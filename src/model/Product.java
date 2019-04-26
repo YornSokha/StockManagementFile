@@ -1,13 +1,13 @@
 package model;
 
 public class Product {
-    private String id;
+    private long id;
     private String name;
     private double unitPrice;
     private int stockQty;
     private String importedDate;
 
-    public Product(String id, String name, double unitPrice, int stockQty, String importedDate) {
+    public Product(long id, String name, double unitPrice, int stockQty, String importedDate) {
         this.id = id;
         this.name = name;
         this.unitPrice = unitPrice;
@@ -15,11 +15,11 @@ public class Product {
         this.importedDate = importedDate;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -57,12 +57,6 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Product{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", unitPrice=" + unitPrice +
-                ", stockQty=" + stockQty +
-                ", importedDate='" + importedDate + '\'' +
-                '}';
+        return id + "|" + name + "|" + unitPrice + "|" +stockQty + "|"+ importedDate + "\n";
     }
 }
