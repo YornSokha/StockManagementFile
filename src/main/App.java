@@ -20,13 +20,13 @@ class Fetch implements Runnable{
         long startTime = System.nanoTime();
         FileWriter fileWriter = null;
         try {
-            fileWriter = new FileWriter("File.txt");
+            fileWriter = new FileWriter("product.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
         Product product;
-        for(long i = 1; i < 10000000; i++){
+        for(long i = 1; i < 100; i++){
             product = new Product(i, "Coca", 10d, 1000, "12/12/2019" );
             try {
                 bufferedWriter.write(product.toString());
