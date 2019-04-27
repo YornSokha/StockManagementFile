@@ -12,7 +12,7 @@ public class App {
         FileWriter fileWriter = null;
         int bufferSize = 8 * 1024;
         try {
-            fileWriter = new FileWriter("Product.txt");
+            fileWriter = new FileWriter("product.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
