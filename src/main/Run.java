@@ -5,19 +5,26 @@ import model.Product;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Scanner;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Run {
-    private static ArrayList<Product> products;
+    private static HashMap<Integer, Product> products;
     static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
-//        generateData();
+        generateData();
         getData();
         writeData();
+        readData();
         saveUpdate();
+    }
+
+    private static void readData() {
+        System.out.print("Read by ID : ");
+        int id = scanner.nextInt();
+        Product product = products.get(id);
+        if(product != null){
+            System.out.println(product.toString());
+        }
     }
 
     private static void saveUpdate() {
@@ -30,7 +37,8 @@ public class Run {
             e.printStackTrace();
         }
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter, bufferSize);
-        for (int i = 0; i <products.size(); i++) {
+        System.out.println(products.size());
+        for (int i = 1; i <= products.size(); i++) {
             try {
                 bufferedWriter.write(products.get(i).toString());
                 bufferedWriter.newLine();
@@ -45,16 +53,16 @@ public class Run {
     }
 
     private static String getDate(){
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         Date date = new Date();
-        System.out.println(dateFormat.format(date)); //2016/11/16 12:08:43
+//        System.out.println(dateFormat.format(date)); //2016/11/16 12:08:43
         return dateFormat.format(date);
     }
 
     private static void writeData() {
-        Product product = products.get(products.size() -1 );
-        int lastId = product.getId();
-        System.out.println("Product ID : " + lastId + 1);
+        Product lastProduct = products.get(products.size());
+        int lastId = lastProduct.getId();
+        System.out.println("Product ID : " + (lastId + 1));
         System.out.print("Product's Name : ");
         String name = scanner.nextLine();
         System.out.print("Product's Price : ");
@@ -62,15 +70,16 @@ public class Run {
         System.out.print("Product's Qty : ");
         int qty = scanner.nextInt();
 
-        System.out.println("ID : " + lastId + 1);
+        System.out.println("ID : " + (lastId + 1));
         System.out.println("Name : " + name);
         System.out.println("Price : " + price);
         System.out.println("Qty : " + qty);
         System.out.println("Imported Date : " + getDate());
-        char answer = ' ';
+        char answer;
         System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
-        answer = scanner.next().charAt(0);
-        products.add(new Product(lastId+1, name, price, qty, getDate()));
+        answer = Character.toLowerCase(scanner.next().charAt(0));
+        if(answer == 'y')
+            products.put(lastId + 1, new Product(lastId+1, name, price, qty, getDate()));
         scanner.nextLine();
 
     }
@@ -78,7 +87,7 @@ public class Run {
     private static void getData() {
         long startTime = System.nanoTime();
         FileReader fileReader = null;
-        products = new ArrayList<>();
+        products = new HashMap<>();
         int bufferSize = 8 * 1024;
         try {
             fileReader = new FileReader("Product.txt");
@@ -95,7 +104,7 @@ public class Run {
                 double unitPrice = Double.parseDouble(parts[2]);
                 int stockQty = Integer.parseInt(parts[3]);
 //                String importedDate = parts[4];
-                products.add(new Product(id, parts[1], unitPrice, stockQty, parts[4]));
+                products.put(id, new Product(id, parts[1], unitPrice, stockQty, parts[4]));
             }
             System.out.println("Array length:" + products.size());
             System.out.println("Read length: " + length);
@@ -117,8 +126,8 @@ public class Run {
         }
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter, bufferSize);
         Product product;
-        for (int i = 1; i <= 10_000; i++) {
-            product = new Product(i, "Coca", 10d, 1000, "12/12/2019");
+        for (int i = 1; i <= 5_000; i++) {
+            product = new Product(i, "Coca", 10d, 1000, getDate());
             try {
                 bufferedWriter.write(product.toString());
                 bufferedWriter.newLine();
