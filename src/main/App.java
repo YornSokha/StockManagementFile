@@ -8,30 +8,23 @@ import java.io.IOException;
 
 public class App {
     public static void main(String[] args) throws InterruptedException{
-        Thread thread = new Thread(new Fetch());
-        thread.start();
-        thread.join();
-    }
-}
-
-class Fetch implements Runnable {
-
-    @Override
-    public synchronized void run() {
         long startTime = System.nanoTime();
         FileWriter fileWriter = null;
+        int bufferSize = 8 * 1024;
         try {
             fileWriter = new FileWriter("Product.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter, bufferSize);
         Product product;
 
-        for (long i = 1; i < 4000; i++) {
+        for (int i = 0; i < 2000; i++) {
             product = new Product(i, "Coca", 10d, 1000, "12/12/2019");
+            System.out.println("i = " + i);
             try {
                 bufferedWriter.write(product.toString());
+                bufferedWriter.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -41,4 +34,3 @@ class Fetch implements Runnable {
         System.out.println("Read using " + (double) time / 1000000 + " milliseconds");
     }
 }
-
