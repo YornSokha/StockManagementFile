@@ -63,7 +63,7 @@ public class App {
                 goFirst();
                 break;
             case "p":
-                gotoPage(currentPage);
+                goPrevious();
                 break;
             case "n":
                 goNext();
@@ -157,20 +157,22 @@ public class App {
     }
 
     private static void readData() {
-        System.out.println("\n\nread\n\n");
-        long startTime2 = System.nanoTime();
-        String thisLine = null;
-        try {
-            BufferedReader br = new BufferedReader(new FileReader("Product.txt"));
-
-            while ((thisLine = br.readLine()) != null) {
-                System.out.println(thisLine);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        int id = Validator.readInt("Read by ID :");
+        Product product = products.get(id);
+        if (product != null) {
+            Table tableReadData = new Table(2);
+            tableReadData.addCell("ID");
+            tableReadData.addCell("" + product.getId());
+            tableReadData.addCell("Name");
+            tableReadData.addCell(product.getName());
+            tableReadData.addCell("Price");
+            tableReadData.addCell("" + product.getUnitPrice());
+            tableReadData.addCell("Imported Date");
+            tableReadData.addCell(product.getImportedDate());
+            System.out.println(tableReadData.render());
+        } else {
+            System.out.println("Product id is not exist!");
         }
-        long time2 = System.nanoTime() - startTime2;
-        System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
     }
 
     private static void generateData() {
@@ -187,7 +189,7 @@ public class App {
             }
         }).start();
         long startTime = System.nanoTime();
-        try(BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("Product.txt", false))) {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("Product.txt", false))) {
             int flush = 0;
             for (int i = 1; i <= 1_000; i++) {
                 Product product = new Product(i, "Coca Cola", 10d, 1000, getDate());
@@ -216,30 +218,37 @@ public class App {
     private static void goNext() {
         if (currentPage != getTotalPage())
             gotoPage(++currentPage);
+        else gotoPage(getTotalPage());
     }
 
     private static void goPrevious() {
         if (currentPage != 1)
             gotoPage(--currentPage);
+        else
+            gotoPage(1);
     }
 
     private static void gotoPage(int pageNum) {
         initTable();
         currentPage = pageNum;
         int start = numOfRows * (currentPage - 1) + 1;
-        for (int i = start; i < start + numOfRows; i++) {
-            addRowTable(i);
+        if (pageNum == getTotalPage()){
+            int remainRows = products.size() - start;
+            for (int i = start; i <= start + remainRows; i++){
+                addRowTable(i);
+            }
+        }else {
+            for (int i = start; i < start + numOfRows; i++) {
+                addRowTable(i);
+            }
         }
+
         System.out.println(table.render());
         printPageSummary();
     }
 
     private static int getTotalPage() {
         return products.size() % numOfRows == 0 ? products.size() / numOfRows : products.size() / numOfRows + 1;
-    }
-
-    private static int getCurrentPage() {
-        return currentPage;
     }
 
     private static void goFirst() {
@@ -276,15 +285,6 @@ public class App {
         table.addCell("" + product.getStockQty());
         table.addCell(product.getImportedDate());
     }
-
-//    private static void readData() {
-//        System.out.print("Read by ID : ");
-//        int id = scanner.nextInt();
-//        Product product = products.get(id);
-//        if (product != null) {
-//            System.out.println(product.toString());
-//        }
-//    }
 
     private static void saveUpdate() {
         long startTime = System.nanoTime();
@@ -324,16 +324,19 @@ public class App {
         System.out.println("Product ID : " + (lastId + 1));
         System.out.print("Product's Name : ");
         String name = scanner.nextLine();
-        System.out.print("Product's Price : ");
-        double price = scanner.nextDouble();
-        System.out.print("Product's Qty : ");
-        int qty = scanner.nextInt();
+        double price = Validator.readDouble("Product's Price : ");
+        int qty = Validator.readInt("Product's Qty : ", 1, 1_000_000);
 
-        System.out.println("ID : " + (lastId + 1));
-        System.out.println("Name : " + name);
-        System.out.println("Price : " + price);
-        System.out.println("Qty : " + qty);
-        System.out.println("Imported Date : " + getDate());
+        Table tableWriteData = new Table(2);
+        tableWriteData.addCell("ID");
+        tableWriteData.addCell("" + (lastId + 1));
+        tableWriteData.addCell("Name");
+        tableWriteData.addCell(name);
+        tableWriteData.addCell("Price");
+        tableWriteData.addCell("" + price);
+        tableWriteData.addCell("Imported Date");
+        tableWriteData.addCell(getDate());
+        System.out.println(tableWriteData.render());
         char answer;
         System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
         answer = Character.toLowerCase(scanner.next().charAt(0));
