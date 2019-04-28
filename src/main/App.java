@@ -38,9 +38,9 @@ public class App {
 //                new Product(19,"J",10.0,10,"fffff"),new Product(20,"K",10.0,10,"fffff"),
 //        };
 
-        for(Product p:product){
-            products.put(p.getId(),p);
-        }
+//        for(Product p:product){
+//            products.put(p.getId(),p);
+//        }
 
         do switch (printMenu()
         ) {
