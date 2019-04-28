@@ -1,5 +1,6 @@
 package main;
 
+import helper.Validator;
 import model.Product;
 
 import java.io.*;
@@ -14,12 +15,12 @@ public class Run {
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        generateData();
+//        generateData();
         getData();
         writeData();
-        readData();
-        saveUpdate();
-        runPagination();
+//        readData();
+//        saveUpdate();
+//        runPagination();
     }
 
     private static void runPagination() {
@@ -148,10 +149,8 @@ public class Run {
         System.out.println("Product ID : " + (lastId + 1));
         System.out.print("Product's Name : ");
         String name = scanner.nextLine();
-        System.out.print("Product's Price : ");
-        double price = scanner.nextDouble();
-        System.out.print("Product's Qty : ");
-        int qty = scanner.nextInt();
+        double price = Validator.readDouble("Product's Price : ");
+        int qty = Validator.readInt("Product's Qty : ");
 
         System.out.println("ID : " + (lastId + 1));
         System.out.println("Name : " + name);
@@ -164,7 +163,6 @@ public class Run {
         if (answer == 'y')
             products.put(lastId + 1, new Product(lastId + 1, name, price, qty, getDate()));
         scanner.nextLine();
-
     }
 
     private static void getData() {
