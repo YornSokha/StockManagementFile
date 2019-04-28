@@ -25,7 +25,7 @@ public class App {
 //                System.out.println(line.split("|"));
 //                products.add(new Product(line));
                 String parts[] = line.split("\\|");
-                int id = Integer.parseInt(parts[0]);
+                int id = Integer.parseInt(parts[0]);;
 //                String name = parts[1];
                 double unitPrice = Double.parseDouble(parts[2]);
                 int stockQty = Integer.parseInt(parts[3]);
@@ -42,10 +42,28 @@ public class App {
     }
 
     public static void main(String[] args) throws InterruptedException{
-        getData();
-//                generateData();
+//        getData();
+//        readData();
+        generateData();
     }
+    private static void readData(){
+        System.out.println("\n\nread\n\n");
+        long startTime2 = System.nanoTime();
+        String thisLine = null;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("Mytest.txt") );
 
+            while ((thisLine = br.readLine()) != null) {
+                System.out.println(thisLine);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        long time2 = System.nanoTime() - startTime2;
+        System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
+    }
     private static void generateData() {
         new Thread(() -> {
             String message = "Please wait....";
@@ -53,7 +71,7 @@ public class App {
             while (i < message.length()){
                 System.out.print(message.charAt(i++));
                 try {
-                    Thread.sleep(250);
+                    Thread.sleep(350);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -63,16 +81,14 @@ public class App {
         try {
             int flush = 0;
             BufferedWriter b=new BufferedWriter(new FileWriter("Mytest.txt",false));
-            for(int i=1;i<=1_000_000;i++){
+            for(int i=1;i<=10_000_000;i++){
                 Product product = new Product(i, "Coca", 10d, 1000, "12/12/2019");
                 b.write(product.toString());
                 b.newLine();
                 if(i == 5000 + flush){
-//                    System.out.println("Invoke " + (flush/10000 + 1) + " times");
                     flush += 5000;
                     b.flush();
                 }
-//                b.close();
             }
             System.out.println("success");
         } catch (FileNotFoundException e) {
@@ -82,22 +98,7 @@ public class App {
         }
         long time = System.nanoTime() - startTime;
         System.out.println("Read using " + (double) time / 1000000 + " milliseconds");
-//        System.out.println("\n\nread\n\n");
-//        long startTime2 = System.nanoTime();
-//        String thisLine = null;
-//        try {
-//            BufferedReader br = new BufferedReader(new FileReader("Mytest.txt") );
-//
-//            while ((thisLine = br.readLine()) != null) {
-//                System.out.println(thisLine);
-//            }
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        long time2 = System.nanoTime() - startTime2;
-//        System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
+
     }
 }
 
