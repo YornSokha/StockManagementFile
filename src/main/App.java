@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class App {
-    private static HashMap<Integer, Product> products;
+    public static HashMap<Integer, Product> products;// = new HashMap<>();
     private static Scanner scanner = new Scanner(System.in);
     private static int numOfRows = 5;
     private static int currentPage = 1;
@@ -23,7 +23,25 @@ public class App {
 
     public static void main(String[] args) {
 //        generateData();
+//        new App();
         getData();
+//        Product[] product = new Product[]{
+//                new Product(1,"A",10.0,10,"fffff"),new Product(2,"T",10.0,10,"fffff"),
+//                new Product(3,"B",10.0,10,"fffff"),new Product(4,"S",10.0,10,"fffff"),
+//                new Product(5,"C",10.0,10,"fffff"),new Product(6,"R",10.0,10,"fffff"),
+//                new Product(7,"D",10.0,10,"fffff"),new Product(8,"Q",10.0,10,"fffff"),
+//                new Product(9,"E",10.0,10,"fffff"),new Product(10,"P",10.0,10,"fffff"),
+//                new Product(11,"F",10.0,10,"fffff"),new Product(12,"O",10.0,10,"fffff"),
+//                new Product(13,"G",10.0,10,"fffff"),new Product(14,"N",10.0,10,"fffff"),
+//                new Product(15,"H",10.0,10,"fffff"),new Product(16,"M",10.0,10,"fffff"),
+//                new Product(17,"I",10.0,10,"fffff"),new Product(18,"L",10.0,10,"fffff"),
+//                new Product(19,"J",10.0,10,"fffff"),new Product(20,"K",10.0,10,"fffff"),
+//        };
+
+        for(Product p:product){
+            products.put(p.getId(),p);
+        }
+
         do switch (printMenu()
         ) {
             case "*":
@@ -80,11 +98,15 @@ public class App {
     }
 
     private static String printMenu() {
-        Table tableMenu = new Table(9, BorderStyle.UNICODE_BOX_DOUBLE_BORDER, ShownBorders.SURROUND_HEADER_AND_COLUMNS);
+        BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
+        Table tableMenu = new Table(9,borderStyle,new ShownBorders("......tttt"));
         String[] menu = {"*)Display", "W)rite", "R)ead",
                 "U)pdate", "D)elete", "F)irst", "P)revious",
                 "N)ext", "L)ast", "S)earch", "G)oto", "Se)t",
                 "Sa)ve", "Ba)ck up", "Re)store", "H)elp", "E)xit"};
+        for(int i=0; i<9; i++){
+            tableMenu.setColumnWidth(i, 11,11);
+        }
         for (String s : menu) {
 //            tableMenu.addCell(s);
             tableMenu.addCell(s);
@@ -95,12 +117,23 @@ public class App {
     }
 
     private static void initTable() {
-        table = new Table(5);
+        BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
+//        table = new Table(5);
+//        table.addCell("ID");
+//        table.addCell("NAME");
+//        table.addCell("Unit Price");
+//        table.addCell("Qty");
+//        table.addCell("Imported Date");
+        table = new Table(5,borderStyle,new ShownBorders("tttttttttt"));
+        int myMinWidth[] ={14,32,11,12,18};
+        for (int i = 0; i < 5; i++) {
+            table.setColumnWidth(i, myMinWidth[i], 27);
+        }
         table.addCell("ID");
-        table.addCell("NAME");
-        table.addCell("Unit Price");
+        table.addCell("Name");
         table.addCell("Qty");
-        table.addCell("Imported Date");
+        table.addCell("Unit Price");
+        table.addCell("Date");
     }
 
     private static int selectChoice() {
@@ -120,7 +153,7 @@ public class App {
         products = new HashMap<>();
         Connection.getProducts(products);
         long time = System.nanoTime() - startTime;
-        System.out.println("Read using " + (double) time / 1000000 + " milliseconds");
+        System.out.println("Read using " + (double) time / 1000000 + " seconds");
     }
 
     private static void readData() {
@@ -220,7 +253,9 @@ public class App {
     }
 
     private static void printPageSummary() {
-        System.out.println("Page : " + currentPage + " of " + getTotalPage() + "\t\t\tTotal record : " + products.size());
+//        System.out.print("Page : " + currentPage + " of " + getTotalPage() + "\t\t\t\t\t\t\tTotal record : " + products.size());
+        System.out.printf("%4sPage : %d of %d %64s Total Record: %d"," ",currentPage, getTotalPage()," ",products.size());
+        System.out.println();
     }
 
     private static void goLast() {
@@ -234,7 +269,7 @@ public class App {
     }
 
     private static void addRowTable(int i) {
-        Product product = products.get(i);
+        Product product = products.get(i); // products hash map
         table.addCell("" + product.getId());
         table.addCell(product.getName());
         table.addCell("" + product.getUnitPrice());
