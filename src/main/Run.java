@@ -1,6 +1,7 @@
 package main;
 
 import helper.Validator;
+import controller.Connection;
 import model.Product;
 
 import java.io.*;
@@ -55,13 +56,13 @@ public class Run {
     }
 
     private static void goNext() {
-        if(currentPage != getTotalPage())
+        if (currentPage != getTotalPage())
             gotoPage(++currentPage);
     }
 
-    private static void goPrevious(){
-        if(currentPage != 1)
-        gotoPage(--currentPage);
+    private static void goPrevious() {
+        if (currentPage != 1)
+            gotoPage(--currentPage);
     }
 
     private static void gotoPage(int pageNum) {
@@ -167,32 +168,9 @@ public class Run {
 
     private static void getData() {
         long startTime = System.nanoTime();
-        FileReader fileReader = null;
         products = new HashMap<>();
-        int bufferSize = 8 * 1024;
-        try {
-            fileReader = new FileReader("Product.txt");
-            BufferedReader buffer = new BufferedReader(fileReader);
-            long length = 0;
-            String line;
-            while ((line = buffer.readLine()) != null) {
-                length++;
-//                System.out.println(line.split("|"));
-//                products.add(new Product(line));
-                String parts[] = line.split("\\|");
-                int id = Integer.parseInt(parts[0]);
-//                String name = parts[1];
-                double unitPrice = Double.parseDouble(parts[2]);
-                int stockQty = Integer.parseInt(parts[3]);
-//                String importedDate = parts[4];
-                products.put(id, new Product(id, parts[1], unitPrice, stockQty, parts[4]));
-            }
-            System.out.println("Array length:" + products.size());
-            System.out.println("Read length: " + length);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         long time = System.nanoTime() - startTime;
+        Connection.getProducts(products);
         System.out.println("Read using " + (double) time / 1000000 + " milliseconds");
     }
 
