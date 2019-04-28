@@ -1,4 +1,4 @@
-package main;
+package testing;
 
 import controller.Connection;
 import helper.Validator;
@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class App {
+public class Testing {
     private static HashMap<Integer, Product> products;
     private static Scanner scanner = new Scanner(System.in);
     private static int numOfRows = 5;
@@ -307,4 +307,6 @@ public class App {
         scanner.nextLine();
 
     }
+
+
 }
