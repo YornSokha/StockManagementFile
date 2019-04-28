@@ -24,8 +24,7 @@ public class Testing {
     public static void main(String[] args) {
 //        generateData();
         getData();
-        do switch (printMenu()
-        ) {
+        do switch (printMenu()) {
             case "*":
                 gotoPage(currentPage);
                 break;
@@ -45,6 +44,7 @@ public class Testing {
                 goFirst();
                 break;
             case "p":
+                System.out.println("P");
                 gotoPage(currentPage);
                 break;
             case "n":
@@ -74,23 +74,21 @@ public class Testing {
             case "e":
                 System.exit(0);
                 break;
-
-
         } while (true);
     }
 
     private static String printMenu() {
         Table tableMenu = new Table(9, BorderStyle.UNICODE_BOX_DOUBLE_BORDER, ShownBorders.SURROUND_HEADER_AND_COLUMNS);
-        String[] menu = {"*)Display", "W)rite", "R)ead",
-                "U)pdate", "D)elete", "F)irst", "P)revious",
-                "N)ext", "L)ast", "S)earch", "G)oto", "Se)t",
-                "Sa)ve", "Ba)ck up", "Re)store", "H)elp", "E)xit"};
+        String[] menu = {"*) Display", "W) Write", "R) Read",
+                "U) Update", "D) Delete", "F) First", "P) Previous",
+                "N) Next", "L) Last", "S) Search", "G) Goto", "Se) Set",
+                "Sa) Save", "Ba) Back up", "Re) Restore", "H) Help", "E) Exit"};
         for (String s : menu) {
 //            tableMenu.addCell(s);
             tableMenu.addCell(s);
         }
         System.out.println(tableMenu.render());
-        System.out.print("Command-->");
+        System.out.print("Command--> ");
         return scanner.nextLine().toLowerCase();
     }
 
