@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class App {
-    public static HashMap<Integer, Product> products;// = new HashMap<>();
+    public static HashMap<Integer, Product> products = new HashMap<>();
     private static Scanner scanner = new Scanner(System.in);
     private static int numOfRows = 5;
     private static int currentPage = 1;
@@ -24,23 +24,23 @@ public class App {
     public static void main(String[] args) {
 //        generateData();
 //        new App();
-        getData();
-//        Product[] product = new Product[]{
-//                new Product(1,"A",10.0,10,"fffff"),new Product(2,"T",10.0,10,"fffff"),
-//                new Product(3,"B",10.0,10,"fffff"),new Product(4,"S",10.0,10,"fffff"),
-//                new Product(5,"C",10.0,10,"fffff"),new Product(6,"R",10.0,10,"fffff"),
-//                new Product(7,"D",10.0,10,"fffff"),new Product(8,"Q",10.0,10,"fffff"),
-//                new Product(9,"E",10.0,10,"fffff"),new Product(10,"P",10.0,10,"fffff"),
-//                new Product(11,"F",10.0,10,"fffff"),new Product(12,"O",10.0,10,"fffff"),
-//                new Product(13,"G",10.0,10,"fffff"),new Product(14,"N",10.0,10,"fffff"),
-//                new Product(15,"H",10.0,10,"fffff"),new Product(16,"M",10.0,10,"fffff"),
-//                new Product(17,"I",10.0,10,"fffff"),new Product(18,"L",10.0,10,"fffff"),
-//                new Product(19,"J",10.0,10,"fffff"),new Product(20,"K",10.0,10,"fffff"),
-//        };
+//        getData();
+        Product[] product = new Product[]{
+                new Product(1,"A",10.0,10,"fffff"),new Product(2,"T",10.0,10,"fffff"),
+                new Product(3,"B",10.0,10,"fffff"),new Product(4,"S",10.0,10,"fffff"),
+                new Product(5,"C",10.0,10,"fffff"),new Product(6,"R",10.0,10,"fffff"),
+                new Product(7,"D",10.0,10,"fffff"),new Product(8,"Q",10.0,10,"fffff"),
+                new Product(9,"E",10.0,10,"fffff"),new Product(10,"P",10.0,10,"fffff"),
+                new Product(11,"F",10.0,10,"fffff"),new Product(12,"O",10.0,10,"fffff"),
+                new Product(13,"G",10.0,10,"fffff"),new Product(14,"N",10.0,10,"fffff"),
+                new Product(15,"H",10.0,10,"fffff"),new Product(16,"M",10.0,10,"fffff"),
+                new Product(17,"I",10.0,10,"fffff"),new Product(18,"L",10.0,10,"fffff"),
+                new Product(19,"J",10.0,10,"fffff"),new Product(20,"K",10.0,10,"fffff"),
+        };
 
-//        for(Product p:product){
-//            products.put(p.getId(),p);
-//        }
+        for(Product p:product){
+            products.put(p.getId(),p);
+        }
 
         do switch (printMenu()
         ) {
