@@ -21,6 +21,23 @@ public class Validator {
         return value;
     }
 
+    public static int readInt(String message, int min, int max){
+        int value = readInt(message);
+        while (value < min || value > max){
+            value = readInt(message);
+        }
+        return value;
+    }
+
+    public static String readAlphabets(){
+        String value = scanner.nextLine();
+        while(!value.matches("[a-zA-Z]+")){
+            System.out.println("Please enter a valid value!");
+            value = scanner.nextLine();
+        }
+        return value;
+    }
+
     public static float readFloat(String message){
         float value = 0;
         boolean validValue = false;
