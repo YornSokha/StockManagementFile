@@ -14,11 +14,15 @@ public class Run {
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-//        generateData();
+        generateData();
         getData();
-//        writeData();
-//        readData();
-//        saveUpdate();
+        writeData();
+        readData();
+        saveUpdate();
+        runPagination();
+    }
+
+    private static void runPagination() {
         System.out.println("=================GO FIRST===================");
         goFirst();
         System.out.println("================== GO TO PAGE 4==================");
@@ -41,8 +45,6 @@ public class Run {
         goNext();
         System.out.println("===================GO FIRST=================");
         goFirst();
-
-
     }
 
     private static void setRow() {
@@ -207,12 +209,16 @@ public class Run {
         }
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter, bufferSize);
         Product product;
-        for (int i = 1; i <= 5_000; i++) {
+        int flush = 0;
+        for (int i = 1; i <= 1_000_0; i++) {
             product = new Product(i, "Coca", 10d, 1000, getDate());
             try {
                 bufferedWriter.write(product.toString());
                 bufferedWriter.newLine();
-                bufferedWriter.flush();
+                if(i == (5000 + flush)){
+                    flush += 5000;
+                    bufferedWriter.flush();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
