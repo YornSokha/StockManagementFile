@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 public class Connection {
     public static HashMap<Integer, Product> getProducts(HashMap<Integer, Product> products){
-        try (BufferedReader buffer = new BufferedReader(new FileReader("Product.txt"));
+        try (BufferedReader buffer = new BufferedReader(new FileReader("Product.txt"))
         ) {
             long length = 0;
             String line;

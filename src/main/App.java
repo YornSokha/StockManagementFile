@@ -16,15 +16,17 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class App {
-    private static HashMap<Integer, Product> products;
+    private static final String FILE_NAME = "product.txt";
+    public static HashMap<Integer, Product> products = new HashMap<>();
     private static Scanner scanner = new Scanner(System.in);
     private static int numOfRows = 5;
     private static int currentPage = 1;
     private static Table table;
 
     public static void main(String[] args) {
-//        generateData();
+        generateData();
         getData();
+
         do switch (printMenu()
         ) {
             case "*":
@@ -46,7 +48,7 @@ public class App {
                 goFirst();
                 break;
             case "p":
-                gotoPage(currentPage);
+                goPrevious();
                 break;
             case "n":
                 goNext();
@@ -63,11 +65,14 @@ public class App {
             case "se":
                 setRow();
                 break;
+            case "ba":
+                backup();
+                break;
             case "sa":
                 System.out.println("Save");
                 break;
             case "re":
-                System.out.println("Restore");
+                reStore();
                 break;
             case "h":
                 System.out.println("Help");
@@ -80,12 +85,34 @@ public class App {
         } while (true);
     }
 
+    private static void seakThongGenerator() {
+        Product[] product = new Product[]{
+                new Product(1, "A", 10.0, 10, "fffff"), new Product(2, "T", 10.0, 10, "fffff"),
+                new Product(3, "B", 10.0, 10, "fffff"), new Product(4, "S", 10.0, 10, "fffff"),
+                new Product(5, "C", 10.0, 10, "fffff"), new Product(6, "R", 10.0, 10, "fffff"),
+                new Product(7, "D", 10.0, 10, "fffff"), new Product(8, "Q", 10.0, 10, "fffff"),
+                new Product(9, "E", 10.0, 10, "fffff"), new Product(10, "P", 10.0, 10, "fffff"),
+                new Product(11, "F", 10.0, 10, "fffff"), new Product(12, "O", 10.0, 10, "fffff"),
+                new Product(13, "G", 10.0, 10, "fffff"), new Product(14, "N", 10.0, 10, "fffff"),
+                new Product(15, "H", 10.0, 10, "fffff"), new Product(16, "M", 10.0, 10, "fffff"),
+                new Product(17, "I", 10.0, 10, "fffff"), new Product(18, "L", 10.0, 10, "fffff"),
+                new Product(19, "J", 10.0, 10, "fffff"), new Product(20, "K", 10.0, 10, "fffff"),
+        };
+        for (Product p : product) {
+            products.put(p.getId(), p);
+        }
+    }
+
     private static String printMenu() {
-        Table tableMenu = new Table(9, BorderStyle.UNICODE_BOX_DOUBLE_BORDER, ShownBorders.SURROUND_HEADER_AND_COLUMNS);
+        BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
+        Table tableMenu = new Table(9, borderStyle, new ShownBorders("......tttt"));
         String[] menu = {"*)Display", "W)rite", "R)ead",
                 "U)pdate", "D)elete", "F)irst", "P)revious",
                 "N)ext", "L)ast", "S)earch", "G)oto", "Se)t",
                 "Sa)ve", "Ba)ck up", "Re)store", "H)elp", "E)xit"};
+        for (int i = 0; i < 9; i++) {
+            tableMenu.setColumnWidth(i, 11, 11);
+        }
         for (String s : menu) {
 //            tableMenu.addCell(s);
             tableMenu.addCell(s);
@@ -96,12 +123,23 @@ public class App {
     }
 
     private static void initTable() {
-        table = new Table(5);
+        BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
+//        table = new Table(5);
+//        table.addCell("ID");
+//        table.addCell("NAME");
+//        table.addCell("Unit Price");
+//        table.addCell("Qty");
+//        table.addCell("Imported Date");
+        table = new Table(5, borderStyle, new ShownBorders("tttttttttt"));
+        int myMinWidth[] = {14, 32, 11, 12, 18};
+        for (int i = 0; i < 5; i++) {
+            table.setColumnWidth(i, myMinWidth[i], 27);
+        }
         table.addCell("ID");
-        table.addCell("NAME");
-        table.addCell("Unit Price");
+        table.addCell("Name");
         table.addCell("Qty");
-        table.addCell("Imported Date");
+        table.addCell("Unit Price");
+        table.addCell("Date");
     }
 
     private static int selectChoice() {
@@ -121,24 +159,26 @@ public class App {
         products = new HashMap<>();
         Connection.getProducts(products);
         long time = System.nanoTime() - startTime;
-        System.out.println("Read using " + (double) time / 1000000 + " milliseconds");
+        System.out.println("Read using " + (double) time / 1000000 + " seconds");
     }
 
     private static void readData() {
-        System.out.println("\n\nread\n\n");
-        long startTime2 = System.nanoTime();
-        String thisLine = null;
-        try {
-            BufferedReader br = new BufferedReader(new FileReader("Product.txt"));
-
-            while ((thisLine = br.readLine()) != null) {
-                System.out.println(thisLine);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        int id = Validator.readInt("Read by ID :");
+        Product product = products.get(id);
+        if (product != null) {
+            Table tableReadData = new Table(2);
+            tableReadData.addCell("ID");
+            tableReadData.addCell("" + product.getId());
+            tableReadData.addCell("Name");
+            tableReadData.addCell(product.getName());
+            tableReadData.addCell("Price");
+            tableReadData.addCell("" + product.getUnitPrice());
+            tableReadData.addCell("Imported Date");
+            tableReadData.addCell(product.getImportedDate());
+            System.out.println(tableReadData.render());
+        } else {
+            System.out.println("Product id is not exist!");
         }
-        long time2 = System.nanoTime() - startTime2;
-        System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
     }
 
     private static void generateData() {
@@ -155,10 +195,10 @@ public class App {
             }
         }).start();
         long startTime = System.nanoTime();
-        try(BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("Product.txt", false))) {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILE_NAME, false))) {
             int flush = 0;
             for (int i = 1; i <= 1_000; i++) {
-                Product product = new Product(i, "Coca Cola", 10d, 1000, getDate());
+                Product product = new Product(i, "Tiger beer", 10d, 1000, getDate());
                 bufferedWriter.write(product.toString());
                 bufferedWriter.newLine();
                 if (i == 5000 + flush) {
@@ -184,30 +224,37 @@ public class App {
     private static void goNext() {
         if (currentPage != getTotalPage())
             gotoPage(++currentPage);
+        else gotoPage(getTotalPage());
     }
 
     private static void goPrevious() {
         if (currentPage != 1)
             gotoPage(--currentPage);
+        else
+            gotoPage(1);
     }
 
     private static void gotoPage(int pageNum) {
         initTable();
         currentPage = pageNum;
         int start = numOfRows * (currentPage - 1) + 1;
-        for (int i = start; i < start + numOfRows; i++) {
-            addRowTable(i);
+        if (pageNum == getTotalPage()) {
+            int remainRows = products.size() - start;
+            for (int i = start; i <= start + remainRows; i++) {
+                addRowTable(i);
+            }
+        } else {
+            for (int i = start; i < start + numOfRows; i++) {
+                addRowTable(i);
+            }
         }
+
         System.out.println(table.render());
         printPageSummary();
     }
 
     private static int getTotalPage() {
         return products.size() % numOfRows == 0 ? products.size() / numOfRows : products.size() / numOfRows + 1;
-    }
-
-    private static int getCurrentPage() {
-        return currentPage;
     }
 
     private static void goFirst() {
@@ -221,7 +268,9 @@ public class App {
     }
 
     private static void printPageSummary() {
-        System.out.println("Page : " + currentPage + " of " + getTotalPage() + "\t\t\tTotal record : " + products.size());
+//        System.out.print("Page : " + currentPage + " of " + getTotalPage() + "\t\t\t\t\t\t\tTotal record : " + products.size());
+        System.out.printf("%4sPage : %d of %d %64s Total Record: %d", " ", currentPage, getTotalPage(), " ", products.size());
+        System.out.println();
     }
 
     private static void goLast() {
@@ -235,31 +284,13 @@ public class App {
     }
 
     private static void addRowTable(int i) {
-        Product product = products.get(i);
+        Product product = products.get(i); // products hash map
         table.addCell("" + product.getId());
         table.addCell(product.getName());
         table.addCell("" + product.getUnitPrice());
         table.addCell("" + product.getStockQty());
         table.addCell(product.getImportedDate());
     }
-
-    private static void addRowTable(ArrayList<Product> list){
-        list.forEach((product)-> {
-            table.addCell("" + product.getId());
-            table.addCell(product.getName());
-            table.addCell("" + product.getUnitPrice());
-            table.addCell("" + product.getStockQty());
-            table.addCell(product.getImportedDate());
-        });
-    }
-//    private static void readData() {
-//        System.out.print("Read by ID : ");
-//        int id = scanner.nextInt();
-//        Product product = products.get(id);
-//        if (product != null) {
-//            System.out.println(product.toString());
-//        }
-//    }
 
     private static void saveUpdate() {
         long startTime = System.nanoTime();
@@ -299,16 +330,19 @@ public class App {
         System.out.println("Product ID : " + (lastId + 1));
         System.out.print("Product's Name : ");
         String name = scanner.nextLine();
-        System.out.print("Product's Price : ");
-        double price = scanner.nextDouble();
-        System.out.print("Product's Qty : ");
-        int qty = scanner.nextInt();
+        double price = Validator.readDouble("Product's Price : ");
+        int qty = Validator.readInt("Product's Qty : ", 1, 1_000_000);
 
-        System.out.println("ID : " + (lastId + 1));
-        System.out.println("Name : " + name);
-        System.out.println("Price : " + price);
-        System.out.println("Qty : " + qty);
-        System.out.println("Imported Date : " + getDate());
+        Table tableWriteData = new Table(2);
+        tableWriteData.addCell("ID");
+        tableWriteData.addCell("" + (lastId + 1));
+        tableWriteData.addCell("Name");
+        tableWriteData.addCell(name);
+        tableWriteData.addCell("Price");
+        tableWriteData.addCell("" + price);
+        tableWriteData.addCell("Imported Date");
+        tableWriteData.addCell(getDate());
+        System.out.println(tableWriteData.render());
         char answer;
         System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
         answer = Character.toLowerCase(scanner.next().charAt(0));
@@ -316,5 +350,62 @@ public class App {
             products.put(lastId + 1, new Product(lastId + 1, name, price, qty, getDate()));
         scanner.nextLine();
 
+    }
+
+    static void backup() {
+        long start = System.nanoTime();
+        try (BufferedWriter backup = new BufferedWriter(new FileWriter("backup\\" + (new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date())) + ".bac"))) {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(FILE_NAME));
+            String thisLine;
+            int flush = 5000;
+            int i = 0;
+            //copy the file content in bytes
+            while ((thisLine = bufferedReader.readLine()) != null) {
+                i++;
+                backup.write(thisLine);
+                backup.newLine();
+                if (i == flush) {
+                    flush += 5000;
+                    backup.flush();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        long time = System.nanoTime() - start;
+        System.out.print("Read using " + (double) time / 1000000 + " milliseconds");
+//            System.out.println("Time taken by Stream Copy = "+(System.nanoTime()-start));
+    }
+
+    static void reStore() {
+        File[] listOfFiles;
+        listOfFiles = (new File("backup")).listFiles();
+        for (int i = 0; i < listOfFiles.length; i++) {
+            if (listOfFiles[i].isFile()) {
+                System.out.println((i + 1) + ") " + listOfFiles[i].getName());
+            }
+        }
+        int index = Validator.readInt("Enter you choice :", 1, listOfFiles.length);
+        try (BufferedWriter restoreTo = new BufferedWriter(new FileWriter(FILE_NAME))) {
+            BufferedReader bacRead = new BufferedReader(new FileReader("backup\\" + listOfFiles[index - 1].getName()));
+            String thisLine = "";
+            int flush = 5000;
+            int i = 0;
+            //copy the file content in bytes
+            while ((thisLine = bacRead.readLine()) != null) {
+                i++;
+                restoreTo.write(thisLine);
+                restoreTo.newLine();
+                ;
+                if (i == flush) {
+                    flush += 5000;
+                    restoreTo.flush();
+                }
+            }
+            getData();
+            System.out.println("Restore success!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
