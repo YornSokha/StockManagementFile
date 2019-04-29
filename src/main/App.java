@@ -24,11 +24,13 @@ public class App {
     private static Table table;
 
     public static void main(String[] args) {
-        generateData();
+        myGroupname();
+        //generateData();
         getData();
 
-        do switch (printMenu()
-        ) {
+        do{
+            String key = printMenu();
+            switch (key){
             case "*":
                 gotoPage(currentPage);
                 break;
@@ -39,10 +41,11 @@ public class App {
                 readData();
                 break;
             case "u":
-                System.out.println("Update");
+                RecordComplement.updateObjectById(10, products);
                 break;
-            case "d":
-                System.out.println("Delete");
+            case "d": /*@Delete*/
+                //System.out.println("Delete");
+                RecordComplement.deleteRecordById(Validator.readInt("Enter Number: "), products);
                 break;
             case "f":
                 goFirst();
@@ -82,27 +85,10 @@ public class App {
                 break;
 
 
-        } while (true);
-    }
-
-    private static void seakThongGenerator() {
-        Product[] product = new Product[]{
-                new Product(1, "A", 10.0, 10, "fffff"), new Product(2, "T", 10.0, 10, "fffff"),
-                new Product(3, "B", 10.0, 10, "fffff"), new Product(4, "S", 10.0, 10, "fffff"),
-                new Product(5, "C", 10.0, 10, "fffff"), new Product(6, "R", 10.0, 10, "fffff"),
-                new Product(7, "D", 10.0, 10, "fffff"), new Product(8, "Q", 10.0, 10, "fffff"),
-                new Product(9, "E", 10.0, 10, "fffff"), new Product(10, "P", 10.0, 10, "fffff"),
-                new Product(11, "F", 10.0, 10, "fffff"), new Product(12, "O", 10.0, 10, "fffff"),
-                new Product(13, "G", 10.0, 10, "fffff"), new Product(14, "N", 10.0, 10, "fffff"),
-                new Product(15, "H", 10.0, 10, "fffff"), new Product(16, "M", 10.0, 10, "fffff"),
-                new Product(17, "I", 10.0, 10, "fffff"), new Product(18, "L", 10.0, 10, "fffff"),
-                new Product(19, "J", 10.0, 10, "fffff"), new Product(20, "K", 10.0, 10, "fffff"),
-        };
-        for (Product p : product) {
-            products.put(p.getId(), p);
         }
+    }while (true);
     }
-
+/*@Seakthong*/
     private static String printMenu() {
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
         Table tableMenu = new Table(9, borderStyle, new ShownBorders("......tttt"));
@@ -119,17 +105,44 @@ public class App {
         }
         System.out.println(tableMenu.render());
         System.out.print("Command-->");
-        return scanner.nextLine().toLowerCase();
+//        String str =scanner.nextLine().toLowerCase();
+        String str = scanner.nextLine();
+        if(str.charAt(0)=='*'){
+            if(str.toUpperCase().charAt(1)=='U'){
+                if(str.charAt(2)=='1'){
+                    //.U1:Name:Unit:Price
+                    String []mystr = str.split("/",10);
+//                    System.out.println("1"+mystr[1]);
+//                    System.out.println("2"+mystr[2]);
+                }
+                else if(str.charAt(2)=='2'){
+                    System.out.println(2);
+                }
+                else if(str.charAt(2)=='3'){
+                    System.out.println(3);
+                }
+                else if(str.charAt(2)=='4'){
+                    System.out.println(4);
+                }
+
+            }
+            else if(str.charAt(1)=='G'){
+                int num = 0;
+                for(int i = 0 ; i < str.length(); i++){
+                    if(i>1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                }
+//                System.out.println(num);
+//                str.lastIndexOf(str, 2);
+//                int num = Integer.parseInt(str);
+                gotoPage(num);
+            }
+
+        }
+        return str.toLowerCase();
     }
 
     private static void initTable() {
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
-//        table = new Table(5);
-//        table.addCell("ID");
-//        table.addCell("NAME");
-//        table.addCell("Unit Price");
-//        table.addCell("Qty");
-//        table.addCell("Imported Date");
         table = new Table(5, borderStyle, new ShownBorders("tttttttttt"));
         int myMinWidth[] = {14, 32, 11, 12, 18};
         for (int i = 0; i < 5; i++) {
@@ -182,18 +195,18 @@ public class App {
     }
 
     private static void generateData() {
-        new Thread(() -> {
-            String message = "Please wait....";
-            int i = 0;
-            while (i < message.length()) {
-                System.out.print(message.charAt(i++));
-                try {
-                    Thread.sleep(350);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+//        new Thread(() -> {
+//            String message = "Please wait....";
+//            int i = 0;
+//            while (i < message.length()) {
+//                System.out.print(message.charAt(i++));
+//                try {
+//                    Thread.sleep(350);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
         long startTime = System.nanoTime();
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILE_NAME, false))) {
             int flush = 0;
@@ -232,6 +245,20 @@ public class App {
             gotoPage(--currentPage);
         else
             gotoPage(1);
+    }
+
+
+    private static void addRowTable(int i) {
+
+        table.addCell("" + checkMyProduct(i).getId());
+        table.addCell(checkMyProduct(i).getName());
+        table.addCell("" + checkMyProduct(i).getUnitPrice());
+        table.addCell("" + checkMyProduct(i).getStockQty());
+        table.addCell(checkMyProduct(i).getImportedDate());
+    }
+
+    private static Product checkMyProduct(int i){
+        return products.get(i);
     }
 
     private static void gotoPage(int pageNum) {
@@ -283,14 +310,6 @@ public class App {
         printPageSummary();
     }
 
-    private static void addRowTable(int i) {
-        Product product = products.get(i); // products hash map
-        table.addCell("" + product.getId());
-        table.addCell(product.getName());
-        table.addCell("" + product.getUnitPrice());
-        table.addCell("" + product.getStockQty());
-        table.addCell(product.getImportedDate());
-    }
 
     private static void saveUpdate() {
         long startTime = System.nanoTime();
@@ -407,5 +426,32 @@ public class App {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    static void myGroupname(){
+        System.out.println
+        (
+                "\n" +
+
+                        ".....................................................................................................................................\n" +
+                        ".....................................................................................................................................\n" +
+                        "...______.........._........_________..._________........_........____....____...______.........._........____.._____.....______.....\n" +
+                        "..|_..._.\\......../.\\......|.._..._..|.|.._..._..|....../.\\......|_...\\../..._|.|_..._.\\......../.\\......|_...\\|_..._|...'.___..|....\n" +
+                        "....|.|_).|....../._.\\.....|_/.|.|.\\_|.|_/.|.|.\\_|...../._.\\.......|...\\/...|.....|.|_).|....../._.\\.......|...\\.|.|.../..'...\\_|....\n" +
+                        "....|..__'....../.___.\\........|.|.........|.|......../.___.\\......|.|\\../|.|.....|..__'....../.___.\\......|.|\\.\\|.|...|.|...____....\n" +
+                        "..._|.|__).|.._/./...\\.\\_....._|.|_......._|.|_....._/./...\\.\\_..._|.|_\\/_|.|_..._|.|__).|.._/./...\\.\\_..._|.|_\\...|_..\\.`.___]..|...\n" +
+                        "..|_______/..|____|.|____|...|_____|.....|_____|...|____|.|____|.|_____||_____|.|_______/..|____|.|____|.|_____|\\____|..`._____.'....\n" +
+                        ".....................................................................................................................................\n" +
+                        "...................................______..................................................._...._...................................\n" +
+                        "..................................'.___..|.................................................|.|..|.|..................................\n" +
+                        "................................/..'...\\_|..._..--......--.....__..._...._..--.....______..|.|__|.|_.................................\n" +
+                        "................................|.|...____..[.`/'`\\]./..'`\\.\\.[..|.|.|..[.'/'`\\.\\.|______|.|____..._|................................\n" +
+                        "................................\\.`.___]..|..|.|.....|.\\__..|..|.\\_/.|,..|.\\__/.|.............._|.|_.................................\n" +
+                        ".................................`._____.'..[___].....'.__.'...'.__.'_/..|.;.__/..............|_____|................................\n" +
+                        "........................................................................[__|.........................................................\n" +
+                        ".....................................................................................................................................\n" +
+                        ".....................................................................................................................................\n"
+
+        );
     }
 }
