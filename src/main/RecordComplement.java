@@ -19,9 +19,9 @@ public class RecordComplement {
     private static ArrayList searchResult;
 
     /*important and usable method
-    * findObjectByCharacterInName(String character,HashMap<Integer,Product> hashMap)//<<<< move to searcherThread
-    * Boolean updateObjectById(int number,HashMap<Integer, Product> hashMap)
-    * void deleteRecordById(int number , HashMap<Integer, Product> hashMap)<<should be change to boolean
+    * findObjectByCharacterInName(String character,HashMap<Integer,Product> products)//<<<< move to searcherThread
+    * Boolean updateObjectById(int number,ArrayList<Product products)
+    * void deleteRecordById(int number , ArrayList<Product products)<<should be change to boolean
     * filterListWithPagination(int page,int recordAmountInlist)
     * */
 
@@ -45,11 +45,11 @@ public class RecordComplement {
         }
     }
 
-    public static ArrayList findObjectByCharacterInName(String character,HashMap<Integer,Product> hashMap){
+    public static ArrayList findObjectByCharacterInName(String character,HashMap<Integer,Product> products){
 
         ArrayList arrayList = new ArrayList();
 
-        hashMap.forEach((key,value)->{
+        products.forEach((key,value)->{
 
             if(stringHasChar(character,value.getName())){
                 arrayList.add(value);
@@ -66,31 +66,31 @@ public class RecordComplement {
         return Pattern.matches(".*"+regex+".*",text);
     }
 
-//    @mengHok-Add
-    public static Boolean updateObjectById(int number,HashMap<Integer, Product> hashMap){//<<<reference to hashMap ??
-        if(hashMap.get(number) == null ){
+
+    public static Boolean updateObjectById(int number,ArrayList<Product> products){//<<<reference to products ??
+        if(products.get(number) == null ){
             System.out.println("Data not found");
             return false;
         }else{
-            hashMap.put(number,insertRecord(hashMap.get(number)));
+            products.add(insertRecord(products.get(number)));
             return true;
         }
     }
 
-    public static void deleteRecordById(int number , HashMap<Integer, Product> hashMap){
+    public static void deleteRecordById(int number , ArrayList<String> products){
         char c;
-        if(hashMap.get(number)== null){
+        if(products.get(number)== null){
             System.out.println("Data not Found");
             return;
         }else {
-            System.out.println(hashMap.get(number).toString());
+            System.out.println(products.get(number).toString());
             System.out.println("Are you sure ");
             System.out.println("press 'y' to delete");
             c = new Scanner(System.in).next().charAt(0);
             if( c =='y'){
-                hashMap.remove(number);
+                products.remove(number);
                 System.out.println("successfully deleted");
-                System.out.println(hashMap);
+                System.out.println(products);
                 return;
             }else{
                 return;
