@@ -75,7 +75,7 @@ public class App {
                 reStore();
                 break;
             case "h":
-                System.out.println("Help");
+                help();
                 break;
             case "e":
                 System.exit(0);
@@ -85,23 +85,29 @@ public class App {
         } while (true);
     }
 
-    private static void seakThongGenerator() {
-        Product[] product = new Product[]{
-                new Product(1, "A", 10.0, 10, "fffff"), new Product(2, "T", 10.0, 10, "fffff"),
-                new Product(3, "B", 10.0, 10, "fffff"), new Product(4, "S", 10.0, 10, "fffff"),
-                new Product(5, "C", 10.0, 10, "fffff"), new Product(6, "R", 10.0, 10, "fffff"),
-                new Product(7, "D", 10.0, 10, "fffff"), new Product(8, "Q", 10.0, 10, "fffff"),
-                new Product(9, "E", 10.0, 10, "fffff"), new Product(10, "P", 10.0, 10, "fffff"),
-                new Product(11, "F", 10.0, 10, "fffff"), new Product(12, "O", 10.0, 10, "fffff"),
-                new Product(13, "G", 10.0, 10, "fffff"), new Product(14, "N", 10.0, 10, "fffff"),
-                new Product(15, "H", 10.0, 10, "fffff"), new Product(16, "M", 10.0, 10, "fffff"),
-                new Product(17, "I", 10.0, 10, "fffff"), new Product(18, "L", 10.0, 10, "fffff"),
-                new Product(19, "J", 10.0, 10, "fffff"), new Product(20, "K", 10.0, 10, "fffff"),
-        };
-        for (Product p : product) {
-            products.put(p.getId(), p);
-        }
+    private static void help(){
+        System.out.println("+-----------------------------------------------------------------------------+");
+        System.out.println("! 1.    press    * : Display all record of products                           !");
+        System.out.println("! 2.    press    w : Add new products                                         !");
+        System.out.println("!       press    w : #proname-unitprice-qty : sortcut for add new product     !");
+        System.out.println("! 3.    press    r : read Content any content                                 !");
+        System.out.println("!       press    r#proId :  sortcut for read product by Id                    !");
+        System.out.println("! 4.    press    u : Update Data                                              !");
+        System.out.println("! 5.    press    d : Delete Data                                              !");
+        System.out.println("!       press    d#proId :  sortcut for read product by Id                    !");
+        System.out.println("! 6.    press    f : Display First Page                                       !");
+        System.out.println("! 7.    press    p : Display Previous Page                                    !");
+        System.out.println("! 8.    press    n : Display Next Page                                        !");
+        System.out.println("! 9.    press    l : Display Last Page                                        !");
+        System.out.println("! 10.   press    s : Search product by name                                   !");
+        System.out.println("! 11.   press    sa : Save record to file                                     !");
+        System.out.println("! 12.   press    ba : Backup data                                             !");
+        System.out.println("! 13.   press    re : Restore data                                            !");
+        System.out.println("! 14.   press    h : Help                                                     !");
+        System.out.println("+-----------------------------------------------------------------------------+");
+
     }
+
 
     private static String printMenu() {
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
@@ -198,7 +204,7 @@ public class App {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILE_NAME, false))) {
             int flush = 0;
             for (int i = 1; i <= 1_000; i++) {
-                Product product = new Product(i, "Tiger beer", 10d, 1000, getDate());
+                Product product = new Product(i, "Angkor Beer", 10d, 1000, getDate());
                 bufferedWriter.write(product.toString());
                 bufferedWriter.newLine();
                 if (i == 5000 + flush) {
@@ -373,8 +379,7 @@ public class App {
             e.printStackTrace();
         }
         long time = System.nanoTime() - start;
-        System.out.print("Read using " + (double) time / 1000000 + " milliseconds");
-//            System.out.println("Time taken by Stream Copy = "+(System.nanoTime()-start));
+        System.out.print("Backup successfully " + (double) time / 1000000 + " milliseconds");
     }
 
     static void reStore() {
@@ -402,10 +407,11 @@ public class App {
                     restoreTo.flush();
                 }
             }
-            getData();
             System.out.println("Restore success!");
         } catch (IOException e) {
             e.printStackTrace();
         }
+        getData();
+
     }
 }
