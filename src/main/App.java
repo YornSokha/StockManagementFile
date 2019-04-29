@@ -78,6 +78,7 @@ public class App {
                 help();
                 break;
             case "e":
+                System.out.println("Good bye");
                 System.exit(0);
                 break;
 
