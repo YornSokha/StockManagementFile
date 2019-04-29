@@ -10,6 +10,7 @@ import org.nocrala.tools.texttablefmt.Table;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -242,6 +243,15 @@ public class App {
         table.addCell(product.getImportedDate());
     }
 
+    private static void addRowTable(ArrayList<Product> list){
+        list.forEach((product)-> {
+            table.addCell("" + product.getId());
+            table.addCell(product.getName());
+            table.addCell("" + product.getUnitPrice());
+            table.addCell("" + product.getStockQty());
+            table.addCell(product.getImportedDate());
+        });
+    }
 //    private static void readData() {
 //        System.out.print("Read by ID : ");
 //        int id = scanner.nextInt();
