@@ -2,6 +2,9 @@ package main;
 
 import helper.Validator;
 import model.Product;
+import org.nocrala.tools.texttablefmt.BorderStyle;
+import org.nocrala.tools.texttablefmt.ShownBorders;
+import org.nocrala.tools.texttablefmt.Table;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -16,9 +19,9 @@ public class RecordComplement {
     private static ArrayList searchResult;
 
     /*important and usable method
-    * findObjectByCharacterInName(String character,HashMap<Integer,Product> hashMap)//<<<< move to searcherThread
-    * Boolean updateObjectById(int number,HashMap<Integer, Product> hashMap)
-    * void deleteRecordById(int number , HashMap<Integer, Product> hashMap)<<should be change to boolean
+    * findObjectByCharacterInName(String character,HashMap<Integer,Product> products)//<<<< move to searcherThread
+    * Boolean updateObjectById(int number,ArrayList<Product products)
+    * void deleteRecordById(int number , ArrayList<Product products)<<should be change to boolean
     * filterListWithPagination(int page,int recordAmountInlist)
     * */
 
@@ -42,11 +45,11 @@ public class RecordComplement {
         }
     }
 
-    public static ArrayList findObjectByCharacterInName(String character,HashMap<Integer,Product> hashMap){
+    public static ArrayList findObjectByCharacterInName(String character,HashMap<Integer,Product> products){
 
         ArrayList arrayList = new ArrayList();
 
-        hashMap.forEach((key,value)->{
+        products.forEach((key,value)->{
 
             if(stringHasChar(character,value.getName())){
                 arrayList.add(value);
@@ -64,29 +67,30 @@ public class RecordComplement {
     }
 
 
-    public static Boolean updateObjectById(int number,HashMap<Integer, Product> hashMap){//<<<reference to hashMap ??
-        if(hashMap.get(number) == null ){
+    public static Boolean updateObjectById(int number,ArrayList<Product> products){//<<<reference to products ??
+        if(products.get(number) == null ){
             System.out.println("Data not found");
             return false;
         }else{
-            hashMap.put(number,insertRecord(hashMap.get(number)));
+            products.add(insertRecord(products.get(number)));
             return true;
         }
     }
 
-    public static void deleteRecordById(int number , HashMap<Integer, Product> hashMap){
+    public static void deleteRecordById(int number , ArrayList<String> products){
         char c;
-        if(hashMap.get(number)== null){
+        if(products.get(number)== null){
             System.out.println("Data not Found");
             return;
         }else {
-            System.out.println(hashMap.get(number).toString());
+            System.out.println(products.get(number).toString());
             System.out.println("Are you sure ");
             System.out.println("press 'y' to delete");
             c = new Scanner(System.in).next().charAt(0);
             if( c =='y'){
-                hashMap.remove(number);
+                products.remove(number);
                 System.out.println("successfully deleted");
+                System.out.println(products);
                 return;
             }else{
                 return;
@@ -96,12 +100,20 @@ public class RecordComplement {
     }
 
     /*> updateRecord*/
+
+//    private String myTable(){}
+
     private static Product insertRecord(Product paramProduct){
         Product product = new Product();
         passByValue(product,paramProduct);
         int orderNum;
         boolean loopStatus = true;
-        System.out.println("1./Update All||2./Name||3./Price||n4./Qty||5./Exit");
+        String InsertMenu[] ={"1./Update All","2./Name","3./Price|","4./Qty","5./Exit"};
+        Table tbl = new Table(5,BorderStyle.UNICODE_DOUBLE_BOX, ShownBorders.ALL);
+        for(int i = 0; i<5; i++){
+            tbl.addCell(InsertMenu[i]);
+        }
+        System.out.println(tbl.render());
         do{
             orderNum = Validator.readInt("Option :");
                 switch (orderNum) {
@@ -128,11 +140,11 @@ public class RecordComplement {
                         System.out.println("input mistake");
                         break;
                 }
-
-        }while(loopStatus);
-
             System.out.println(product);//??<<<
             System.out.println(paramProduct);//??<<<
+        }while(loopStatus);
+
+
 
         while (true){
             System.out.println("press 'y' to update and 'n' to cancel");
@@ -166,5 +178,7 @@ public class RecordComplement {
         product1.setStockQty(product2.getStockQty());
         product1.setUnitPrice(product2.getUnitPrice());
     }
+
+
 
 }

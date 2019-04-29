@@ -116,7 +116,7 @@ public class Testing {
     private static void getData() {
         long startTime = System.nanoTime();
         products = new HashMap<>();
-        Connection.getProducts(products);
+//        Connection.getProducts(products);
         long time = System.nanoTime() - startTime;
         System.out.println("Read using " + (double) time / 1000000 + " milliseconds");
     }
