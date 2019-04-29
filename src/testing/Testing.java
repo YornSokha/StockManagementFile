@@ -1,4 +1,4 @@
-package main;
+package testing;
 
 import controller.Connection;
 import helper.Validator;
@@ -7,28 +7,25 @@ import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
+
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class App {
-    private static final String FILE_NAME = "product.txt";
-    public static HashMap<Integer, Product> products = new HashMap<>();
+public class Testing {
+    private static HashMap<Integer, Product> products;
     private static Scanner scanner = new Scanner(System.in);
     private static int numOfRows = 5;
     private static int currentPage = 1;
     private static Table table;
 
     public static void main(String[] args) {
-        generateData();
+//        generateData();
         getData();
-
-        do switch (printMenu()
-        ) {
+        do switch (printMenu()) {
             case "*":
                 gotoPage(currentPage);
                 break;
@@ -65,14 +62,11 @@ public class App {
             case "se":
                 setRow();
                 break;
-            case "ba":
-                backup();
-                break;
             case "sa":
                 System.out.println("Save");
                 break;
             case "re":
-                reStore();
+                System.out.println("Restore");
                 break;
             case "h":
                 System.out.println("Help");
@@ -80,66 +74,31 @@ public class App {
             case "e":
                 System.exit(0);
                 break;
-
-
         } while (true);
     }
 
-    private static void seakThongGenerator() {
-        Product[] product = new Product[]{
-                new Product(1, "A", 10.0, 10, "fffff"), new Product(2, "T", 10.0, 10, "fffff"),
-                new Product(3, "B", 10.0, 10, "fffff"), new Product(4, "S", 10.0, 10, "fffff"),
-                new Product(5, "C", 10.0, 10, "fffff"), new Product(6, "R", 10.0, 10, "fffff"),
-                new Product(7, "D", 10.0, 10, "fffff"), new Product(8, "Q", 10.0, 10, "fffff"),
-                new Product(9, "E", 10.0, 10, "fffff"), new Product(10, "P", 10.0, 10, "fffff"),
-                new Product(11, "F", 10.0, 10, "fffff"), new Product(12, "O", 10.0, 10, "fffff"),
-                new Product(13, "G", 10.0, 10, "fffff"), new Product(14, "N", 10.0, 10, "fffff"),
-                new Product(15, "H", 10.0, 10, "fffff"), new Product(16, "M", 10.0, 10, "fffff"),
-                new Product(17, "I", 10.0, 10, "fffff"), new Product(18, "L", 10.0, 10, "fffff"),
-                new Product(19, "J", 10.0, 10, "fffff"), new Product(20, "K", 10.0, 10, "fffff"),
-        };
-        for (Product p : product) {
-            products.put(p.getId(), p);
-        }
-    }
-
     private static String printMenu() {
-        BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
-        Table tableMenu = new Table(9, borderStyle, new ShownBorders("......tttt"));
-        String[] menu = {"*)Display", "W)rite", "R)ead",
-                "U)pdate", "D)elete", "F)irst", "P)revious",
-                "N)ext", "L)ast", "S)earch", "G)oto", "Se)t",
-                "Sa)ve", "Ba)ck up", "Re)store", "H)elp", "E)xit"};
-        for (int i = 0; i < 9; i++) {
-            tableMenu.setColumnWidth(i, 11, 11);
-        }
+        Table tableMenu = new Table(9, BorderStyle.UNICODE_BOX_DOUBLE_BORDER, ShownBorders.SURROUND_HEADER_AND_COLUMNS);
+        String[] menu = {"*) Display", "W) Write", "R) Read",
+                "U) Update", "D) Delete", "F) First", "P) Previous",
+                "N) Next", "L) Last", "S) Search", "G) Goto", "Se) Set",
+                "Sa) Save", "Ba) Back up", "Re) Restore", "H) Help", "E) Exit"};
         for (String s : menu) {
 //            tableMenu.addCell(s);
             tableMenu.addCell(s);
         }
         System.out.println(tableMenu.render());
-        System.out.print("Command-->");
+        System.out.print("Command--> ");
         return scanner.nextLine().toLowerCase();
     }
 
     private static void initTable() {
-        BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
-//        table = new Table(5);
-//        table.addCell("ID");
-//        table.addCell("NAME");
-//        table.addCell("Unit Price");
-//        table.addCell("Qty");
-//        table.addCell("Imported Date");
-        table = new Table(5, borderStyle, new ShownBorders("tttttttttt"));
-        int myMinWidth[] = {14, 32, 11, 12, 18};
-        for (int i = 0; i < 5; i++) {
-            table.setColumnWidth(i, myMinWidth[i], 27);
-        }
+        table = new Table(5);
         table.addCell("ID");
-        table.addCell("Name");
-        table.addCell("Qty");
+        table.addCell("NAME");
         table.addCell("Unit Price");
-        table.addCell("Date");
+        table.addCell("Qty");
+        table.addCell("Imported Date");
     }
 
     private static int selectChoice() {
@@ -159,7 +118,7 @@ public class App {
         products = new HashMap<>();
         Connection.getProducts(products);
         long time = System.nanoTime() - startTime;
-        System.out.println("Read using " + (double) time / 1000000 + " seconds");
+        System.out.println("Read using " + (double) time / 1000000 + " milliseconds");
     }
 
     private static void readData() {
@@ -195,10 +154,10 @@ public class App {
             }
         }).start();
         long startTime = System.nanoTime();
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILE_NAME, false))) {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("Product.txt", false))) {
             int flush = 0;
             for (int i = 1; i <= 1_000; i++) {
-                Product product = new Product(i, "Tiger beer", 10d, 1000, getDate());
+                Product product = new Product(i, "Coca Cola", 10d, 1000, getDate());
                 bufferedWriter.write(product.toString());
                 bufferedWriter.newLine();
                 if (i == 5000 + flush) {
@@ -238,12 +197,12 @@ public class App {
         initTable();
         currentPage = pageNum;
         int start = numOfRows * (currentPage - 1) + 1;
-        if (pageNum == getTotalPage()) {
+        if (pageNum == getTotalPage()){
             int remainRows = products.size() - start;
-            for (int i = start; i <= start + remainRows; i++) {
+            for (int i = start; i <= start + remainRows; i++){
                 addRowTable(i);
             }
-        } else {
+        }else {
             for (int i = start; i < start + numOfRows; i++) {
                 addRowTable(i);
             }
@@ -268,9 +227,7 @@ public class App {
     }
 
     private static void printPageSummary() {
-//        System.out.print("Page : " + currentPage + " of " + getTotalPage() + "\t\t\t\t\t\t\tTotal record : " + products.size());
-        System.out.printf("%4sPage : %d of %d %64s Total Record: %d", " ", currentPage, getTotalPage(), " ", products.size());
-        System.out.println();
+        System.out.println("Page : " + currentPage + " of " + getTotalPage() + "\t\t\tTotal record : " + products.size());
     }
 
     private static void goLast() {
@@ -284,7 +241,7 @@ public class App {
     }
 
     private static void addRowTable(int i) {
-        Product product = products.get(i); // products hash map
+        Product product = products.get(i);
         table.addCell("" + product.getId());
         table.addCell(product.getName());
         table.addCell("" + product.getUnitPrice());
@@ -352,60 +309,5 @@ public class App {
 
     }
 
-    static void backup() {
-        long start = System.nanoTime();
-        try (BufferedWriter backup = new BufferedWriter(new FileWriter("backup\\" + (new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date())) + ".bac"))) {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(FILE_NAME));
-            String thisLine;
-            int flush = 5000;
-            int i = 0;
-            //copy the file content in bytes
-            while ((thisLine = bufferedReader.readLine()) != null) {
-                i++;
-                backup.write(thisLine);
-                backup.newLine();
-                if (i == flush) {
-                    flush += 5000;
-                    backup.flush();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        long time = System.nanoTime() - start;
-        System.out.print("Read using " + (double) time / 1000000 + " milliseconds");
-//            System.out.println("Time taken by Stream Copy = "+(System.nanoTime()-start));
-    }
 
-    static void reStore() {
-        File[] listOfFiles;
-        listOfFiles = (new File("backup")).listFiles();
-        for (int i = 0; i < listOfFiles.length; i++) {
-            if (listOfFiles[i].isFile()) {
-                System.out.println((i + 1) + ") " + listOfFiles[i].getName());
-            }
-        }
-        int index = Validator.readInt("Enter you choice :", 1, listOfFiles.length);
-        try (BufferedWriter restoreTo = new BufferedWriter(new FileWriter(FILE_NAME))) {
-            BufferedReader bacRead = new BufferedReader(new FileReader("backup\\" + listOfFiles[index - 1].getName()));
-            String thisLine = "";
-            int flush = 5000;
-            int i = 0;
-            //copy the file content in bytes
-            while ((thisLine = bacRead.readLine()) != null) {
-                i++;
-                restoreTo.write(thisLine);
-                restoreTo.newLine();
-                ;
-                if (i == flush) {
-                    flush += 5000;
-                    restoreTo.flush();
-                }
-            }
-            getData();
-            System.out.println("Restore success!");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
