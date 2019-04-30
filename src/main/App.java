@@ -12,20 +12,19 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Scanner;
 
 public class App {
     private static final String FILE_NAME = "product.txt";
-    public static ArrayList<String> products = new ArrayList<>();
+    private static ArrayList<String> products = new ArrayList<>();
     private static Scanner scanner = new Scanner(System.in);
     private static int numOfRows = 5;
     private static int currentPage = 1;
-    private static Table table;
+    public static Table table;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException{
         myGroupname();
-        generateData();
+//        generateData();
         getData();
 
 <<<<<<< HEAD
@@ -98,12 +97,13 @@ public class App {
                     readData();
                     break;
                 case "u":
-                    //RecordComplement.updateObjectById(10, products);
+                   Complementary.updateObjectById(Validator.readInt("Input ID : "),products,true);
                     break;
                 case "d": /*@Delete*/
                     //System.out.println("Delete");
-                    RecordComplement.deleteRecordById(Validator.readInt("Enter Number: ", 0, products.size() - 1), products);
-
+                    //RecordComplement.deleteRecordById(Validator.readInt("Enter Number: ", 0, products.size() - 1), products);
+                    if(Complementary.updateObjectById(Validator.readInt("Input ID : "),products,false))
+                        reCalculateCurrentPage();
                     break;
                 case "f":
                     goFirst();
@@ -118,7 +118,8 @@ public class App {
                     goLast();
                     break;
                 case "s":
-                    System.out.println("search");
+                    System.out.print("Name :");
+                    System.out.println(Complementary.findObjectByCharacterInName(scanner.nextLine(),products));
                     break;
                 case "g":
                     gotoPage(Validator.readInt("Input page number(1-" + getTotalPage() + ") : ", 1, getTotalPage()));
@@ -146,6 +147,11 @@ public class App {
             }
 >>>>>>> a04271c715418e08e1b42dd84a24dfaff156b8b7
         } while (true);
+    }
+
+    private static void reCalculateCurrentPage() {
+        if (currentPage > getTotalPage())
+            currentPage = 1;
     }
 
     private static void help() {
@@ -210,9 +216,9 @@ public class App {
 
             }
             else if(str.toLowerCase().charAt(1)=='g'){
-                int num = 0;
-                for(int i = 0 ; i < str.length(); i++){
-                    if(i>1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                int num = Validator.getNumberFromShortcut(str);
+                for(int i = 2 ; i < str.length(); i++){
+                    num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
                 }
                 gotoPage(num);
             }
@@ -270,27 +276,30 @@ public class App {
                 tableReadData.addCell("Imported Date");
                 tableReadData.addCell(idPro[3]);
                 System.out.println(tableReadData.render());
+                return;
             }
         }
+        System.out.println("Product not found!");
     }
 
-    private static void generateData() {
-//        new Thread(() -> {
-//            String message = "Please wait....";
-//            int i = 0;
-//            while (i < message.length()) {
-//                System.out.print(message.charAt(i++));
-//                try {
-//                    Thread.sleep(350);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }).start();
+    private static void generateData() throws InterruptedException{
+        Thread.sleep(1000);
+        new Thread(() -> {
+            String message = "Please wait....";
+            int i = 0;
+            while (i < message.length()) {
+                System.out.print(message.charAt(i++));
+                try {
+                    Thread.sleep(350);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         long startTime = System.nanoTime();
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILE_NAME, false))) {
             int flush = 0;
-            for (int i = 1; i <= 1_00; i++) {
+            for (int i = 1; i <= 1_000_000; i++) {
                 Product product = new Product(i, "Angkor Beer", 10d, 1000, getDate());
                 bufferedWriter.write(product.toString());
                 bufferedWriter.newLine();
@@ -311,8 +320,7 @@ public class App {
     private static void setRow() {
         System.out.print("Number of row : ");
         numOfRows = scanner.nextInt();
-        if (currentPage > getTotalPage())
-            currentPage = 1;
+        reCalculateCurrentPage();
         scanner.nextLine();
     }
 
