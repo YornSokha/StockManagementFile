@@ -23,9 +23,9 @@ public class App {
     private static int currentPage = 1;
     private static Table table;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException{
         myGroupname();
-        generateData();
+//        generateData();
         getData();
 
         do{
@@ -216,23 +216,24 @@ public class App {
         }
     }
 
-    private static void generateData() {
-//        new Thread(() -> {
-//            String message = "Please wait....";
-//            int i = 0;
-//            while (i < message.length()) {
-//                System.out.print(message.charAt(i++));
-//                try {
-//                    Thread.sleep(350);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }).start();
+    private static void generateData() throws InterruptedException{
+        Thread.sleep(1000);
+        new Thread(() -> {
+            String message = "Please wait....";
+            int i = 0;
+            while (i < message.length()) {
+                System.out.print(message.charAt(i++));
+                try {
+                    Thread.sleep(350);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         long startTime = System.nanoTime();
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILE_NAME, false))) {
             int flush = 0;
-            for (int i = 1; i <= 1_00; i++) {
+            for (int i = 1; i <= 10_000_000; i++) {
                 Product product = new Product(i, "Angkor Beer", 10d, 1000, getDate());
                 bufferedWriter.write(product.toString());
                 bufferedWriter.newLine();
