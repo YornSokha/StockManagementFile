@@ -202,16 +202,18 @@ public class App {
         for (String product : products) {
             String[] idPro = product.split("\\|");
             if (id == Integer.parseInt(idPro[0])) {
-                Table tableReadData = new Table(2);
-                tableReadData.addCell("ID");
-                tableReadData.addCell(idPro[0]);
-                tableReadData.addCell("Name");
-                tableReadData.addCell(idPro[1]);
-                tableReadData.addCell("Price");
-                tableReadData.addCell(idPro[2]);
-                tableReadData.addCell("Imported Date");
-                tableReadData.addCell(idPro[3]);
-                System.out.println(tableReadData.render());
+                String shown[]={"ID",idPro[0], "Name",idPro[1],"Price",idPro[2],"Imported Date",idPro[3]};
+                App.myTable(2,shown,"tttttttttt");
+//                Table tableReadData = new Table(2);
+//                tableReadData.addCell("ID");
+//                tableReadData.addCell(idPro[0]);
+//                tableReadData.addCell("Name");
+//                tableReadData.addCell(idPro[1]);
+//                tableReadData.addCell("Price");
+//                tableReadData.addCell(idPro[2]);
+//                tableReadData.addCell("Imported Date");
+//                tableReadData.addCell(idPro[3]);
+//                System.out.println(tableReadData.render());
             }
         }
     }
@@ -366,8 +368,9 @@ public class App {
         String name = scanner.nextLine();
         double price = Validator.readDouble("Product's Price : ");
         int qty = Validator.readInt("Product's Qty : ", 1, 1_000_000);
-
-        Table tableWriteData = new Table(2);
+        String shown[]={"ID","" + (lastId + 1), "Name",name,"Price","" + price,"Imported Date",getDate()};
+        App.myTable(2,shown,"tttttttttt");
+        /*Table tableWriteData = new Table(2);
         tableWriteData.addCell("ID");
         tableWriteData.addCell("" + (lastId + 1));
         tableWriteData.addCell("Name");
@@ -376,7 +379,7 @@ public class App {
         tableWriteData.addCell("" + price);
         tableWriteData.addCell("Imported Date");
         tableWriteData.addCell(getDate());
-        System.out.println(tableWriteData.render());
+        System.out.println(tableWriteData.render());*/
         char answer;
         System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
         answer = Character.toLowerCase(scanner.next().charAt(0));
@@ -441,6 +444,15 @@ public class App {
         }
         getData();
 
+    }
+
+    public static void myTable(int colNum, String[] Value, String shown){
+        BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
+        Table tbl = new Table(colNum, borderStyle,new ShownBorders(shown));
+        for(int i = 0; i<Value.length; i++){
+            tbl.addCell(Value[i]);
+        }
+        System.out.println(tbl.render());
     }
 
     static void myGroupname(){
