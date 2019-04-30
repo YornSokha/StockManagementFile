@@ -25,7 +25,7 @@ public class App {
 
     public static void main(String[] args) {
         myGroupname();
-//        generateData();
+        generateData();
         getData();
 
         do{
@@ -234,7 +234,7 @@ public class App {
         long startTime = System.nanoTime();
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILE_NAME, false))) {
             int flush = 0;
-            for (int i = 1; i <= 1_000_000; i++) {
+            for (int i = 1; i <= 1_00; i++) {
                 Product product = new Product(i, "Angkor Beer", 10d, 1000, getDate());
                 bufferedWriter.write(product.toString());
                 bufferedWriter.newLine();
@@ -278,10 +278,7 @@ public class App {
         currentPage = pageNum;
         int start = numOfRows * (currentPage - 1);
         if (pageNum == getTotalPage()) {
-            int remainRows = products.size() - start;
-            for (int i = start; i < start + remainRows; i++) {
-                addRowTable(products.get(i));
-            }
+            goLast();
         } else {
             for (int i = start; i < start + numOfRows; i++) {
                 addRowTable(products.get(i));
@@ -299,7 +296,7 @@ public class App {
     private static void goFirst() {
         currentPage = 1;
         initTable();
-        for (int i = 1; i <= numOfRows; i++) {
+        for (int i = 0; i < numOfRows; i++) {
             addRowTable(products.get(i));
         }
         System.out.println(table.render());
@@ -312,10 +309,15 @@ public class App {
         System.out.println();
     }
 
+    private static int remainRowInLastPage(){
+        return products.size()%numOfRows;
+    }
+
     private static void goLast() {
         initTable();
         currentPage = getTotalPage();
-        for (int i = products.size() - (numOfRows - 1); i < products.size(); i++) {
+        int start = numOfRows * (currentPage - 1);
+        for (int i = start  ; i < products.size(); i++) {
             addRowTable(products.get(i));
         }
         System.out.println(table.render());
