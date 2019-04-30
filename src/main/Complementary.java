@@ -1,0 +1,144 @@
+package main;
+
+import model.Product;
+import org.nocrala.tools.texttablefmt.BorderStyle;
+import org.nocrala.tools.texttablefmt.ShownBorders;
+import org.nocrala.tools.texttablefmt.Table;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Scanner;
+
+/*
+*<<<<< instance table
+*<<<<< move to table update UI
+*<<<<< arraylist pagination
+*<<<<< R-T-F-B-R-A-C
+*<<<<< R-C-MO
+ */
+
+public class Complementary extends Thread{
+    static private ArrayList arrayList;
+    private Integer index;
+    public static Table table;
+
+    static {
+        /*cmon table*/
+    }
+
+    public Complementary(Integer index,ArrayList arrayList){
+        this.index = index;
+        this.arrayList = arrayList;
+    }
+
+    public Complementary(){
+
+    }
+
+    @Override
+    public void run() {
+
+    }
+
+    public static ArrayList findObjectByCharacterInName(String character, ArrayList<String> products){
+
+        arrayList = new ArrayList();
+
+        products.forEach((value)->{
+
+            if(RecordComplement.stringHasChar(character,subString(value)[1])){
+                arrayList.add(value);
+            }
+
+        });
+
+
+
+        return arrayList;
+    }
+
+    //<<<<<<main call update or delete determine by boolean
+    //<<<<<< UI improver
+    public static Boolean updateObjectById(int number,ArrayList<String> products,boolean booFeature){
+
+        int index = findObjectToUpdate(number,products);
+
+        if(index ==-1){
+
+            return false;
+
+        }else {
+
+            if(booFeature == true){
+
+                Product product =  convertFromStringToProduct(subString(products.get(index)));
+                products.set(index,RecordComplement.insertRecord(product)) ;
+
+            }else {
+
+                while (true){
+                    System.out.println("press 'y' to delete and 'n' to cancel");//<<<<< move to table
+                    char c = new Scanner(System.in).next().charAt(0);
+                    if (c == 'y' || c == 'Y'){
+                        break;
+                    }else if(c == 'n' || c == 'N'){
+                        return false;
+                    }else{
+                        continue;
+                    }
+                }
+
+                products.remove(index);
+
+                System.out.println("successfully deleted");//<<<<< move to table
+
+            }
+            return true;
+            //>>>>> data found
+        }
+
+    }
+
+    private static Product convertFromStringToProduct(String []str){ return new Product(Integer.parseInt(str[0]),str[1],Double.parseDouble(str[2]),Integer.parseInt( str[3]),str[4]); }
+
+    private static int findObjectToUpdate(Integer id, ArrayList<String> products){
+
+        for (int i = 0; i < products.size(); i++) {
+            String []str = subString(products.get(i));
+//            System.out.println(str[0]);
+            if(Integer.parseInt( str[0])==id){
+                System.out.println("found");//<<<<< move to table
+                return i;
+            }
+        }
+
+        System.out.println("not found");//<<<<< move to table
+        return -1;
+    }
+
+    public static String[] subString(String str) {
+        int firstIndex = str.indexOf('|');
+        String s1 = str.substring(0, firstIndex);
+
+        int second = str.indexOf("|", firstIndex + 1);
+        String s2 = str.substring(firstIndex + 1, second);
+
+        int third = str.indexOf("|", second + 1);
+        String s3 = str.substring(second + 1, third);
+
+        int fourth = str.indexOf("|", third + 1);
+        String s4 = str.substring(third + 1, fourth);
+
+        String s5 = str.substring(fourth + 1);
+
+        return new String[]{s1, s2, s3, s4, s5};
+    }
+
+    public static String subFirstString(String str){
+        int firstIndex = str.indexOf('|');
+        String s1 = str.substring(0, firstIndex);
+        return s1;
+    }
+
+}

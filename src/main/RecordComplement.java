@@ -67,16 +67,6 @@ public class RecordComplement {
     }
 
 
-    public static Boolean updateObjectById(int number,ArrayList<Product> products){//<<<reference to products ??
-        if(products.get(number) == null ){
-            System.out.println("Data not found");
-            return false;
-        }else{
-            products.add(insertRecord(products.get(number)));
-            return true;
-        }
-    }
-
     public static void deleteRecordById(int number , ArrayList<String> products){
         char c;
         if(products.get(number)== null){
@@ -103,7 +93,7 @@ public class RecordComplement {
 
 //    private String myTable(){}
 
-    private static Product insertRecord(Product paramProduct){
+    public static String insertRecord(Product paramProduct){
         Product product = new Product();
         passByValue(product,paramProduct);
         int orderNum;
@@ -137,22 +127,22 @@ public class RecordComplement {
                         loopStatus = false;
                         break;
                     default:
-                        System.out.println("input mistake");
+                        System.out.println("input mistake");//<<<<< move to table
                         break;
                 }
-            System.out.println(product);//??<<<
-            System.out.println(paramProduct);//??<<<
+            System.out.println(product);//<<<<< move to table
+            System.out.println(paramProduct);//<<<<< move to table
         }while(loopStatus);
 
 
 
         while (true){
-            System.out.println("press 'y' to update and 'n' to cancel");
+            System.out.println("press 'y' to update and 'n' to cancel");//<<<<< move to table
             char c = new Scanner(System.in).next().charAt(0);
-            if (c == 'y' ){
-                return product;
-            }else if(c == 'n'){
-                return paramProduct;
+            if (c == 'y' || c == 'Y'){
+                return product.toString();
+            }else if(c == 'n' || c == 'N'){
+                return paramProduct.toString();
             }else{
                 continue;
             }
