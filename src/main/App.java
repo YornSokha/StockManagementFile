@@ -41,12 +41,12 @@ public class App {
                     readData();
                     break;
                 case "u":
-                    //RecordComplement.updateObjectById(10, products);
+                   Complementary.updateObjectById(Validator.readInt("Input ID : "),products,true);
                     break;
                 case "d": /*@Delete*/
                     //System.out.println("Delete");
-                    RecordComplement.deleteRecordById(Validator.readInt("Enter Number: ", 0, products.size() - 1), products);
-
+                    //RecordComplement.deleteRecordById(Validator.readInt("Enter Number: ", 0, products.size() - 1), products);
+                    Complementary.updateObjectById(Validator.readInt("Input ID : "),products,false);
                     break;
                 case "f":
                     goFirst();
@@ -61,7 +61,8 @@ public class App {
                     goLast();
                     break;
                 case "s":
-                    System.out.println("search");
+                    System.out.print("Name :");
+                    System.out.println(Complementary.findObjectByCharacterInName(new Scanner(System.in).nextLine(),products));
                     break;
                 case "g":
                     gotoPage(Validator.readInt("Input page number(1-" + getTotalPage() + ") : ", 1, getTotalPage()));
