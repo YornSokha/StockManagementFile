@@ -1,5 +1,6 @@
 package main;
 
+import helper.Validator;
 import model.Product;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
@@ -11,14 +12,14 @@ import java.util.Iterator;
 import java.util.Scanner;
 
 /*
-*<<<<< instance table
-*<<<<< move to table update UI
-*<<<<< arraylist pagination
-*<<<<< R-T-F-B-R-A-C
-*<<<<< R-C-MO
+ *<<<<< instance table
+ *<<<<< move to table update UI
+ *<<<<< arraylist pagination
+ *<<<<< R-T-F-B-R-A-C
+ *<<<<< R-C-MO
  */
 
-public class Complementary extends Thread{
+public class Complementary extends Thread {
     static private ArrayList arrayList;
     private Integer index;
     public static Table table;
@@ -27,12 +28,12 @@ public class Complementary extends Thread{
         /*cmon table*/
     }
 
-    public Complementary(Integer index,ArrayList arrayList){
+    public Complementary(Integer index, ArrayList arrayList) {
         this.index = index;
         this.arrayList = arrayList;
     }
 
-    public Complementary(){
+    public Complementary() {
 
     }
 
@@ -41,18 +42,19 @@ public class Complementary extends Thread{
 
     }
 
-    public static ArrayList findObjectByCharacterInName(String character, ArrayList<String> products){
+
+
+    public static ArrayList findObjectByCharacterInName(String character, ArrayList<String> products) {
 
         arrayList = new ArrayList();
 
-        products.forEach((value)->{
+        products.forEach((value) -> {
 
-            if(RecordComplement.stringHasChar(character,subString(value)[1])){
+            if (RecordComplement.stringHasChar(character, subString(value)[1])) {
                 arrayList.add(value);
             }
 
         });
-
 
 
         return arrayList;
@@ -60,38 +62,28 @@ public class Complementary extends Thread{
 
     //<<<<<<main call update or delete determine by boolean
     //<<<<<< UI improver
-    public static Boolean updateObjectById(int number,ArrayList<String> products,boolean booFeature){
+    public static Boolean updateObjectById(int number, ArrayList<String> products, boolean booFeature) {
 
-        int index = findObjectToUpdate(number,products);
+        int index = findObjectToUpdate(number, products);
 
-        if(index ==-1){
+        if (index == -1) {
 
             return false;
 
-        }else {
+        } else {
 
-            if(booFeature == true){
+            if (booFeature) {//update record
 
-                Product product =  convertFromStringToProduct(subString(products.get(index)));
-                products.set(index,RecordComplement.insertRecord(product)) ;
+                Product product = convertFromStringToProduct(subString(products.get(index)));
+                products.set(index, RecordComplement.insertRecord(product));
 
-            }else {
+            } else {//delete record
 
-                while (true){
-                    System.out.println("press 'y' to delete and 'n' to cancel");//<<<<< move to table
-                    char c = new Scanner(System.in).next().charAt(0);
-                    if (c == 'y' || c == 'Y'){
-                        break;
-                    }else if(c == 'n' || c == 'N'){
-                        return false;
-                    }else{
-                        continue;
-                    }
+                if (Validator.readYesNo("press 'y' to delete and 'n' to cancel : ") == 'y') {
+                    products.remove(index);
+
+                    System.out.println("successfully deleted");//<<<<< move to table
                 }
-
-                products.remove(index);
-
-                System.out.println("successfully deleted");//<<<<< move to table
 
             }
             return true;
@@ -100,15 +92,27 @@ public class Complementary extends Thread{
 
     }
 
-    private static Product convertFromStringToProduct(String []str){ return new Product(Integer.parseInt(str[0]),str[1],Double.parseDouble(str[2]),Integer.parseInt( str[3]),str[4]); }
+    private static Product convertFromStringToProduct(String[] str) {
+        return new Product(Integer.parseInt(str[0]), str[1], Double.parseDouble(str[2]), Integer.parseInt(str[3]), str[4]);
+    }
 
-    private static int findObjectToUpdate(Integer id, ArrayList<String> products){
+    private static int findObjectToUpdate(Integer id, ArrayList<String> products) {
 
         for (int i = 0; i < products.size(); i++) {
-            String []str = subString(products.get(i));
+            String[] str = subString(products.get(i));
 //            System.out.println(str[0]);
-            if(Integer.parseInt( str[0])==id){
-                System.out.println("found");//<<<<< move to table
+            if (Integer.parseInt(str[0]) == id) {
+
+                Table tableReadData = new Table(2);
+                tableReadData.addCell("ID");
+                tableReadData.addCell(str[0]);
+                tableReadData.addCell("Name");
+                tableReadData.addCell(str[1]);
+                tableReadData.addCell("Price");
+                tableReadData.addCell(str[2]);
+                tableReadData.addCell("Imported Date");
+                tableReadData.addCell(str[3]);
+                System.out.println(tableReadData.render());
                 return i;
             }
         }
@@ -135,7 +139,7 @@ public class Complementary extends Thread{
         return new String[]{s1, s2, s3, s4, s5};
     }
 
-    public static String subFirstString(String str){
+    public static String subFirstString(String str) {
         int firstIndex = str.indexOf('|');
         String s1 = str.substring(0, firstIndex);
         return s1;
