@@ -42,7 +42,46 @@ public class Complementary extends Thread {
 
     }
 
+    public static void tabler(String ...str){//<<<< for adding String Array
+        int number = str.length;
+        Table tbl = new Table(number, BorderStyle.UNICODE_DOUBLE_BOX, ShownBorders.ALL);
+        for(int i = 0; i<number; i++){
 
+            try {
+                tbl.addCell(str[i]);    //<<<<< add table to two
+            }catch (NullPointerException in){
+
+                System.out.println("problem");
+                break;
+            }
+        }
+        System.out.println(tbl.render());
+    }
+    ///<<< first index for array & sec for adding many string as varage
+    public static String[] combineArray(String []str,String ...str2 ){
+        int number = str.length+str2.length;
+        int i=0;
+        String []stringResult = new String[number];
+        for (String st:str2) {
+            stringResult[i] = st;
+            i++;
+        }
+        for (String st:str) {
+            stringResult[i] = st;
+            i++;
+        }
+        return stringResult;
+    }
+
+    public static boolean searcher(String character, ArrayList<String> products){
+        ArrayList arrayList = findObjectByCharacterInName(character,products);
+        if (arrayList.size()>0){
+            paginator(arrayList,10);
+            return true;
+        }else{
+            return false;
+        }
+    }
 
     public static ArrayList findObjectByCharacterInName(String character, ArrayList<String> products) {
 
@@ -60,36 +99,84 @@ public class Complementary extends Thread {
         return arrayList;
     }
 
-    //<<<<<<main call update or delete determine by boolean
-    //<<<<<< UI improver
-    public static Boolean updateObjectById(int number, ArrayList<String> products, boolean booFeature) {
+    private static void paginator(ArrayList<String> products, int recordAmount){
 
-        int index = findObjectToUpdate(number, products);
+        recordAmount = 5;
+        int productSize = products.size()%10;
+        productSize = products.size() + 10 - (productSize==0? 10 : productSize);//បង្កត់
+        //>>>> end of file
+//        System.out.println(productSize);
 
-        if (index == -1) {
+        if(recordAmount < 5 ){
 
-            return false;
+        }else{
+            int page = 0;
+            System.out.println("1.previous/2.next/3.exit");
 
-        } else {
+            while (true){
+                switch (Validator.readInt("Option")){
+                    case 1:
+                        if(page*recordAmount <= recordAmount){
+                            System.out.println("current");
+                            continue;
+                        }
 
-            if (booFeature) {//update record
+                        else
+                            page--;
+                        break;
+                    case 2:
+                        //page = page * recordAmount > productSize ? continue : page ;
+                        if(page*recordAmount >= productSize){
+                            System.out.println("end of page ");
+                            continue;
+                        }else {
+                            page++;
+                        }
+                        break;
+                    case 3:
+                        return;
 
-                Product product = convertFromStringToProduct(subString(products.get(index)));
-                products.set(index, RecordComplement.insertRecord(product));
+                    default:
+                        System.out.println("Input mistake");
+                        break;
 
-            } else {//delete record
-
-                if (Validator.readYesNo("press 'y' to delete and 'n' to cancel : ") == 'y') {
-                    products.remove(index);
-
-                    System.out.println("successfully deleted");//<<<<< move to table
                 }
+                for(int i = (recordAmount*page ) - recordAmount ;i < recordAmount*page;i++){
+                    try {
+                        System.out.println(products.get(i));
+                    }catch (IndexOutOfBoundsException e){
+                        break;
+                    }
+                }
+            }//while loop
 
-            }
-            return true;
-            //>>>>> data found
+
         }
 
+    }
+
+    //<<<<<<main call update or delete determine by boolean
+    //<<<<<< UI improver
+    public static String updateObjectById(int number, ArrayList<String> products, boolean booFeature) {
+        int index = findObjectToUpdate(number, products);
+        String productString = null;
+        if (index == -1) {
+            return null;
+        } else {
+            if (booFeature) {//update record
+                Product product = convertFromStringToProduct(subString(products.get(index)));
+                productString = RecordComplement.insertRecord(product);
+                products.set(index, productString);
+            } else {//delete record
+                if (Validator.readYesNo("press 'y' to delete and 'n' to cancel : ") == 'y') {
+                    productString = products.remove(index);
+                    System.out.println(productString);
+                    System.out.println("successfully deleted");//<<<<< move to table
+                }
+            }
+
+            return productString;
+        }
     }
 
     private static Product convertFromStringToProduct(String[] str) {

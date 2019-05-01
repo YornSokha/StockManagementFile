@@ -9,14 +9,14 @@ import java.util.Iterator;
 public class SearcherThread extends Thread{
 
     private static ArrayList searchResult;
-
+    //<<<<indexStart indexEnd
     String regex;
-    HashMap<Integer,Product> hashMap;
+    HashMap<Integer,Product> hashMap;//<<<<<?? change arraylist
 
     SearcherThread(String regex,HashMap hashMap){
+
         this.regex = regex;
         this.hashMap = hashMap;
-
     }
 
 //    public void paginator(int number ){
@@ -38,7 +38,7 @@ public class SearcherThread extends Thread{
     public void findObjectByCharacterInName(String character, HashMap<Integer, Product> hashMap){
         searchResult = new ArrayList();
 
-        hashMap.forEach((key,value)->{
+        hashMap.forEach((key,value)->{//<<<changetofor
 
             if(RecordComplement.stringHasChar(character,value.getName())){
                 searchResult.add(value);
