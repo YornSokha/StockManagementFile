@@ -17,76 +17,80 @@ import java.util.Scanner;
 
 public class App {
     private static final String FILE_NAME = "product.txt";
-    public static HashMap<Integer, Product> products = new HashMap<>();
+    public static ArrayList<String> products = new ArrayList<>();
     private static Scanner scanner = new Scanner(System.in);
     private static int numOfRows = 5;
     private static int currentPage = 1;
     private static Table table;
 
     public static void main(String[] args) {
-        generateData();
+        myGroupname();
+//        generateData();
         getData();
-
-        do switch (printMenu()
-        ) {
-            case "*":
-                gotoPage(currentPage);
-                break;
-            case "w":
-                writeData();
-                break;
-            case "r":
-                readData();
-                break;
-            case "u":
-                System.out.println("Update");
-                break;
-            case "d":
-                System.out.println("Delete");
-                break;
-            case "f":
-                goFirst();
-                break;
-            case "p":
-                goPrevious();
-                break;
-            case "n":
-                goNext();
-                break;
-            case "l":
-                goLast();
-                break;
-            case "s":
-                System.out.println("search");
-                break;
-            case "g":
-                gotoPage(Validator.readInt("Input page number(1-" + getTotalPage() + ") : ", 1, getTotalPage()));
-                break;
-            case "se":
-                setRow();
-                break;
-            case "ba":
-                backup();
-                break;
-            case "sa":
-                System.out.println("Save");
-                break;
-            case "re":
-                reStore();
-                break;
-            case "h":
-                help();
-                break;
-            case "e":
-                System.out.println("Good bye");
-                System.exit(0);
-                break;
+        do {
+            String key = printMenu();
+            switch (key) {
+                case "*":
+                    gotoPage(currentPage);
+                    break;
+                case "w":
+                    writeData();
+                    break;
+                case "r":
+                    readData();
+                    break;
+                case "u":
+                    //RecordComplement.updateObjectById(10, products);
+                    break;
+                case "d": /*@Delete*/
+                    //System.out.println("Delete");
+                    RecordComplement.deleteRecordById(Validator.readInt("Enter Number: ", 0, products.size() - 1), products);
 
 
+                case "f":
+                    goFirst();
+                    break;
+                case "p":
+                    goPrevious();
+                    break;
+                case "n":
+                    goNext();
+                    break;
+                case "l":
+                    goLast();
+                    break;
+                case "s":
+                    System.out.println("search");
+                    break;
+                case "g":
+                    gotoPage(Validator.readInt("Input page number(1-" + getTotalPage() + ") : ", 1, getTotalPage()));
+                    break;
+                case "se":
+                    setRow();
+                    break;
+                case "ba":
+                    backup();
+                    break;
+                case "sa":
+                    System.out.println("Save");
+                    break;
+                case "re":
+                    reStore();
+                    break;
+                case "h":
+                    help();
+                    break;
+                case "e":
+                    System.out.println("Good bye");
+                    System.exit(0);
+                    break;
+
+                /*@Seakthong*/
+            }
         } while (true);
     }
 
-    private static void help(){
+    private static void help() {
         System.out.println("+-----------------------------------------------------------------------------+");
         System.out.println("! 1.    press    * : Display all record of products                           !");
         System.out.println("! 2.    press    w : Add new products                                         !");
@@ -126,17 +130,37 @@ public class App {
         }
         System.out.println(tableMenu.render());
         System.out.print("Command-->");
-        return scanner.nextLine().toLowerCase();
+//        String str =scanner.nextLine().toLowerCase();
+        String str = scanner.nextLine();
+        if (str.charAt(0) == '.') {
+            if (str.toLowerCase().charAt(1) == 'u') {
+                if (str.charAt(2) == '1') {
+                    //.U1:Name:Unit:Price
+                    String[] mystr = str.split("/", 10);
+//                    System.out.println("1"+mystr[1]);
+//                    System.out.println("2"+mystr[2]);
+                } else if (str.charAt(2) == '2') {
+                    System.out.println(2);
+                } else if (str.charAt(2) == '3') {
+                    System.out.println(3);
+                } else if (str.charAt(2) == '4') {
+                    System.out.println(4);
+                }
+
+            } else if (str.toLowerCase().charAt(1) == 'g') {
+                int num = 0;
+                for (int i = 0; i < str.length(); i++) {
+                    if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                }
+                gotoPage(num);
+            }
+
+        }
+        return str.toLowerCase();
     }
 
     private static void initTable() {
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
-//        table = new Table(5);
-//        table.addCell("ID");
-//        table.addCell("NAME");
-//        table.addCell("Unit Price");
-//        table.addCell("Qty");
-//        table.addCell("Imported Date");
         table = new Table(5, borderStyle, new ShownBorders("tttttttttt"));
         int myMinWidth[] = {14, 32, 11, 12, 18};
         for (int i = 0; i < 5; i++) {
@@ -163,7 +187,7 @@ public class App {
 
     private static void getData() {
         long startTime = System.nanoTime();
-        products = new HashMap<>();
+        products = new ArrayList<>();
         Connection.getProducts(products);
         long time = System.nanoTime() - startTime;
         System.out.println("Read using " + (double) time / 1000000 + " seconds");
@@ -171,40 +195,40 @@ public class App {
 
     private static void readData() {
         int id = Validator.readInt("Read by ID :");
-        Product product = products.get(id);
-        if (product != null) {
-            Table tableReadData = new Table(2);
-            tableReadData.addCell("ID");
-            tableReadData.addCell("" + product.getId());
-            tableReadData.addCell("Name");
-            tableReadData.addCell(product.getName());
-            tableReadData.addCell("Price");
-            tableReadData.addCell("" + product.getUnitPrice());
-            tableReadData.addCell("Imported Date");
-            tableReadData.addCell(product.getImportedDate());
-            System.out.println(tableReadData.render());
-        } else {
-            System.out.println("Product id is not exist!");
+        for (String product : products) {
+            String[] idPro = product.split("\\|");
+            if (id == Integer.parseInt(idPro[0])) {
+                Table tableReadData = new Table(2);
+                tableReadData.addCell("ID");
+                tableReadData.addCell(idPro[0]);
+                tableReadData.addCell("Name");
+                tableReadData.addCell(idPro[1]);
+                tableReadData.addCell("Price");
+                tableReadData.addCell(idPro[2]);
+                tableReadData.addCell("Imported Date");
+                tableReadData.addCell(idPro[3]);
+                System.out.println(tableReadData.render());
+            }
         }
     }
 
     private static void generateData() {
-        new Thread(() -> {
-            String message = "Please wait....";
-            int i = 0;
-            while (i < message.length()) {
-                System.out.print(message.charAt(i++));
-                try {
-                    Thread.sleep(350);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+//        new Thread(() -> {
+//            String message = "Please wait....";
+//            int i = 0;
+//            while (i < message.length()) {
+//                System.out.print(message.charAt(i++));
+//                try {
+//                    Thread.sleep(350);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
         long startTime = System.nanoTime();
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILE_NAME, false))) {
             int flush = 0;
-            for (int i = 1; i <= 1_000; i++) {
+            for (int i = 1; i <= 1_000_000; i++) {
                 Product product = new Product(i, "Angkor Beer", 10d, 1000, getDate());
                 bufferedWriter.write(product.toString());
                 bufferedWriter.newLine();
@@ -225,6 +249,8 @@ public class App {
     private static void setRow() {
         System.out.print("Number of row : ");
         numOfRows = scanner.nextInt();
+        if (currentPage > getTotalPage())
+            currentPage = 1;
         scanner.nextLine();
     }
 
@@ -244,15 +270,15 @@ public class App {
     private static void gotoPage(int pageNum) {
         initTable();
         currentPage = pageNum;
-        int start = numOfRows * (currentPage - 1) + 1;
+        int start = numOfRows * (currentPage - 1);
         if (pageNum == getTotalPage()) {
             int remainRows = products.size() - start;
-            for (int i = start; i <= start + remainRows; i++) {
-                addRowTable(i);
+            for (int i = start; i < start + remainRows; i++) {
+                addRowTable(products.get(i));
             }
         } else {
             for (int i = start; i < start + numOfRows; i++) {
-                addRowTable(i);
+                addRowTable(products.get(i));
             }
         }
 
@@ -268,7 +294,7 @@ public class App {
         currentPage = 1;
         initTable();
         for (int i = 1; i <= numOfRows; i++) {
-            addRowTable(i);
+            addRowTable(products.get(i));
         }
         System.out.println(table.render());
         printPageSummary();
@@ -283,20 +309,17 @@ public class App {
     private static void goLast() {
         initTable();
         currentPage = getTotalPage();
-        for (int i = products.size() - (numOfRows - 1); i <= products.size(); i++) {
-            addRowTable(i);
+        for (int i = products.size() - (numOfRows - 1); i < products.size(); i++) {
+            addRowTable(products.get(i));
         }
         System.out.println(table.render());
         printPageSummary();
     }
 
-    private static void addRowTable(int i) {
-        Product product = products.get(i); // products hash map
-        table.addCell("" + product.getId());
-        table.addCell(product.getName());
-        table.addCell("" + product.getUnitPrice());
-        table.addCell("" + product.getStockQty());
-        table.addCell(product.getImportedDate());
+    private static void addRowTable(String product) {
+        String[] p = product.split("\\|");
+        for (int i = 0; i < 5; i++)
+            table.addCell(p[i]);
     }
 
     private static void saveUpdate() {
@@ -332,8 +355,8 @@ public class App {
     }
 
     private static void writeData() {
-        Product lastProduct = products.get(products.size());
-        int lastId = lastProduct.getId();
+        String[] lastProduct = products.get(products.size() - 1).split("\\|");
+        int lastId = Integer.parseInt(lastProduct[0]);
         System.out.println("Product ID : " + (lastId + 1));
         System.out.print("Product's Name : ");
         String name = scanner.nextLine();
@@ -354,7 +377,7 @@ public class App {
         System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
         answer = Character.toLowerCase(scanner.next().charAt(0));
         if (answer == 'y')
-            products.put(lastId + 1, new Product(lastId + 1, name, price, qty, getDate()));
+            products.add("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
         scanner.nextLine();
 
     }
@@ -414,5 +437,32 @@ public class App {
         }
         getData();
 
+    }
+
+    static void myGroupname() {
+        System.out.println
+                (
+                        "\n" +
+
+                                ".....................................................................................................................................\n" +
+                                ".....................................................................................................................................\n" +
+                                "...______.........._........_________..._________........_........____....____...______.........._........____.._____.....______.....\n" +
+                                "..|_..._.\\......../.\\......|.._..._..|.|.._..._..|....../.\\......|_...\\../..._|.|_..._.\\......../.\\......|_...\\|_..._|...'.___..|....\n" +
+                                "....|.|_).|....../._.\\.....|_/.|.|.\\_|.|_/.|.|.\\_|...../._.\\.......|...\\/...|.....|.|_).|....../._.\\.......|...\\.|.|.../..'...\\_|....\n" +
+                                "....|..__'....../.___.\\........|.|.........|.|......../.___.\\......|.|\\../|.|.....|..__'....../.___.\\......|.|\\.\\|.|...|.|...____....\n" +
+                                "..._|.|__).|.._/./...\\.\\_....._|.|_......._|.|_....._/./...\\.\\_..._|.|_\\/_|.|_..._|.|__).|.._/./...\\.\\_..._|.|_\\...|_..\\.`.___]..|...\n" +
+                                "..|_______/..|____|.|____|...|_____|.....|_____|...|____|.|____|.|_____||_____|.|_______/..|____|.|____|.|_____|\\____|..`._____.'....\n" +
+                                ".....................................................................................................................................\n" +
+                                "...................................______..................................................._...._...................................\n" +
+                                "..................................'.___..|.................................................|.|..|.|..................................\n" +
+                                "................................/..'...\\_|..._..--......--.....__..._...._..--.....______..|.|__|.|_.................................\n" +
+                                "................................|.|...____..[.`/'`\\]./..'`\\.\\.[..|.|.|..[.'/'`\\.\\.|______|.|____..._|................................\n" +
+                                "................................\\.`.___]..|..|.|.....|.\\__..|..|.\\_/.|,..|.\\__/.|.............._|.|_.................................\n" +
+                                ".................................`._____.'..[___].....'.__.'...'.__.'_/..|.;.__/..............|_____|................................\n" +
+                                "........................................................................[__|.........................................................\n" +
+                                ".....................................................................................................................................\n" +
+                                ".....................................................................................................................................\n"
+
+                );
     }
 }
