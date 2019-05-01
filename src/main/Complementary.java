@@ -42,6 +42,15 @@ public class Complementary extends Thread {
 
     }
 
+    public static boolean searcher(String character, ArrayList<String> products){
+        ArrayList arrayList = findObjectByCharacterInName(character,products);
+        if (arrayList.size()>0){
+            paginator(findObjectByCharacterInName(),10);
+            return true;
+        }else{
+            return false;
+        }
+    }
 
     public static ArrayList findObjectByCharacterInName(String character, ArrayList<String> products) {
 
@@ -57,6 +66,62 @@ public class Complementary extends Thread {
 
 
         return arrayList;
+    }
+
+    private static void paginator(ArrayList<String> products, int recordAmount){
+
+        recordAmount = 5;
+        int productSize = products.size()%10;
+        productSize = products.size() + 10 - (productSize==0? 10 : productSize);//បង្កត់
+        //>>>> end of file
+//        System.out.println(productSize);
+
+        if(recordAmount < 5 ){
+
+        }else{
+            int page = 0;
+            System.out.println("1.previous/2.next/3.exit");
+
+            while (true){
+                switch (Validator.readInt("Option")){
+                    case 1:
+                        if(page*recordAmount <= recordAmount){
+                            System.out.println("current");
+                            continue;
+                        }
+
+                        else
+                            page--;
+                        break;
+                    case 2:
+                        //page = page * recordAmount > productSize ? continue : page ;
+                        if(page*recordAmount >= productSize){
+                            System.out.println("end of page ");
+                            continue;
+                        }else {
+                            page++;
+                        }
+                        break;
+                    case 3:
+                        return;
+
+                    default:
+                        System.out.println("Input mistake");
+                        break;
+
+                }
+                for(int i = (recordAmount*page ) - recordAmount ;i < recordAmount*page;i++){
+                    try {
+                        System.out.println(products.get(i));
+                    }catch (IndexOutOfBoundsException e){
+                        break;
+                    }
+                }
+            }//while loop
+
+
+        }
+
     }
 
     //<<<<<<main call update or delete determine by boolean
