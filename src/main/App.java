@@ -44,12 +44,12 @@ public class App<publlic> {
                     readData();
                     break;
                 case "u":
-                    //RecordComplement.updateObjectById(10, products);
+                    Complementary.updateObjectById(Validator.readInt("Input ID : "), products, true);
                     break;
                 case "d": /*@Delete*/
-                    RecordComplement.deleteRecordById(Validator.readInt("Enter Number: ", 0, products.size() - 1), products);
+                    //RecordComplement.deleteRecordById(Validator.readInt("Enter Number: ", 0, products.size() - 1), products);
 
-                    Complementary.updateObjectById(Validator.readInt("Input ID : "), products, true);
+                    Complementary.updateObjectById(Validator.readInt("Input ID : "), products, false);
 
                     delete();
                     break;
@@ -107,6 +107,7 @@ public class App<publlic> {
         if (currentPage > getTotalPage())
             currentPage = 1;
     }
+
     private static void help() {
         String Help[] = {
 
@@ -133,7 +134,6 @@ public class App<publlic> {
         /*@Seakthong App.myTable*/
         App.myTable(1, 90, "Help", Help, "......tttt");
     }
-
 
     private static String printMenu () {
         String[] menu = {"*)Display", "W)rite", "R)ead",
@@ -227,13 +227,34 @@ public class App<publlic> {
         System.out.println("Read using " + (double) time / 1000000 + " seconds");
     }
 
+    private static void writeData () {
+        String[] lastProduct = products.get(products.size() - 1).split("\\|");
+        int lastId = Integer.parseInt(lastProduct[0]);
+        System.out.println("Product ID : " + (lastId + 1));
+        System.out.print("Product's Name : ");
+        String name = scanner.nextLine();
+        double price = Validator.readDouble("Product's Price : ");
+        int qty = Validator.readInt("Product's Qty : ", 1, 1_000_000);
+        /*@Seakthong add App.myTable*/
+        String shown[] = {"ID", "" + (lastId + 1), "Name", name, "Price", "" + price,"Qty",""+qty, "Imported Date", getDate()};
+        App.myTable(2, 20, "Result", shown, "tttttttttt");
+
+        char answer;
+        System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
+        answer = Character.toLowerCase(scanner.next().charAt(0));
+        if (answer == 'y')
+            products.add("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+        scanner.nextLine();
+
+    }
+
     private static void readData () {
         int id = Validator.readInt("Read by ID :");
         for (String product : products) {
             String[] idPro = product.split("\\|");
             if (id == Integer.parseInt(idPro[0])) {
-                String shown[] = {"ID", idPro[0], "Name", idPro[1], "Price", idPro[2], "Imported Date", idPro[3]};
-                App.myTable(2, 20, "Read", shown, "tttttttttt");
+                String shown[] = {"ID", idPro[0], "Name", idPro[1], "Price", idPro[2], "Qty", idPro[3], "Imported Date", idPro[4]};
+                App.myTable(2, 20, "Product Detail", shown, "tttttttttt");
             }
         }
     }
@@ -338,6 +359,7 @@ public class App<publlic> {
         for (int i = 0; i < 5; i++)
             table.addCell(p[i]);
     }
+
     private static void goLast () {
         initTable();
         currentPage = getTotalPage();
@@ -348,7 +370,6 @@ public class App<publlic> {
         System.out.println(table.render());
         printPageSummary();
     }
-
 
     private static void saveUpdate () {
         long startTime = System.nanoTime();
@@ -380,27 +401,6 @@ public class App<publlic> {
         Date date = new Date();
 //        System.out.println(dateFormat.format(date)); //2016/11/16 12:08:43
         return dateFormat.format(date);
-    }
-
-    private static void writeData () {
-        String[] lastProduct = products.get(products.size() - 1).split("\\|");
-        int lastId = Integer.parseInt(lastProduct[0]);
-        System.out.println("Product ID : " + (lastId + 1));
-        System.out.print("Product's Name : ");
-        String name = scanner.nextLine();
-        double price = Validator.readDouble("Product's Price : ");
-        int qty = Validator.readInt("Product's Qty : ", 1, 1_000_000);
-        /*@Seakthong add App.myTable*/
-        String shown[] = {"ID", "" + (lastId + 1), "Name", name, "Price", "" + price, "Imported Date", getDate()};
-        App.myTable(2, 20, "Result", shown, "tttttttttt");
-
-        char answer;
-        System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
-        answer = Character.toLowerCase(scanner.next().charAt(0));
-        if (answer == 'y')
-            products.add("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
-        scanner.nextLine();
-
     }
 
     static void backup () {
