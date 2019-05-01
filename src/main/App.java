@@ -26,7 +26,6 @@ public class App {
         myGroupname();
 //        generateData();
         getData();
-
         do{
             String key = printMenu();
             switch (key) {
