@@ -7,9 +7,6 @@ import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Scanner;
 
 /*
  *<<<<< instance table
@@ -163,21 +160,13 @@ public class Complementary extends Thread {
                 for(int i = (recordAmount*page ) - recordAmount ;i < recordAmount*page;i++){
 
                     try {
-//                        System.out.println(products.get(i));
-
                         showData[j] = products.get(i);
-
-//                        System.out.println(showData[j]);
                         j++;
                     }catch (IndexOutOfBoundsException e){
                         break;
                     }
                 }
-//                System.out.println(showData[2]);
-//                System.out.println(showData[3]);
-                tabler(2,showData);
-
-
+                App.myTable(15,showData);  //show search string result @Seakthong@Search Table
             }//while loop
 
 

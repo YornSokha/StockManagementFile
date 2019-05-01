@@ -138,12 +138,12 @@ public class RecordComplement {
                  String checkInfo[] = Complementary.subString(product.toString());
                  String PreviousInfo[] = Complementary.subString(paramProduct.toString());
                  String addStringTable[]= {
-                         " ","New","Old",
-                         "ID",checkInfo[0],PreviousInfo[0],
-                         "Name",checkInfo[1],PreviousInfo[1],
-                         "Price",checkInfo[2],PreviousInfo[2],
-                         "Qty",checkInfo[3],PreviousInfo[3]
-                         ,"Imorted Date",checkInfo[4],PreviousInfo[4]
+                         " ","Old","New",
+                         "ID",PreviousInfo[0],checkInfo[0],
+                         "Name",PreviousInfo[1],checkInfo[1],
+                         "Price",PreviousInfo[2],checkInfo[2],
+                         "Qty",PreviousInfo[3],checkInfo[3]
+                         ,"Imorted Date",PreviousInfo[4],checkInfo[4]
                  };
                  App.myTable(3,19,"Chceck",addStringTable,"tttttttttt");
 

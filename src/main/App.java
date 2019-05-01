@@ -141,7 +141,9 @@ public class App<publlic> {
                         System.err.println("Syntax: #w/ProductName is Text/Price is Number/Qty is Number");
                     }
                     break;
-                case 's': break;
+                case 's':
+
+                    break;
                 case 'r':
                     /* #r100 */ //read data id 100
                     num = 0;
@@ -244,11 +246,11 @@ public class App<publlic> {
         for (int i = 0; i < 5; i++) {
             table.setColumnWidth(i, myMinWidth[i], 27);
         }
-        table.addCell("ID");
-        table.addCell("Name");
-        table.addCell("Unit Price");
-        table.addCell("Qty");
-        table.addCell("Date");
+        table.addCell("ID",new CellStyle(CellStyle.HorizontalAlign.center));
+        table.addCell("Name",new CellStyle(CellStyle.HorizontalAlign.center));
+        table.addCell("Unit Price",new CellStyle(CellStyle.HorizontalAlign.left));
+        table.addCell("Qty",new CellStyle(CellStyle.HorizontalAlign.left));
+        table.addCell("Date",new CellStyle(CellStyle.HorizontalAlign.left));
     }
 
     private static int selectChoice () {
@@ -341,15 +343,21 @@ public class App<publlic> {
         initTable();
         currentPage = pageNum;
         int start = numOfRows * (currentPage - 1);
+
         if(pageNum > getTotalPage()) return;
         if (pageNum == getTotalPage()) {
             goLast();
         } else {
+            String[] myProducts = new String[start+numOfRows];
             for (int i = start; i < start + numOfRows; i++) {
                 addRowTable(products.get(i));
+//                myProducts[i-start] = products.get(i);
             }
+//            myTable(20,myProducts);
         }
-
+        String[] myPageDetail = printPageSummary();
+        table.addCell(myPageDetail[0], new CellStyle(CellStyle.HorizontalAlign.left),2);
+        table.addCell(myPageDetail[1], new CellStyle(CellStyle.HorizontalAlign.right),3);
         System.out.println(table.render());
         printPageSummary();
     }
@@ -368,10 +376,11 @@ public class App<publlic> {
         printPageSummary();
     }
 
-    private static void printPageSummary () {
+    private static String[] printPageSummary () {
 //        System.out.print("Page : " + currentPage + " of " + getTotalPage() + "\t\t\t\t\t\t\tTotal record : " + products.size());
-        System.out.printf("%4sPage : %d of %d %64s Total Record: %d", " ", currentPage, getTotalPage(), " ", products.size());
-        System.out.println();
+        //System.out.printf("%4sPage : %d of %d %64s Total Record: %d", " ", currentPage, getTotalPage(), " ", products.size());
+        //System.out.println();
+        return new String[]{"Page : "+currentPage+" of "+getTotalPage(),"Total Record: "+ products.size()};
     }
 
     private static int remainRowInLastPage () {
@@ -660,10 +669,36 @@ public class App<publlic> {
         }
     }
 
-    public static void myTable ( int colNum, int colWidth, String[] Value, String shown){
+    public static void myTable(int colWidth, String[] fullValues){
+        BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
+        Table tbl = new Table(5, borderStyle, new ShownBorders("tttttttttt"));
+        String contents[]={"ID","Name","Price","Qty","Imported Date"};
+        for (int i = 0; i < 5; i++) {
+            tbl.setColumnWidth(i, colWidth, colWidth + 10);
+            tbl.addCell(contents[i]);
+        }
+            for(int i=0; i< 5; i++){
+                String[] myValues = Complementary.subString(fullValues[i]);
+                for(int j=0; j<5; j++) {
+                    tbl.addCell(myValues[j]);
+                }
+        }
+        System.out.println(tbl.render());
+    }
+
+    public static void myTable(int colNum, int colWidth, String[] values){
+        myTable(colNum, colWidth,"", values, "tttttttttt");
+    }
+
+    public static void myTable ( int colNum, int colWidth, String[] values, String shown){
+        myTable(colNum, colWidth,"", values, shown);
+    }
+
+    public static void myTable ( int colNum, int colWidth, String content, String[]Value, String shown){
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
         Table tbl = new Table(colNum, borderStyle, new ShownBorders(shown));
-    //        tbl.addCell(content, CellStyle.HorizontalAlign.center,colNum);
+        if(content != "")
+            tbl.addCell(content, new CellStyle(CellStyle.HorizontalAlign.center), colNum);
         for (int i = 0; i < colNum; i++) {
             tbl.setColumnWidth(i, colWidth, colWidth + 10);
         }
@@ -673,11 +708,11 @@ public class App<publlic> {
         System.out.println(tbl.render());
     }
 
-    public static void myTable ( int colNum, int colWidth, String content, String[]Value, String shown){
+    public static void myTable ( int colNum, int colWidth, String content[], String[]Value, String shown){
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
-    //        CellStyle cellStyle = new CellStyle();
+        //        CellStyle cellStyle = new CellStyle();
         Table tbl = new Table(colNum, borderStyle, new ShownBorders(shown));
-        tbl.addCell(content, new CellStyle(CellStyle.HorizontalAlign.center), colNum);
+        tbl.addCell(content[0], new CellStyle(CellStyle.HorizontalAlign.center), colNum);
         for (int i = 0; i < colNum; i++) {
             tbl.setColumnWidth(i, colWidth, colWidth + 10);
         }
