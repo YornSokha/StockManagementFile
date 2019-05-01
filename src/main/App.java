@@ -91,6 +91,9 @@ public class App<publlic> {
                 case "e":
                     System.exit(0);
                     break;
+                case "a":
+                    aboutus();
+                    break;
                 default:
                     usingSpecialExpression(key);
                     break;
@@ -105,32 +108,44 @@ public class App<publlic> {
         if (str.toLowerCase().charAt(0) == '#') {
             switch (str.toLowerCase().charAt(1)){
                 //read write delete search
-                case 'g':
+                case 'g': //@Goto_Shorthand
                     /* #g100*/ //go to page 100
                     num = 0;
-                    for (int i = 0; i < str.length(); i++) {
-                        if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                    try {
+                        for (int i = 0; i < str.length(); i++) {
+                            if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                        }
+                        gotoPage(num);
+                    }catch (NumberFormatException nfe){
+                        System.err.println("Syntax: #gNumber\nExample #g100 for goto page 100");
                     }
-                    gotoPage(num);
                     break;
-                case 'd':
+                case 'd'://@Delete_Shorthand
                     /* #d100 */  //Delete id 100
                     num = 0;
-                    for (int i = 0; i < str.length(); i++) {
-                        if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                    try {
+                        for (int i = 0; i < str.length(); i++) {
+                            if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                        }
+                        delete(num);
+                    }catch (NumberFormatException nfe){
+                        System.err.println("Syntax: #dNumber\nExample #d100 for delete pro_id 100");
                     }
-                    delete(num);
                     break;
-                case 'u':
+                case 'u'://@Update_Shorthand
                     /* #u100*/
                     num = 0;
-                    for (int i = 0; i < str.length(); i++) {
-                        if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                    try {
+                        for (int i = 0; i < str.length(); i++) {
+                            if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                        }
+                        Complementary.updateObjectById(num, products, true);
+                    }catch (NumberFormatException nfe){
+                        System.err.println("Syntax: #uNumber\nExample #u100 for update pro_id 100");
                     }
-                    Complementary.updateObjectById(num, products, true);
 
                     break;
-                case 'w':
+                case 'w'://@Write_Shorthand
                     /* #w/Items/100.5/10 */ //write data name: Items /price: 100.5 /qty: 10
                     String [] myString = subStringWrite(str);
                     if(myString[0] == "Wrong") return;
@@ -138,19 +153,21 @@ public class App<publlic> {
                         writeData(myString[1], Double.valueOf(myString[2]), Integer.valueOf(myString[3]));
                     }
                     catch (NumberFormatException e){
-                        System.err.println("Syntax: #w/ProductName is Text/Price is Number/Qty is Number");
+                        System.err.println("Syntax: #w/ProductName/Price/Quantity\nExample #w/Reach/1.0/1");
                     }
                     break;
-                case 's':
-
-                    break;
-                case 'r':
+                case 'r'://@Read_Shorthand
                     /* #r100 */ //read data id 100
                     num = 0;
-                    for (int i = 0; i < str.length(); i++) {
-                        if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                    try {
+                        for (int i = 0; i < str.length(); i++) {
+                            if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                        }
+                        readData(num);
                     }
-                    readData(num);
+                    catch(NumberFormatException nfe){
+                        System.err.println("Syntax: #rNumber \nExample #r100 for show pro_id 100");
+                    }
                     break;
             }
         }
@@ -204,24 +221,27 @@ public class App<publlic> {
     private static void help() {
         String Help[] = {
 
-                "1.    press    * : Display all record of products",
-                "2.    press    w : Add new products",
-                "      press    w : #proname-unitprice-qty : sortcut for add new product",
-                "3.    press    r : read Content any content",
-                "      press    r#proId :  sortcut for read product by Id",
-                "4.    press    u : Update Data",
-                "5.    press    d : Delete Data",
-                "      press    d#proId :  sortcut for read product by Id",
-                "6.    press    f : Display First Page",
-                "7.    press    p : Display Previous Page",
-                "8.    press    n : Display Next Page",
-                "9.    press    l : Display Last Page",
-                "10.   press    s : Search product by name",
-                "11.   press    g : Goto a specific page",
+                "1.    press    *  : Display all record of products",
+                "2.    press    w  : Add new products",
+                "      press         #w/proname/unitprice/qty : sortcut for add new product",
+                "3.    press    r  : read Content any content",
+                "      press         #rID:  sortcut for read product by Id",
+                "4.    press    u  : Update Data",
+                "      press         #uID",
+                "5.    press    d  : Delete Data",
+                "      press         #dID :  sortcut for read product by Id",
+                "6.    press    f  : Display First Page",
+                "7.    press    p  : Display Previous Page",
+                "8.    press    n  : Display Next Page",
+                "9.    press    l  : Display Last Page",
+                "10.   press    s  : Search product by name",
+                "11.   press    g  : Goto a specific page",
+                "      press         #gPageNum",
                 "11.   press    sa : Save record to file",
                 "12.   press    ba : Backup data",
                 "13.   press    re : Restore data",
-                "14.   press    h : Help"
+                "14.   press    h  : Help",
+                "15.   press    a  : About Our Developers"
 
         };
         /*@Seakthong App.myTable*/
@@ -232,7 +252,7 @@ public class App<publlic> {
         String[] menu = {"*)Display", "W)rite", "R)ead",
                 "U)pdate", "D)elete", "F)irst", "P)revious",
                 "N)ext", "L)ast", "S)earch", "G)oto", "Se)t",
-                "Sa)ve", "Ba)ck up", "Re)store", "H)elp", "E)xit"};
+                "Sa)ve", "Ba)ck up", "Re)store", "H)elp", "A)bout US", "E)xit"};
         App.myTable(9, 15, "Menu", menu, "tttttttttt");
         System.out.print("Command-->");
         String str = scanner.nextLine();
@@ -745,6 +765,37 @@ public class App<publlic> {
                                 ".....................................................................................................................................\n" +
                                 ".....................................................................................................................................\n"
                 );
+    }
+
+    private static void aboutus(){
+        String about[]={
+                "","",
+                "Welcome To Stock Management System",
+                " ",
+                "Hello User, our Stock Management System is built for easy to control products in stock.",
+                "Include, product id, product name, product quantity, product price, and product imported date.",
+                "Moreover, we can know about product out of stock or expired date.",
+                "",
+                "",
+                "And We also have multi work according to this Details",
+                "1). Display Read Write and Search Data",
+                "2). Insert Update Delete: update all or some",
+                "3). Pagination from 1 to end by next Page, Previous Page or go to a specific page",
+                "4). Save, Backup Restore and Recovery file",
+                "",
+                ""
+        };
+        String Developer[]={
+                "Name", "Position",
+                "Yorn Sokha", "Project Leader",
+                "Sok Menghok", "Project Logical",
+                "Nim Sreytouch", "Developer",
+                "Veth Samoeun", "Database Manager",
+                "Aing Seakthong", "UI Designer"
+        };
+
+        App.myTable(1, 99, "About US", about,"......tttt");
+        App.myTable(2,48,"Stock Management System was developed by Group 4 Class BTB",Developer,"tttttttttt");
     }
 
     }
