@@ -49,8 +49,8 @@ public class App<publlic> {
                     Complementary.updateObjectById(Validator.readInt("Input ID : "), products, true);
                     break;
                 case "d": /*@Delete*/
-                    //RecordComplement.deleteRecordById(Validator.readInt("Enter Number: ", 0, products.size() - 1), products);
                     Complementary.updateObjectById(Validator.readInt("Input ID : "), products, false);
+
                     delete();
                     break;
                 case "f":
@@ -66,7 +66,7 @@ public class App<publlic> {
                     goLast();
                     break;
                 case "s":
-                    System.out.println("search");
+                    Complementary.tabler("search");
                     System.out.print("Name :");
                     if(Complementary.searcher(scanner.nextLine(), products,10)==true){
                     }else {
@@ -386,7 +386,7 @@ public class App<publlic> {
         return products.size() % numOfRows;
     }
 
-    private static void addRowTable (String product){
+    public static void addRowTable (String product){
         String[] p = product.split("\\|");
         for (int i = 0; i < 5; i++)
             table.addCell(p[i]);
