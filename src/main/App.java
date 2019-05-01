@@ -25,7 +25,9 @@ public class App {
     public static void main(String[] args) throws InterruptedException{
         myGroupname();
 //        generateData();
+        saveOption();
         getData();
+
         do{
             String key = printMenu();
             switch (key) {
@@ -73,7 +75,7 @@ public class App {
                     backup();
                     break;
                 case "sa":
-                    System.out.println("Save");
+                    saveOption();
                     break;
                 case "re":
                     reStore();
@@ -89,6 +91,7 @@ public class App {
             }
         } while (true);
     }
+
 
     private static void reCalculateCurrentPage() {
         if (currentPage > getTotalPage())
@@ -240,7 +243,7 @@ public class App {
         long startTime = System.nanoTime();
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILE_NAME, false))) {
             int flush = 0;
-            for (int i = 1; i <= 1_000_000; i++) {
+            for (int i = 1; i <= 1000; i++) {
                 Product product = new Product(i, "Angkor Beer", 10d, 1000, getDate());
                 bufferedWriter.write(product.toString());
                 bufferedWriter.newLine();
@@ -335,6 +338,112 @@ public class App {
             table.addCell(p[i]);
     }
 
+    public static boolean containedUnsavedFiles(){
+        return new File("temp\\Insert.txt").exists() || new File("Delete.txt").exists()||new File("Update.txt").exists();
+    }
+    private static void saveInserted(){
+        try {
+            long startTime2 = System.nanoTime();
+            File fileInsert=new File("temp\\Insert.txt");
+            BufferedReader fileTempRead=new BufferedReader(new FileReader(fileInsert));
+            BufferedWriter fileSourceWrite=new BufferedWriter(new FileWriter("product.txt",true));
+            String line=null;
+            while((line=fileTempRead.readLine())!=null){
+                fileSourceWrite.write(line);
+                fileSourceWrite.newLine();
+                fileSourceWrite.flush();
+            }
+            fileTempRead.close();
+            fileInsert.delete();
+            long time2 = System.nanoTime() - startTime2;
+            System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private static void saveDeleted(){
+        try {
+            long startTime2 = System.nanoTime();
+            File fileTemp=new File("deleteTempPro.txt");
+            File fileSource=new File("product.txt");
+            File fileDelete=new File("temp\\Delete.txt");
+            BufferedReader br = new BufferedReader(new FileReader(fileSource));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileTemp));
+            boolean b=false;String line1=null;String line2 = null;int i=0,j=100;
+            while ((line1 = br.readLine()) != null) {
+                b = false;
+                BufferedReader br2 = new BufferedReader(new FileReader(fileDelete));
+                while((line2 =br2.readLine())!= null)
+                {
+                    if(line1.split("\\|")[0].equals(line2.split("\\|")[0]))
+                    {
+                        b = true; break;
+                    }
+                }
+                if(b==false){
+                    bufferedWriter.write(line1);
+                    bufferedWriter.newLine();
+                    if(i++==j){
+                        j+=100;
+                        bufferedWriter.flush();;
+                    }
+                }
+            }
+            br.close();
+            bufferedWriter.close();
+            fileSource.delete();
+            fileTemp.renameTo(new File("product.txt"));
+            br.close();
+            fileDelete.delete();
+            long time2 = System.nanoTime() - startTime2;
+            System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private static void saveUpdated(){
+        try {
+            long startTime2 = System.nanoTime();
+            File fileTemp=new File("updateTempPro.txt");
+            File fileSource=new File("product.txt");
+            File fileUpdate=new File("temp\\Update.txt");
+            BufferedReader br = new BufferedReader(new FileReader(fileSource));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileTemp));
+            BufferedReader br2=null;
+            boolean b=false;String line1=null;String line2 = null;
+            while ((line1 = br.readLine()) != null) {
+                b = false;
+                br2 = new BufferedReader(new FileReader(fileUpdate));
+                while((line2 =br2.readLine())!= null)
+                {
+                    if(line1.split("\\|")[0].equals(line2.split("\\|")[0]))
+                    {
+                        bufferedWriter.write(line2);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+                        b = true; break;
+                    }
+                }
+                if(b==false){
+                    bufferedWriter.write(line1);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+                }
+            }
+            br.close();
+            bufferedWriter.close();
+            fileSource.delete();
+            fileTemp.renameTo(new File("product.txt"));
+            br2.close();
+            fileUpdate.delete();
+            long time2 = System.nanoTime() - startTime2;
+            System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     private static void saveUpdate() {
         long startTime = System.nanoTime();
         FileWriter fileWriter = null;
@@ -389,8 +498,17 @@ public class App {
         char answer;
         System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
         answer = Character.toLowerCase(scanner.next().charAt(0));
-        if (answer == 'y')
-            products.add("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+        if (answer == 'y'){
+            String product = "" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate();
+            products.add(product);
+            try (BufferedWriter writerInsert=new BufferedWriter(new FileWriter("temp\\Insert.txt",true))){
+                writerInsert.write(product);
+                writerInsert.newLine();
+                writerInsert.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         scanner.nextLine();
 
     }
@@ -449,7 +567,26 @@ public class App {
             e.printStackTrace();
         }
         getData();
+    }
+    private static void saveOption(){
+        if(containedUnsavedFiles()){
+            if (new File("temp\\Insert.txt").exists()){
+                if (Validator.readYesNo("Are you sure to add record? [Y/y] or [N/n]:") == 'y'){
+                    saveInserted();
+                }
+            }
+            if (new File("temp\\Delete.txt").exists()){
+                if (Validator.readYesNo("Are you sure to add record? [Y/y] or [N/n]:") == 'y'){
+                    saveDeleted();
+                }
 
+            }if (new File("temp\\Update.txt").exists()){
+                if (Validator.readYesNo("Are you sure to add record? [Y/y] or [N/n]:") == 'y'){
+                    saveUpdated();
+                }
+            }
+            System.out.println("\n\nAready update!!!\n");
+        }
     }
 
     static void myGroupname(){
