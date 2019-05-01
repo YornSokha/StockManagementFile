@@ -43,7 +43,6 @@ public class Complementary extends Thread {
     }
 
 
-
     public static ArrayList findObjectByCharacterInName(String character, ArrayList<String> products) {
 
         arrayList = new ArrayList();
@@ -62,31 +61,31 @@ public class Complementary extends Thread {
 
     //<<<<<<main call update or delete determine by boolean
     //<<<<<< UI improver
-    public static Boolean updateObjectById(int number, ArrayList<String> products, boolean booFeature) {
-
+    public static String updateObjectById(int number, ArrayList<String> products, boolean booFeature) {
         int index = findObjectToUpdate(number, products);
-
+        String productString = null;
         if (index == -1) {
 
-            return false;
+            return null;
 
         } else {
 
             if (booFeature) {//update record
 
                 Product product = convertFromStringToProduct(subString(products.get(index)));
-                products.set(index, RecordComplement.insertRecord(product));
+                productString = RecordComplement.insertRecord(product);
+                products.set(index, productString);
 
             } else {//delete record
 
                 if (Validator.readYesNo("press 'y' to delete and 'n' to cancel : ") == 'y') {
-                    products.remove(index);
-
+                    productString = products.remove(index);
+                    System.out.println(productString);
                     System.out.println("successfully deleted");//<<<<< move to table
                 }
 
             }
-            return true;
+            return productString;
             //>>>>> data found
         }
 

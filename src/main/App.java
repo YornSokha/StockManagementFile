@@ -23,12 +23,13 @@ public class App {
     private static int currentPage = 1;
     private static Table table;
 
-    public static void main(String[] args) {
+//    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         myGroupname();
         generateData();
         getData();
 
-        do{
+        do {
             String key = printMenu();
             switch (key) {
                 case "*":
@@ -44,9 +45,11 @@ public class App {
                     //RecordComplement.updateObjectById(10, products);
                     break;
                 case "d": /*@Delete*/
-                    //System.out.println("Delete");
                     RecordComplement.deleteRecordById(Validator.readInt("Enter Number: ", 0, products.size() - 1), products);
 
+                    Complementary.updateObjectById(Validator.readInt("Input ID : "), products, true);
+
+                    delete();
                     break;
                 case "f":
                     goFirst();
@@ -62,6 +65,8 @@ public class App {
                     break;
                 case "s":
                     System.out.println("search");
+                    System.out.print("Name :");
+                    System.out.println(Complementary.findObjectByCharacterInName(scanner.nextLine(), products));
                     break;
                 case "g":
                     gotoPage(Validator.readInt("Input page number(1-" + getTotalPage() + ") : ", 1, getTotalPage()));
@@ -79,7 +84,7 @@ public class App {
                     reStore();
                     break;
                 case "h":
-                    help();
+//                    help();
                     break;
                 case "e":
                     System.exit(0);
@@ -90,8 +95,16 @@ public class App {
         } while (true);
     }
 
+    private static void delete() {
+        String product = Complementary.updateObjectById(Validator.readInt("Input ID : "), products, false);
+        if(product != null)
+            reCalculateCurrentPage();
+    }
 
-
+    private static void reCalculateCurrentPage() {
+        if (currentPage > getTotalPage())
+            currentPage = 1;
+    }
 
     private static String printMenu() {
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
@@ -111,36 +124,36 @@ public class App {
         System.out.print("Command-->");
 //        String str =scanner.nextLine().toLowerCase();
         String str = scanner.nextLine();
-        if(str.charAt(0)=='.'){
-            if(str.toLowerCase().charAt(1)=='u'){
-                if(str.charAt(2)=='1'){
+        if (str.charAt(0) == '.') {
+            if (str.toLowerCase().charAt(1) == 'u') {
+                if (str.charAt(2) == '1') {
                     //.U1:Name:Unit:Price
-                    String []mystr = str.split("/",10);
+                    String[] mystr = str.split("/", 10);
 //                    System.out.println("1"+mystr[1]);
 //                    System.out.println("2"+mystr[2]);
-                }
-                else if(str.charAt(2)=='2'){
+                } else if (str.charAt(2) == '2') {
                     System.out.println(2);
-                }
-                else if(str.charAt(2)=='3'){
+                } else if (str.charAt(2) == '3') {
                     System.out.println(3);
-                }
-                else if(str.charAt(2)=='4'){
+                } else if (str.charAt(2) == '4') {
                     System.out.println(4);
                 }
 
-            }
-            else if(str.toLowerCase().charAt(1)=='g'){
+            } else if (str.toLowerCase().charAt(1) == 'g') {
                 int num = 0;
-                for(int i = 0 ; i < str.length(); i++){
-                    if(i>1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                for (int i = 0; i < str.length(); i++) {
+                    if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+            /*} else if (str.toLowerCase().charAt(1) == 'g') {
+                int num = Validator.getNumberFromShortcut(str);
+                for (int i = 2; i < str.length(); i++) {
+                    num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                }*/
                 }
                 gotoPage(num);
             }
-
         }
-        return str.toLowerCase();
-    }
+            return str.toLowerCase();
+        }
 
     private static void initTable() {
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
@@ -195,19 +208,21 @@ public class App {
         }
     }
 
-    private static void generateData() {
-//        new Thread(() -> {
-//            String message = "Please wait....";
-//            int i = 0;
-//            while (i < message.length()) {
-//                System.out.print(message.charAt(i++));
-//                try {
-//                    Thread.sleep(350);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }).start();
+
+    private static void generateData() throws InterruptedException {
+        Thread.sleep(1000);
+        new Thread(() -> {
+            String message = "Please wait....";
+            int i = 0;
+            while (i < message.length()) {
+                System.out.print(message.charAt(i++));
+                try {
+                    Thread.sleep(350);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         long startTime = System.nanoTime();
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILE_NAME, false))) {
             int flush = 0;
@@ -286,15 +301,15 @@ public class App {
         System.out.println();
     }
 
-    private static int remainRowInLastPage(){
-        return products.size()%numOfRows;
+    private static int remainRowInLastPage() {
+        return products.size() % numOfRows;
     }
 
     private static void goLast() {
         initTable();
         currentPage = getTotalPage();
         int start = numOfRows * (currentPage - 1);
-        for (int i = start  ; i < products.size(); i++) {
+        for (int i = start; i < products.size(); i++) {
             addRowTable(products.get(i));
         }
         System.out.println(table.render());
@@ -303,7 +318,7 @@ public class App {
 
     private static void addRowTable(String product) {
         String[] p = product.split("\\|");
-        for(int i = 0; i < 5; i++)
+        for (int i = 0; i < 5; i++)
             table.addCell(p[i]);
     }
 
@@ -424,35 +439,35 @@ public class App {
 
     }
 
-    static void myGroupname(){
+    static void myGroupname() {
         System.out.println
-        (
-                "\n" +
+                (
+                        "\n" +
 
-                        ".....................................................................................................................................\n" +
-                        ".....................................................................................................................................\n" +
-                        "...______.........._........_________..._________........_........____....____...______.........._........____.._____.....______.....\n" +
-                        "..|_..._.\\......../.\\......|.._..._..|.|.._..._..|....../.\\......|_...\\../..._|.|_..._.\\......../.\\......|_...\\|_..._|...'.___..|....\n" +
-                        "....|.|_).|....../._.\\.....|_/.|.|.\\_|.|_/.|.|.\\_|...../._.\\.......|...\\/...|.....|.|_).|....../._.\\.......|...\\.|.|.../..'...\\_|....\n" +
-                        "....|..__'....../.___.\\........|.|.........|.|......../.___.\\......|.|\\../|.|.....|..__'....../.___.\\......|.|\\.\\|.|...|.|...____....\n" +
-                        "..._|.|__).|.._/./...\\.\\_....._|.|_......._|.|_....._/./...\\.\\_..._|.|_\\/_|.|_..._|.|__).|.._/./...\\.\\_..._|.|_\\...|_..\\.`.___]..|...\n" +
-                        "..|_______/..|____|.|____|...|_____|.....|_____|...|____|.|____|.|_____||_____|.|_______/..|____|.|____|.|_____|\\____|..`._____.'....\n" +
-                        ".....................................................................................................................................\n" +
-                        "...................................______..................................................._...._...................................\n" +
-                        "..................................'.___..|.................................................|.|..|.|..................................\n" +
-                        "................................/..'...\\_|..._..--......--.....__..._...._..--.....______..|.|__|.|_.................................\n" +
-                        "................................|.|...____..[.`/'`\\]./..'`\\.\\.[..|.|.|..[.'/'`\\.\\.|______|.|____..._|................................\n" +
-                        "................................\\.`.___]..|..|.|.....|.\\__..|..|.\\_/.|,..|.\\__/.|.............._|.|_.................................\n" +
-                        ".................................`._____.'..[___].....'.__.'...'.__.'_/..|.;.__/..............|_____|................................\n" +
-                        "........................................................................[__|.........................................................\n" +
-                        ".....................................................................................................................................\n" +
-                        ".....................................................................................................................................\n"
+                                ".....................................................................................................................................\n" +
+                                ".....................................................................................................................................\n" +
+                                "...______.........._........_________..._________........_........____....____...______.........._........____.._____.....______.....\n" +
+                                "..|_..._.\\......../.\\......|.._..._..|.|.._..._..|....../.\\......|_...\\../..._|.|_..._.\\......../.\\......|_...\\|_..._|...'.___..|....\n" +
+                                "....|.|_).|....../._.\\.....|_/.|.|.\\_|.|_/.|.|.\\_|...../._.\\.......|...\\/...|.....|.|_).|....../._.\\.......|...\\.|.|.../..'...\\_|....\n" +
+                                "....|..__'....../.___.\\........|.|.........|.|......../.___.\\......|.|\\../|.|.....|..__'....../.___.\\......|.|\\.\\|.|...|.|...____....\n" +
+                                "..._|.|__).|.._/./...\\.\\_....._|.|_......._|.|_....._/./...\\.\\_..._|.|_\\/_|.|_..._|.|__).|.._/./...\\.\\_..._|.|_\\...|_..\\.`.___]..|...\n" +
+                                "..|_______/..|____|.|____|...|_____|.....|_____|...|____|.|____|.|_____||_____|.|_______/..|____|.|____|.|_____|\\____|..`._____.'....\n" +
+                                ".....................................................................................................................................\n" +
+                                "...................................______..................................................._...._...................................\n" +
+                                "..................................'.___..|.................................................|.|..|.|..................................\n" +
+                                "................................/..'...\\_|..._..--......--.....__..._...._..--.....______..|.|__|.|_.................................\n" +
+                                "................................|.|...____..[.`/'`\\]./..'`\\.\\.[..|.|.|..[.'/'`\\.\\.|______|.|____..._|................................\n" +
+                                "................................\\.`.___]..|..|.|.....|.\\__..|..|.\\_/.|,..|.\\__/.|.............._|.|_.................................\n" +
+                                ".................................`._____.'..[___].....'.__.'...'.__.'_/..|.;.__/..............|_____|................................\n" +
+                                "........................................................................[__|.........................................................\n" +
+                                ".....................................................................................................................................\n" +
+                                ".....................................................................................................................................\n"
 
-        );
+                );
     }
 
     private static void help() {
-        String help[] ={
+        String helpa[] ={
                 "1.    press    * : Display all record of products",
                 "2.    press    w : Add new products",
                 "      press    w : #proname-unitprice-qty : sortcut for add new product",
@@ -493,4 +508,5 @@ public class App {
         System.out.println("+-----------------------------------------------------------------------------+");
 
     }
+
 }
