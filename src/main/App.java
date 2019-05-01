@@ -33,7 +33,9 @@ public class App<publlic> {
 
         do {
             String key = printMenu();
-            switch (key) {
+
+//            key.toLowerCase();
+            switch (key.toLowerCase()) {
                 case "*":
                     gotoPage(currentPage);
                     break;
@@ -48,9 +50,7 @@ public class App<publlic> {
                     break;
                 case "d": /*@Delete*/
                     //RecordComplement.deleteRecordById(Validator.readInt("Enter Number: ", 0, products.size() - 1), products);
-
                     Complementary.updateObjectById(Validator.readInt("Input ID : "), products, false);
-
                     delete();
                     break;
                 case "f":
@@ -69,7 +69,6 @@ public class App<publlic> {
                     System.out.println("search");
                     System.out.print("Name :");
                     if(Complementary.searcher(scanner.nextLine(), products,10)==true){
-
                     }else {
                         Complementary.tabler("Data Not Found");
                     }
@@ -95,10 +94,71 @@ public class App<publlic> {
                 case "e":
                     System.exit(0);
                     break;
+                default:
+                    usingSpecialExpression(key);
+                    break;
 
                 /*@Seakthong*/
             }
         } while (true);
+    }
+
+    private static void usingSpecialExpression(String str) {
+        int num;
+        if (str.toLowerCase().charAt(0) == '#') {
+            switch (str.toLowerCase().charAt(1)){
+                //read write delete search
+                case 'g':
+                    /* #g100*/ //go to page 100
+                    num = 0;
+                    for (int i = 0; i < str.length(); i++) {
+                        if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                    }
+                    gotoPage(num);
+                    break;
+                case 'd':
+                    /* #d100 */  //Delete id 100
+                    num = 0;
+                    for (int i = 0; i < str.length(); i++) {
+                        if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                    }
+                    gotoPage(num);
+                    break;
+                case 'u':
+
+                    break;
+                case 'w':
+                    /* #w/Items/100.5/10 */ //write data name: Items /price: 100.5 /qty: 10
+                    String [] myString = subStringWrite(str);
+                    writeData(myString[1], Double.valueOf(myString[2]), Integer.valueOf(myString[3]));
+
+                    break;
+                case 's': break;
+                case 'r':
+                    /* #r100 */ //read data id 100
+                    num = 0;
+                    for (int i = 0; i < str.length(); i++) {
+                        if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                    }
+                    readData(num);
+                    break;
+            }
+        }
+    }
+
+    public static String[] subStringWrite(String str) {
+        int firstIndex = str.indexOf('/');
+        String s0 = str.substring(0, firstIndex);
+
+        int second = str.indexOf("/", firstIndex + 1);
+        String s1 = str.substring(firstIndex + 1, second);
+
+        int third = str.indexOf("/", second + 1);
+        String s2 = str.substring(second + 1, third);
+
+        String s3 = str.substring(third + 1);
+
+        return new String[]{s0, s1, s2, s3};
     }
 
     private static void delete() {
@@ -111,7 +171,7 @@ public class App<publlic> {
         if (currentPage > getTotalPage())
             currentPage = 1;
     }
-
+    /*Done*/
     private static void help() {
         String Help[] = {
 
@@ -138,7 +198,7 @@ public class App<publlic> {
         /*@Seakthong App.myTable*/
         App.myTable(1, 90, "Help", Help, "......tttt");
     }
-
+    /*In Process*/
     private static String printMenu () {
         String[] menu = {"*)Display", "W)rite", "R)ead",
                 "U)pdate", "D)elete", "F)irst", "P)revious",
@@ -147,58 +207,7 @@ public class App<publlic> {
         App.myTable(9, 15, "Menu", menu, "tttttttttt");
         System.out.print("Command-->");
         String str = scanner.nextLine();
-        if (str.charAt(0) == '.') {
-            if (str.toLowerCase().charAt(1) == 'u') {
-                if (str.charAt(2) == '1') {
-                    //.U1:Name:Unit:Price
-                    String[] mystr = str.split("/", 10);
-//                    System.out.println("1"+mystr[1]);
-//                    System.out.println("2"+mystr[2]);
-                } else if (str.charAt(2) == '2') {
-                    System.out.println(2);
-                } else if (str.charAt(2) == '3') {
-                    System.out.println(3);
-                } else if (str.charAt(2) == '4') {
-                    System.out.println(4);
-                }
-
-            } else if (str.toLowerCase().charAt(1) == 'g') {
-                int num = 0;
-                for (int i = 0; i < str.length(); i++) {
-                    if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
-                }
-                gotoPage(num);
-            }
-        }
-/*        return str.toLowerCase();
-    }
-
-    String str = scanner.nextLine();
-            if (str.charAt(0) == '.') {
-        if (str.toLowerCase().charAt(1) == 'u') {
-            if (str.charAt(2) == '1') {
-                //.U1:Name:Unit:Price
-                String[] mystr = str.split("/", 10);
-//                    System.out.println("1"+mystr[1]);
-//                    System.out.println("2"+mystr[2]);
-            } else if (str.charAt(2) == '2') {
-                System.out.println(2);
-            } else if (str.charAt(2) == '3') {
-                System.out.println(3);
-            } else if (str.charAt(2) == '4') {
-                System.out.println(4);
-            }
-
-        } else if (str.toLowerCase().charAt(1) == 'g') {
-            int num = 0;
-            for (int i = 0; i < str.length(); i++) {
-                if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
-            }
-            gotoPage(num);
-        }
-
-    }*/
-            return str.toLowerCase();
+        return str;
 }
 
     private static void initTable () {
@@ -252,8 +261,27 @@ public class App<publlic> {
 
     }
 
+    private static void writeData(String name, double price, int qty){
+        String[] lastProduct = products.get(products.size() - 1).split("\\|");
+        int lastId = Integer.parseInt(lastProduct[0]);
+        System.out.println("Product ID : " + (lastId + 1));
+
+        String shown[] = {"ID", "" + (lastId + 1), "Name", name, "Price", "" + price,"Qty",""+qty, "Imported Date", getDate()};
+        App.myTable(2, 20, "Result", shown, "tttttttttt");
+        char answer;
+        System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
+        answer = Character.toLowerCase(scanner.next().charAt(0));
+        if (answer == 'y')
+            products.add("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+        scanner.nextLine();
+    }
+
     private static void readData () {
         int id = Validator.readInt("Read by ID :");
+        readData(id);
+    }
+
+    private static void readData(int id){
         for (String product : products) {
             String[] idPro = product.split("\\|");
             if (id == Integer.parseInt(idPro[0])) {
