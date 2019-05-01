@@ -51,12 +51,29 @@ public class Complementary extends Thread {
                 tbl.addCell(str[i]);    //<<<<< add table to two
             }catch (NullPointerException in){
 
-                System.out.println("problem");
+                //System.out.println("problem");
                 break;
             }
         }
         System.out.println(tbl.render());
     }
+
+    public static void tabler(int j,String ...str){//<<<< for adding String Array
+        int number = str.length;
+        Table tbl = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX, ShownBorders.ALL);
+        for(int i = 0; i<number; i++){
+
+            try {
+                tbl.addCell(str[i]);    //<<<<< add table to two
+            }catch (NullPointerException in){
+
+                //System.out.println("problem");
+                break;
+            }
+        }
+        System.out.println(tbl.render());
+    }
+
 
     ///<<< first index for array & sec for adding many string as varage
     public static String[] combineArray(String []str,String ...str2 ){
@@ -111,13 +128,13 @@ public class Complementary extends Thread {
 
         }else{
             int page = 0;
-            System.out.println("1.previous/2.next/3.exit");
 
             while (true){
-                switch (Validator.readInt("Option")){
+                Complementary.tabler("1.previous||2.next||3.exit");
+                switch (Validator.readInt("Option : ")){
                     case 1:
                         if(page*recordAmount <= recordAmount){
-                            System.out.println("current");
+                           tabler("First Page");
                             continue;
                         }
 
@@ -127,7 +144,7 @@ public class Complementary extends Thread {
                     case 2:
                         //page = page * recordAmount > productSize ? continue : page ;
                         if(page*recordAmount >= productSize){
-                            System.out.println("end of page ");
+                           tabler("End of Page ");
                             continue;
                         }else {
                             page++;
@@ -158,7 +175,7 @@ public class Complementary extends Thread {
                 }
 //                System.out.println(showData[2]);
 //                System.out.println(showData[3]);
-                tabler(showData);
+                tabler(2,showData);
 
 
             }//while loop
@@ -191,6 +208,8 @@ public class Complementary extends Thread {
                     productString = products.remove(index);
                     tabler(productString);
                     tabler("successfully deleted");
+                }else{
+                    tabler("delete canceled");
                 }
 
             }

@@ -98,40 +98,50 @@ public class RecordComplement {
         passByValue(product,paramProduct);
         int orderNum;
         boolean loopStatus = true;
-        String InsertMenu[] ={"1./Update All","2./Name","3./Price|","4./Qty","5./Exit"};
-//        Table tbl = new Table(5,BorderStyle.UNICODE_DOUBLE_BOX, ShownBorders.ALL);
-//        App.myTable(5, 10 ,InsertMenu,"tttttttttt");
-        do{
-            orderNum = Validator.readInt("Option :");
+        boolean isUpdated = false;
+         do{
+             String InsertMenu[] ={"1.Update All","2.Name","3.Price","4.Qty","5.Exit"};
+             Table tbl = new Table(5,BorderStyle.UNICODE_DOUBLE_BOX, ShownBorders.ALL);
+             App.myTable(5, 10 ,InsertMenu,"tttttttttt");
+
+             orderNum = Validator.readInt("Option :");
                 switch (orderNum) {
                     case 1:
                         product = insertNewRecord();
                         product.setId(paramProduct.getId());
                         product.setImportedDate(paramProduct.getImportedDate());
+                        isUpdated =true;
                         break;
                     case 2:
                         System.out.print("Name:"); String name = new Scanner(System.in).nextLine();
                         product.setName(name);
+                        isUpdated = true;
                         break;
                     case 3:
 
                         product.setUnitPrice(Validator.readDouble("Price :"));
+                        isUpdated = true;
                         break;
                     case 4:
                         product.setStockQty(Validator.readInt("QTY :"));
+                        isUpdated = true;
                         break;
                     case 5:
                         loopStatus = false;
                         break;
                     default:
-                        Complementary.tabler("input mistake");
+                        Complementary.tabler("Input Mistake");
                         break;
                 }
-            Complementary.tabler("Updated Info : "+ product.toString() );
-            Complementary.tabler("Previous Info : "+paramProduct.toString());
+             if(isUpdated==true) {
+                 Complementary.tabler("Updated Info : " + product.toString());
+                 Complementary.tabler("Previous Info : " + paramProduct.toString());
+             }
         }while(loopStatus);
 
-
+        if(isUpdated==false){
+            return paramProduct.toString();
+        }
 
         while (true){
 
