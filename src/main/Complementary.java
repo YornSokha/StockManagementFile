@@ -42,6 +42,37 @@ public class Complementary extends Thread {
 
     }
 
+    public static void tabler(String ...str){//<<<< for adding String Array
+        int number = str.length;
+        Table tbl = new Table(number, BorderStyle.UNICODE_DOUBLE_BOX, ShownBorders.ALL);
+        for(int i = 0; i<number; i++){
+
+            try {
+                tbl.addCell(str[i]);    //<<<<< add table to two
+            }catch (NullPointerException in){
+
+                System.out.println("problem");
+                break;
+            }
+        }
+        System.out.println(tbl.render());
+    }
+    ///<<< first index for array & sec for adding many string as varage
+    public static String[] combineArray(String []str,String ...str2 ){
+        int number = str.length+str2.length;
+        int i=0;
+        String []stringResult = new String()[number];
+        for (String st:str2) {
+            stringResult[i] = st;
+            i++;
+        }
+        for (String st:str) {
+            stringResult[i] = st;
+            i++;
+        }
+        return stringResult;
+    }
+
     public static boolean searcher(String character, ArrayList<String> products){
         ArrayList arrayList = findObjectByCharacterInName(character,products);
         if (arrayList.size()>0){
