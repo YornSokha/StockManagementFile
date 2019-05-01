@@ -14,7 +14,7 @@ public class Product {
         this.stockQty = stockQty;
         this.importedDate = importedDate;
     }
-
+    public Product(){}
     public int getId() {
         return id;
     }

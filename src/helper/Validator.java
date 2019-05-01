@@ -2,6 +2,7 @@ package helper;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.regex.Matcher;
 
 public class Validator {
     private static Scanner scanner = new Scanner(System.in);
@@ -17,6 +18,36 @@ public class Validator {
                 System.out.println("Error input!");
                 scanner.nextLine();
             }
+        }
+        return value;
+    }
+
+    public static char readYesNo(String message){
+        char value = ' ';
+        boolean validValue = false;
+        while (!validValue){
+                System.out.print(message);
+                value = scanner.next().charAt(0);
+                if (value == 'y' || value == 'n')
+                    validValue = true;
+        }
+        return value;
+    }
+
+    public static int readInt(String message, int min, int max){
+        int value = readInt(message);
+        while (value < min || value > max){
+            System.out.println("Value must from " + min + " to " + max);
+            value = readInt(message);
+        }
+        return value;
+    }
+
+    public static String readAlphabets(){
+        String value = scanner.nextLine();
+        while(!value.matches("[a-zA-Z]+")){
+            System.out.println("Please enter a valid value!");
+            value = scanner.nextLine();
         }
         return value;
     }
@@ -51,5 +82,24 @@ public class Validator {
             }
         }
         return value;
+    }
+
+    public static int getNumberFromShortcut(String str) {
+        if(isValidStringNumber(str.substring(2, str.length()))){
+
+        }
+
+        int value = 0;
+        try{
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return value;
+    }
+
+    private static boolean isValidStringNumber(String substring) {
+        String regex = "[0-9]+";
+        return substring.matches(regex);
     }
 }
