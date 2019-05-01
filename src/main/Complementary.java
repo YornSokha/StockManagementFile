@@ -45,7 +45,7 @@ public class Complementary extends Thread {
     public static boolean searcher(String character, ArrayList<String> products){
         ArrayList arrayList = findObjectByCharacterInName(character,products);
         if (arrayList.size()>0){
-            paginator(findObjectByCharacterInName(),10);
+            paginator(arrayList,10);
             return true;
         }else{
             return false;
