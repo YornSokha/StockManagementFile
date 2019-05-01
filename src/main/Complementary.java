@@ -61,7 +61,7 @@ public class Complementary extends Thread {
     public static String[] combineArray(String []str,String ...str2 ){
         int number = str.length+str2.length;
         int i=0;
-        String []stringResult = new String()[number];
+        String []stringResult = new String[number];
         for (String st:str2) {
             stringResult[i] = st;
             i++;
