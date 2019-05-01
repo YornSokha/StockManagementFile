@@ -99,11 +99,8 @@ public class RecordComplement {
         int orderNum;
         boolean loopStatus = true;
         String InsertMenu[] ={"1./Update All","2./Name","3./Price|","4./Qty","5./Exit"};
-        Table tbl = new Table(5,BorderStyle.UNICODE_DOUBLE_BOX, ShownBorders.ALL);
-        for(int i = 0; i<5; i++){
-            tbl.addCell(InsertMenu[i]);
-        }
-        System.out.println(tbl.render());
+//        Table tbl = new Table(5,BorderStyle.UNICODE_DOUBLE_BOX, ShownBorders.ALL);
+        App.myTable(5, 10 ,InsertMenu,"tttttttttt");
         do{
             orderNum = Validator.readInt("Option :");
                 switch (orderNum) {

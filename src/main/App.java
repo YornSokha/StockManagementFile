@@ -12,20 +12,22 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class App {
     private static final String FILE_NAME = "product.txt";
-    private static ArrayList<String> products = new ArrayList<>();
+    public static ArrayList<String> products = new ArrayList<>();
     private static Scanner scanner = new Scanner(System.in);
     private static int numOfRows = 5;
     private static int currentPage = 1;
-    public static Table table;
+    private static Table table;
 
-    public static void main(String[] args) throws InterruptedException{
+    public static void main(String[] args) {
         myGroupname();
-//        generateData();
+        generateData();
         getData();
+
         do{
             String key = printMenu();
             switch (key) {
@@ -39,13 +41,12 @@ public class App {
                     readData();
                     break;
                 case "u":
-                   Complementary.updateObjectById(Validator.readInt("Input ID : "),products,true);
+                    //RecordComplement.updateObjectById(10, products);
                     break;
                 case "d": /*@Delete*/
                     //System.out.println("Delete");
-                    //RecordComplement.deleteRecordById(Validator.readInt("Enter Number: ", 0, products.size() - 1), products);
-                    if(Complementary.updateObjectById(Validator.readInt("Input ID : "),products,false))
-                        reCalculateCurrentPage();
+                    RecordComplement.deleteRecordById(Validator.readInt("Enter Number: ", 0, products.size() - 1), products);
+
                     break;
                 case "f":
                     goFirst();
@@ -60,8 +61,7 @@ public class App {
                     goLast();
                     break;
                 case "s":
-                    System.out.print("Name :");
-                    System.out.println(Complementary.findObjectByCharacterInName(scanner.nextLine(),products));
+                    System.out.println("search");
                     break;
                 case "g":
                     gotoPage(Validator.readInt("Input page number(1-" + getTotalPage() + ") : ", 1, getTotalPage()));
@@ -90,32 +90,6 @@ public class App {
         } while (true);
     }
 
-    private static void reCalculateCurrentPage() {
-        if (currentPage > getTotalPage())
-            currentPage = 1;
-    }
-
-    private static void help() {
-        System.out.println("+-----------------------------------------------------------------------------+");
-        System.out.println("! 1.    press    * : Display all record of products                           !");
-        System.out.println("! 2.    press    w : Add new products                                         !");
-        System.out.println("!       press    w : #proname-unitprice-qty : sortcut for add new product     !");
-        System.out.println("! 3.    press    r : read Content any content                                 !");
-        System.out.println("!       press    r#proId :  sortcut for read product by Id                    !");
-        System.out.println("! 4.    press    u : Update Data                                              !");
-        System.out.println("! 5.    press    d : Delete Data                                              !");
-        System.out.println("!       press    d#proId :  sortcut for read product by Id                    !");
-        System.out.println("! 6.    press    f : Display First Page                                       !");
-        System.out.println("! 7.    press    p : Display Previous Page                                    !");
-        System.out.println("! 8.    press    n : Display Next Page                                        !");
-        System.out.println("! 9.    press    l : Display Last Page                                        !");
-        System.out.println("! 10.   press    s : Search product by name                                   !");
-        System.out.println("! 11.   press    sa : Save record to file                                     !");
-        System.out.println("! 12.   press    ba : Backup data                                             !");
-        System.out.println("! 13.   press    re : Restore data                                            !");
-        System.out.println("! 14.   press    h : Help                                                     !");
-        System.out.println("+-----------------------------------------------------------------------------+");
-    }
 
 
 
@@ -157,9 +131,9 @@ public class App {
 
             }
             else if(str.toLowerCase().charAt(1)=='g'){
-                int num = Validator.getNumberFromShortcut(str);
-                for(int i = 2 ; i < str.length(); i++){
-                    num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                int num = 0;
+                for(int i = 0 ; i < str.length(); i++){
+                    if(i>1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
                 }
                 gotoPage(num);
             }
@@ -217,30 +191,27 @@ public class App {
                 tableReadData.addCell("Imported Date");
                 tableReadData.addCell(idPro[3]);
                 System.out.println(tableReadData.render());
-                return;
             }
         }
-        System.out.println("Product not found!");
     }
 
-    private static void generateData() throws InterruptedException{
-        Thread.sleep(1000);
-        new Thread(() -> {
-            String message = "Please wait....";
-            int i = 0;
-            while (i < message.length()) {
-                System.out.print(message.charAt(i++));
-                try {
-                    Thread.sleep(350);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+    private static void generateData() {
+//        new Thread(() -> {
+//            String message = "Please wait....";
+//            int i = 0;
+//            while (i < message.length()) {
+//                System.out.print(message.charAt(i++));
+//                try {
+//                    Thread.sleep(350);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
         long startTime = System.nanoTime();
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILE_NAME, false))) {
             int flush = 0;
-            for (int i = 1; i <= 1_000_000; i++) {
+            for (int i = 1; i <= 1_00; i++) {
                 Product product = new Product(i, "Angkor Beer", 10d, 1000, getDate());
                 bufferedWriter.write(product.toString());
                 bufferedWriter.newLine();
@@ -261,7 +232,8 @@ public class App {
     private static void setRow() {
         System.out.print("Number of row : ");
         numOfRows = scanner.nextInt();
-        reCalculateCurrentPage();
+        if (currentPage > getTotalPage())
+            currentPage = 1;
         scanner.nextLine();
     }
 
@@ -479,4 +451,46 @@ public class App {
         );
     }
 
+    private static void help() {
+        String help[] ={
+                "1.    press    * : Display all record of products",
+                "2.    press    w : Add new products",
+                "      press    w : #proname-unitprice-qty : sortcut for add new product",
+                "3.    press    r : read Content any content",
+                "      press    r#proId :  sortcut for read product by Id",
+                "4.    press    u : Update Data",
+                "5.    press    d : Delete Data",
+                "      press    d#proId :  sortcut for read product by Id",
+                "6.    press    f : Display First Page",
+                "7.    press    p : Display Previous Page",
+                "8.    press    n : Display Next Page",
+                "9.    press    l : Display Last Page",
+                "10.   press    s : Search product by name",
+                "11.   press    sa : Save record to file",
+                "12.   press    ba : Backup data",
+                "13.   press    re : Restore data",
+                "14.   press    h : Help"
+        };
+
+        System.out.println("+-----------------------------------------------------------------------------+");
+        System.out.println("! 1.    press    * : Display all record of products                           !");
+        System.out.println("! 2.    press    w : Add new products                                         !");
+        System.out.println("!       press    w : #proname-unitprice-qty : sortcut for add new product     !");
+        System.out.println("! 3.    press    r : read Content any content                                 !");
+        System.out.println("!       press    r#proId :  sortcut for read product by Id                    !");
+        System.out.println("! 4.    press    u : Update Data                                              !");
+        System.out.println("! 5.    press    d : Delete Data                                              !");
+        System.out.println("!       press    d#proId :  sortcut for read product by Id                    !");
+        System.out.println("! 6.    press    f : Display First Page                                       !");
+        System.out.println("! 7.    press    p : Display Previous Page                                    !");
+        System.out.println("! 8.    press    n : Display Next Page                                        !");
+        System.out.println("! 9.    press    l : Display Last Page                                        !");
+        System.out.println("! 10.   press    s : Search product by name                                   !");
+        System.out.println("! 11.   press    sa : Save record to file                                     !");
+        System.out.println("! 12.   press    ba : Backup data                                             !");
+        System.out.println("! 13.   press    re : Restore data                                            !");
+        System.out.println("! 14.   press    h : Help                                                     !");
+        System.out.println("+-----------------------------------------------------------------------------+");
+
+    }
 }
