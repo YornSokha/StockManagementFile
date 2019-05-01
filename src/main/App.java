@@ -28,7 +28,7 @@ public class App<publlic> {
 
     public static void main(String[] args) throws InterruptedException {
         myGroupname();
-        generateData();
+//        generateData();
         saveOption();
         getData();
 
@@ -45,11 +45,9 @@ public class App<publlic> {
                     readData();
                     break;
                 case "u":
-//                    RecordComplement.updateObjectById(10, products);
                     update();
                     break;
                 case "d": /*@Delete*/
-//                    RecordComplement.deleteRecordById(Validator.readInt("Enter Number: ", 0, products.size() - 1), products);
                     delete();
                     break;
                 case "f":
@@ -67,7 +65,11 @@ public class App<publlic> {
                 case "s":
                     System.out.println("search");
                     System.out.print("Name :");
-                    System.out.println(Complementary.findObjectByCharacterInName(scanner.nextLine(), products));
+                    if (Complementary.searcher(scanner.nextLine(), products, 10) == true) {
+
+                    } else {
+                        Complementary.tabler("Data Not Found");
+                    }
                     break;
                 case "g":
                     gotoPage(Validator.readInt("Input page number(1-" + getTotalPage() + ") : ", 1, getTotalPage()));
@@ -152,7 +154,6 @@ public class App<publlic> {
         App.myTable(1, 90, "Help", Help, "......tttt");
     }
 
-
     private static String printMenu() {
         String[] menu = {"*)Display", "W)rite", "R)ead",
                 "U)pdate", "D)elete", "F)irst", "P)revious",
@@ -166,8 +167,6 @@ public class App<publlic> {
                 if (str.charAt(2) == '1') {
                     //.U1:Name:Unit:Price
                     String[] mystr = str.split("/", 10);
-//                    System.out.println("1"+mystr[1]);
-//                    System.out.println("2"+mystr[2]);
                 } else if (str.charAt(2) == '2') {
                     System.out.println(2);
                 } else if (str.charAt(2) == '3') {
@@ -178,40 +177,12 @@ public class App<publlic> {
 
             } else if (str.toLowerCase().charAt(1) == 'g') {
                 int num = 0;
-                for (int i = 0; i < str.length(); i++) {
-                    if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                for (int i = 2; i < str.length(); i++) {
+                    num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
                 }
                 gotoPage(num);
             }
         }
-/*        return str.toLowerCase();
-    }
-
-    String str = scanner.nextLine();
-            if (str.charAt(0) == '.') {
-        if (str.toLowerCase().charAt(1) == 'u') {
-            if (str.charAt(2) == '1') {
-                //.U1:Name:Unit:Price
-                String[] mystr = str.split("/", 10);
-//                    System.out.println("1"+mystr[1]);
-//                    System.out.println("2"+mystr[2]);
-            } else if (str.charAt(2) == '2') {
-                System.out.println(2);
-            } else if (str.charAt(2) == '3') {
-                System.out.println(3);
-            } else if (str.charAt(2) == '4') {
-                System.out.println(4);
-            }
-
-        } else if (str.toLowerCase().charAt(1) == 'g') {
-            int num = 0;
-            for (int i = 0; i < str.length(); i++) {
-                if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
-            }
-            gotoPage(num);
-        }
-
-    }*/
         return str.toLowerCase();
     }
 
@@ -250,8 +221,8 @@ public class App<publlic> {
         for (String product : products) {
             String[] idPro = product.split("\\|");
             if (id == Integer.parseInt(idPro[0])) {
-                String shown[] = {"ID", idPro[0], "Name", idPro[1], "Price", idPro[2], "Imported Date", idPro[3]};
-                App.myTable(2, 20, "Read", shown, "tttttttttt");
+                String shown[] = {"ID", idPro[0], "Name", idPro[1], "Price", idPro[2], "Qty", idPro[3], "Imported Date", idPro[4]};
+                App.myTable(2, 20, "Product Detail", shown, "tttttttttt");
             }
         }
     }
@@ -342,7 +313,6 @@ public class App<publlic> {
     }
 
     private static void printPageSummary() {
-//        System.out.print("Page : " + currentPage + " of " + getTotalPage() + "\t\t\t\t\t\t\tTotal record : " + products.size());
         System.out.printf("%4sPage : %d of %d %64s Total Record: %d", " ", currentPage, getTotalPage(), " ", products.size());
         System.out.println();
     }
@@ -667,5 +637,4 @@ public class App<publlic> {
                                 ".....................................................................................................................................\n"
                 );
     }
-
 }
