@@ -200,10 +200,15 @@ public class Complementary extends Thread {
             } else {//delete record
                 if (Validator.readYesNo("press 'y' to delete and 'n' to cancel : ") == 'y') {
                     productString = products.remove(index);
-                    tabler(productString);
-                    tabler("successfully deleted");
+                    String str[] = subString(productString);
+                    String myString[] ={"ID", str[0], "Name", str[1], "Price", str[2], "Qty", str[3], "Imported Date", str[4]};
+                    App.myTable(2,20,"Detail",myString,"tttttttttt");
+//                    tabler(productString);
+                    String myString1[] = {"Successfully Deleted"};
+                    App.myTable(1,43,myString1,"tttttttttt");
                 }else{
-                    tabler("delete canceled");
+                    String myString1[] = {"Delete Canceled"};
+                    App.myTable(1,43,myString1,"tttttttttt");
                 }
             }
 
@@ -219,19 +224,9 @@ public class Complementary extends Thread {
 
         for (int i = 0; i < products.size(); i++) {
             String[] str = subString(products.get(i));
-//            System.out.println(str[0]);
             if (Integer.parseInt(str[0]) == id) {
-
-                Table tableReadData = new Table(2);
-                tableReadData.addCell("ID");
-                tableReadData.addCell(str[0]);
-                tableReadData.addCell("Name");
-                tableReadData.addCell(str[1]);
-                tableReadData.addCell("Price");
-                tableReadData.addCell(str[2]);
-                tableReadData.addCell("Imported Date");
-                tableReadData.addCell(str[3]);
-                System.out.println(tableReadData.render());
+                String myString[] ={"ID", str[0], "Name", str[1], "Price", str[2], "Qty", str[3], "Imported Date", str[4]};
+                App.myTable(2,20,"Detail",myString,"tttttttttt");
                 return i;
             }
         }

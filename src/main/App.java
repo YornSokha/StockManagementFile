@@ -33,7 +33,6 @@ public class App<publlic> {
 
         do {
             String key = printMenu();
-
 //            key.toLowerCase();
             switch (key.toLowerCase()) {
                 case "*":
@@ -49,8 +48,6 @@ public class App<publlic> {
                     Complementary.updateObjectById(Validator.readInt("Input ID : "), products, true);
                     break;
                 case "d": /*@Delete*/
-                    Complementary.updateObjectById(Validator.readInt("Input ID : "), products, false);
-
                     delete();
                     break;
                 case "f":
@@ -89,7 +86,7 @@ public class App<publlic> {
                     reStore();
                     break;
                 case "h":
-//                    help();
+                    help();
                     break;
                 case "e":
                     System.exit(0);
@@ -122,16 +119,27 @@ public class App<publlic> {
                     for (int i = 0; i < str.length(); i++) {
                         if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
                     }
-                    gotoPage(num);
+                    delete(num);
                     break;
                 case 'u':
+                    /* #u100*/
+                    num = 0;
+                    for (int i = 0; i < str.length(); i++) {
+                        if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                    }
+                    Complementary.updateObjectById(num, products, true);
 
                     break;
                 case 'w':
                     /* #w/Items/100.5/10 */ //write data name: Items /price: 100.5 /qty: 10
                     String [] myString = subStringWrite(str);
-                    writeData(myString[1], Double.valueOf(myString[2]), Integer.valueOf(myString[3]));
-
+                    if(myString[0] == "Wrong") return;
+                    try {
+                        writeData(myString[1], Double.valueOf(myString[2]), Integer.valueOf(myString[3]));
+                    }
+                    catch (NumberFormatException e){
+                        System.err.println("Syntax: #w/ProductName is Text/Price is Number/Qty is Number");
+                    }
                     break;
                 case 's': break;
                 case 'r':
@@ -147,22 +155,30 @@ public class App<publlic> {
     }
 
     public static String[] subStringWrite(String str) {
-        int firstIndex = str.indexOf('/');
-        String s0 = str.substring(0, firstIndex);
+        try {
+            int firstIndex = str.indexOf('/');
+            String s0 = str.substring(0, firstIndex);
 
-        int second = str.indexOf("/", firstIndex + 1);
-        String s1 = str.substring(firstIndex + 1, second);
+            int second = str.indexOf("/", firstIndex + 1);
+            String s1 = str.substring(firstIndex + 1, second);
 
-        int third = str.indexOf("/", second + 1);
-        String s2 = str.substring(second + 1, third);
+            int third = str.indexOf("/", second + 1);
+            String s2 = str.substring(second + 1, third);
 
-        String s3 = str.substring(third + 1);
+            String s3 = str.substring(third + 1);
+            return new String[]{s0, s1, s2, s3};
+        }catch(IndexOutOfBoundsException e){return new String[]{"Wrong"};}
 
-        return new String[]{s0, s1, s2, s3};
     }
 
     private static void delete() {
         String product = Complementary.updateObjectById(Validator.readInt("Input ID : "), products, false);
+        if(product != null)
+            reCalculateCurrentPage();
+    }
+
+    private static void delete(int id){
+        String product = Complementary.updateObjectById(id, products, false);
         if(product != null)
             reCalculateCurrentPage();
     }
@@ -213,14 +229,14 @@ public class App<publlic> {
     private static void initTable () {
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
         table = new Table(5, borderStyle, new ShownBorders("tttttttttt"));
-        int myMinWidth[] = {14, 32, 11, 12, 18};
+        int myMinWidth[] = {14, 32, 12, 11, 18};
         for (int i = 0; i < 5; i++) {
             table.setColumnWidth(i, myMinWidth[i], 27);
         }
         table.addCell("ID");
         table.addCell("Name");
-        table.addCell("Qty");
         table.addCell("Unit Price");
+        table.addCell("Qty");
         table.addCell("Date");
     }
 
@@ -350,6 +366,7 @@ public class App<publlic> {
         initTable();
         currentPage = pageNum;
         int start = numOfRows * (currentPage - 1);
+        if(pageNum > getTotalPage()) return;
         if (pageNum == getTotalPage()) {
             goLast();
         } else {

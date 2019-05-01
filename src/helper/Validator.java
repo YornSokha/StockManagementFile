@@ -27,7 +27,7 @@ public class Validator {
         boolean validValue = false;
         while (!validValue){
                 System.out.print(message);
-                value = scanner.next().charAt(0);
+                value = scanner.next().toLowerCase().charAt(0);
                 if (value == 'y' || value == 'n')
                     validValue = true;
         }

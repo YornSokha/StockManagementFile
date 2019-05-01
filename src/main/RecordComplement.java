@@ -134,8 +134,20 @@ public class RecordComplement {
                         break;
                 }
              if(isUpdated==true) {
-                 Complementary.tabler("Updated Info : " + product.toString());
-                 Complementary.tabler("Previous Info : " + paramProduct.toString());
+//                 Complementary.tabler("Updated Info : " + product.toString()) ;
+                 String checkInfo[] = Complementary.subString(product.toString());
+                 String PreviousInfo[] = Complementary.subString(paramProduct.toString());
+                 String addStringTable[]= {
+                         " ","New","Old",
+                         "ID",checkInfo[0],PreviousInfo[0],
+                         "Name",checkInfo[1],PreviousInfo[1],
+                         "Price",checkInfo[2],PreviousInfo[2],
+                         "Qty",checkInfo[3],PreviousInfo[3]
+                         ,"Imorted Date",checkInfo[4],PreviousInfo[4]
+                 };
+                 App.myTable(3,19,"Chceck",addStringTable,"tttttttttt");
+
+//                 Complementary.tabler("Previous Info : " + paramProduct.toString());
              }
         }while(loopStatus);
 
