@@ -84,6 +84,10 @@ public class Validator {
         return value;
     }
 
+    public static boolean isValidRangeNumber(int min, int value, int max){
+        return (min < value && value < max);
+    }
+
     public static int getNumberFromShortcut(String str) {
         if(isValidStringNumber(str.substring(2, str.length()))){
 

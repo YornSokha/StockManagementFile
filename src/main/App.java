@@ -158,11 +158,16 @@ public class App {
                 }
 
             } else if (str.toLowerCase().charAt(1) == 'g') {
-                int num = Validator.getNumberFromShortcut(str);
+                int pageNumber = Validator.getNumberFromShortcut(str);
                 for (int i = 2; i < str.length(); i++) {
-                    num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                    pageNumber = pageNumber * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
                 }
-                gotoPage(num);
+                if (Validator.isValidRangeNumber(1, pageNumber, getTotalPage())){
+                    gotoPage(pageNumber);
+                }
+                else {
+                    gotoPage(Validator.readInt("Input page number(1-" + getTotalPage() + ") : ", 1, getTotalPage()));
+                }
             }
 
         }
