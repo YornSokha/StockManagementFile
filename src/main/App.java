@@ -68,7 +68,7 @@ public class App<publlic> {
                 case "s":
                     System.out.println("search");
                     System.out.print("Name :");
-                    System.out.println(Complementary.findObjectByCharacterInName(scanner.nextLine(), products));
+                    System.out.println(Complementary.searcher(scanner.nextLine(), products));
                     break;
                 case "g":
                     gotoPage(Validator.readInt("Input page number(1-" + getTotalPage() + ") : ", 1, getTotalPage()));
