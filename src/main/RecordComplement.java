@@ -98,46 +98,66 @@ public class RecordComplement {
         passByValue(product,paramProduct);
         int orderNum;
         boolean loopStatus = true;
-        String InsertMenu[] ={"1./Update All","2./Name","3./Price|","4./Qty","5./Exit"};
-        Table tbl = new Table(5,BorderStyle.UNICODE_DOUBLE_BOX, ShownBorders.ALL);
-        for(int i = 0; i<5; i++){
-            tbl.addCell(InsertMenu[i]);
-        }
-        System.out.println(tbl.render());
-        do{
-            orderNum = Validator.readInt("Option :");
+        boolean isUpdated = false;
+         do{
+             String InsertMenu[] ={"1.Update All","2.Name","3.Price","4.Qty","5.Exit"};
+             Table tbl = new Table(5,BorderStyle.UNICODE_DOUBLE_BOX, ShownBorders.ALL);
+             App.myTable(5, 10 ,InsertMenu,"tttttttttt");
+
+             orderNum = Validator.readInt("Option :");
                 switch (orderNum) {
                     case 1:
                         product = insertNewRecord();
                         product.setId(paramProduct.getId());
                         product.setImportedDate(paramProduct.getImportedDate());
+                        isUpdated =true;
                         break;
                     case 2:
                         System.out.print("Name:"); String name = new Scanner(System.in).nextLine();
                         product.setName(name);
+                        isUpdated = true;
                         break;
                     case 3:
 
                         product.setUnitPrice(Validator.readDouble("Price :"));
+                        isUpdated = true;
                         break;
                     case 4:
                         product.setStockQty(Validator.readInt("QTY :"));
+                        isUpdated = true;
                         break;
                     case 5:
                         loopStatus = false;
                         break;
                     default:
-                        System.out.println("input mistake");//<<<<< move to table
+                        Complementary.tabler("Input Mistake");
                         break;
                 }
-            System.out.println(product);//<<<<< move to table
-            System.out.println(paramProduct);//<<<<< move to table
+             if(isUpdated==true) {
+//                 Complementary.tabler("Updated Info : " + product.toString()) ;
+                 String checkInfo[] = Complementary.subString(product.toString());
+                 String PreviousInfo[] = Complementary.subString(paramProduct.toString());
+                 String addStringTable[]= {
+                         " ","New","Old",
+                         "ID",checkInfo[0],PreviousInfo[0],
+                         "Name",checkInfo[1],PreviousInfo[1],
+                         "Price",checkInfo[2],PreviousInfo[2],
+                         "Qty",checkInfo[3],PreviousInfo[3]
+                         ,"Imorted Date",checkInfo[4],PreviousInfo[4]
+                 };
+                 App.myTable(3,19,"Chceck",addStringTable,"tttttttttt");
+
+//                 Complementary.tabler("Previous Info : " + paramProduct.toString());
+             }
         }while(loopStatus);
 
-
+        if(isUpdated==false){
+            return paramProduct.toString();
+        }
 
         while (true){
-            System.out.println("press 'y' to update and 'n' to cancel");//<<<<< move to table
+
+            Complementary.tabler("press 'y' to update and 'n' to cancel");
             char c = new Scanner(System.in).next().charAt(0);
             if (c == 'y' || c == 'Y'){
                 return product.toString();

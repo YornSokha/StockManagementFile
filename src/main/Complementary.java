@@ -42,6 +42,64 @@ public class Complementary extends Thread {
 
     }
 
+    public static void tabler(String ...str){//<<<< for adding String Array
+        int number = str.length;
+        Table tbl = new Table(number, BorderStyle.UNICODE_DOUBLE_BOX, ShownBorders.ALL);
+        for(int i = 0; i<number; i++){
+
+            try {
+                tbl.addCell(str[i]);    //<<<<< add table to two
+            }catch (NullPointerException in){
+
+                //System.out.println("problem");
+                break;
+            }
+        }
+        System.out.println(tbl.render());
+    }
+
+    public static void tabler(int j,String ...str){//<<<< for adding String Array
+        int number = str.length;
+        Table tbl = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX, ShownBorders.ALL);
+        for(int i = 0; i<number; i++){
+
+            try {
+                tbl.addCell(str[i]);    //<<<<< add table to two
+            }catch (NullPointerException in){
+
+                //System.out.println("problem");
+                break;
+            }
+        }
+        System.out.println(tbl.render());
+    }
+
+
+    ///<<< first index for array & sec for adding many string as varage
+    public static String[] combineArray(String []str,String ...str2 ){
+        int number = str.length+str2.length;
+        int i=0;
+        String []stringResult = new String[number];
+        for (String st:str2) {
+            stringResult[i] = st;
+            i++;
+        }
+        for (String st:str) {
+            stringResult[i] = st;
+            i++;
+        }
+        return stringResult;
+    }
+
+    public static boolean searcher(String character, ArrayList<String> products,int recordAmount ){
+        ArrayList arrayList = findObjectByCharacterInName(character,products);
+        if (arrayList.size()>0){
+            paginator(arrayList,recordAmount);
+            return true;
+        }else{
+            return false;
+        }
+    }
 
     public static ArrayList findObjectByCharacterInName(String character, ArrayList<String> products) {
 
@@ -59,36 +117,103 @@ public class Complementary extends Thread {
         return arrayList;
     }
 
+    private static void paginator(ArrayList<String> products, int recordAmount){
+
+        recordAmount = 5;
+        int productSize = products.size()%10;
+        productSize = products.size() + 10 - (productSize==0? 10 : productSize);//បង្កត់
+        //>>>> end of file
+//        System.out.println(productSize);
+        if(recordAmount < 5 ){
+
+        }else{
+            int page = 0;
+
+            while (true){
+                Complementary.tabler("1.previous||2.next||3.exit");
+                switch (Validator.readInt("Option : ")){
+                    case 1:
+                        if(page*recordAmount <= recordAmount){
+                           tabler("First Page");
+                            continue;
+                        }
+
+                        else
+                            page--;
+                        break;
+                    case 2:
+                        //page = page * recordAmount > productSize ? continue : page ;
+                        if(page*recordAmount >= productSize){
+                           tabler("End of Page ");
+                            continue;
+                        }else {
+                            page++;
+                        }
+                        break;
+                    case 3:
+                        return;
+
+                    default:
+                        System.out.println("Input mistake");
+                        break;
+
+                }
+                int j = 0;
+                String showData[]= new String[recordAmount];;
+                for(int i = (recordAmount*page ) - recordAmount ;i < recordAmount*page;i++){
+
+                    try {
+//                        System.out.println(products.get(i));
+
+                        showData[j] = products.get(i);
+
+//                        System.out.println(showData[j]);
+                        j++;
+                    }catch (IndexOutOfBoundsException e){
+                        break;
+                    }
+                }
+//                System.out.println(showData[2]);
+//                System.out.println(showData[3]);
+                tabler(2,showData);
+
+
+            }//while loop
+
+
+        }
+
+    }
+
     //<<<<<<main call update or delete determine by boolean
     //<<<<<< UI improver
     public static String updateObjectById(int number, ArrayList<String> products, boolean booFeature) {
         int index = findObjectToUpdate(number, products);
         String productString = null;
         if (index == -1) {
-
             return null;
-
         } else {
-
             if (booFeature) {//update record
-
                 Product product = convertFromStringToProduct(subString(products.get(index)));
                 productString = RecordComplement.insertRecord(product);
                 products.set(index, productString);
-
             } else {//delete record
-
                 if (Validator.readYesNo("press 'y' to delete and 'n' to cancel : ") == 'y') {
                     productString = products.remove(index);
-                    System.out.println(productString);
-                    System.out.println("successfully deleted");//<<<<< move to table
+                    String str[] = subString(productString);
+                    String myString[] ={"ID", str[0], "Name", str[1], "Price", str[2], "Qty", str[3], "Imported Date", str[4]};
+                    App.myTable(2,20,"Detail",myString,"tttttttttt");
+//                    tabler(productString);
+                    String myString1[] = {"Successfully Deleted"};
+                    App.myTable(1,43,myString1,"tttttttttt");
+                }else{
+                    String myString1[] = {"Delete Canceled"};
+                    App.myTable(1,43,myString1,"tttttttttt");
                 }
-
             }
-            return productString;
-            //>>>>> data found
-        }
 
+            return productString;
+        }
     }
 
     private static Product convertFromStringToProduct(String[] str) {
@@ -99,24 +224,14 @@ public class Complementary extends Thread {
 
         for (int i = 0; i < products.size(); i++) {
             String[] str = subString(products.get(i));
-//            System.out.println(str[0]);
             if (Integer.parseInt(str[0]) == id) {
-
-                Table tableReadData = new Table(2);
-                tableReadData.addCell("ID");
-                tableReadData.addCell(str[0]);
-                tableReadData.addCell("Name");
-                tableReadData.addCell(str[1]);
-                tableReadData.addCell("Price");
-                tableReadData.addCell(str[2]);
-                tableReadData.addCell("Imported Date");
-                tableReadData.addCell(str[3]);
-                System.out.println(tableReadData.render());
+                String myString[] ={"ID", str[0], "Name", str[1], "Price", str[2], "Qty", str[3], "Imported Date", str[4]};
+                App.myTable(2,20,"Detail",myString,"tttttttttt");
                 return i;
             }
         }
 
-        System.out.println("not found");//<<<<< move to table
+        tabler("not found");
         return -1;
     }
 
