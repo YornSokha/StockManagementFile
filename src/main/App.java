@@ -45,7 +45,7 @@ public class App<publlic> {
                     readData();
                     break;
                 case "u":
-
+                    update();
                     break;
                 case "d": /*@Delete*/
                     delete();
@@ -171,6 +171,17 @@ public class App<publlic> {
 
     }
 
+    private static void update() {
+        String product = Complementary.updateObjectById(Validator.readInt("Input ID : "), products, true);
+        if (product != null)
+            try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("temp\\Update.txt"))) {
+                bufferedWriter.write(product);
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+            } catch (IOException e) {
+            }
+    }
+
     private static void delete() {
         String product = Complementary.updateObjectById(Validator.readInt("Input ID : "), products, false);
         if(product != null)
@@ -254,42 +265,6 @@ public class App<publlic> {
         Connection.getProducts(products);
         long time = System.nanoTime() - startTime;
         System.out.println("Read using " + (double) time / 1000000 + " seconds");
-    }
-
-    private static void writeData () {
-        String[] lastProduct = products.get(products.size() - 1).split("\\|");
-        int lastId = Integer.parseInt(lastProduct[0]);
-        System.out.println("Product ID : " + (lastId + 1));
-        System.out.print("Product's Name : ");
-        String name = scanner.nextLine();
-        double price = Validator.readDouble("Product's Price : ");
-        int qty = Validator.readInt("Product's Qty : ", 1, 1_000_000);
-        /*@Seakthong add App.myTable*/
-        String shown[] = {"ID", "" + (lastId + 1), "Name", name, "Price", "" + price,"Qty",""+qty, "Imported Date", getDate()};
-        App.myTable(2, 20, "Result", shown, "tttttttttt");
-
-        char answer;
-        System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
-        answer = Character.toLowerCase(scanner.next().charAt(0));
-        if (answer == 'y')
-            products.add("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
-        scanner.nextLine();
-
-    }
-
-    private static void writeData(String name, double price, int qty){
-        String[] lastProduct = products.get(products.size() - 1).split("\\|");
-        int lastId = Integer.parseInt(lastProduct[0]);
-        System.out.println("Product ID : " + (lastId + 1));
-
-        String shown[] = {"ID", "" + (lastId + 1), "Name", name, "Price", "" + price,"Qty",""+qty, "Imported Date", getDate()};
-        App.myTable(2, 20, "Result", shown, "tttttttttt");
-        char answer;
-        System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
-        answer = Character.toLowerCase(scanner.next().charAt(0));
-        if (answer == 'y')
-            products.add("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
-        scanner.nextLine();
     }
 
     private static void readData () {
@@ -420,7 +395,119 @@ public class App<publlic> {
         printPageSummary();
     }
 
-    private static void saveUpdate () {
+    public static boolean containedUnsavedFiles() {
+        return new File("temp\\Insert.txt").exists() || new File("temp\\Delete.txt").exists() || new File("temp\\Update.txt").exists();
+    }
+
+    private static void saveInserted() {
+        try {
+            long startTime2 = System.nanoTime();
+            File fileInsert = new File("temp\\Insert.txt");
+            BufferedReader fileTempRead = new BufferedReader(new FileReader(fileInsert));
+            BufferedWriter fileSourceWrite = new BufferedWriter(new FileWriter("product.txt", true));
+            String line = null;
+            while ((line = fileTempRead.readLine()) != null) {
+                fileSourceWrite.write(line);
+                fileSourceWrite.newLine();
+                fileSourceWrite.flush();
+            }
+            fileTempRead.close();
+            fileInsert.delete();
+            long time2 = System.nanoTime() - startTime2;
+            System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveDeleted() {
+        try {
+            long startTime2 = System.nanoTime();
+            File fileTemp = new File("deleteTempPro.txt");
+            File fileSource = new File("product.txt");
+            File fileDelete = new File("temp\\Delete.txt");
+            BufferedReader br = new BufferedReader(new FileReader(fileSource));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileTemp));
+            boolean b = false;
+            String line1 = null;
+            String line2 = null;
+            int i = 0, j = 100;
+            while ((line1 = br.readLine()) != null) {
+                b = false;
+                BufferedReader br2 = new BufferedReader(new FileReader(fileDelete));
+                while ((line2 = br2.readLine()) != null) {
+                    if (line1.split("\\|")[0].equals(line2.split("\\|")[0])) {
+                        b = true;
+                        break;
+                    }
+                }
+                if (b == false) {
+                    bufferedWriter.write(line1);
+                    bufferedWriter.newLine();
+                    if (i++ == j) {
+                        j += 100;
+                        bufferedWriter.flush();
+                        ;
+                    }
+                }
+            }
+            br.close();
+            bufferedWriter.close();
+            fileSource.delete();
+            fileTemp.renameTo(new File("product.txt"));
+            br.close();
+            fileDelete.delete();
+            long time2 = System.nanoTime() - startTime2;
+            System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveUpdated() {
+        try {
+            long startTime2 = System.nanoTime();
+            File fileTemp = new File("updateTempPro.txt");
+            File fileSource = new File("product.txt");
+            File fileUpdate = new File("temp\\Update.txt");
+            BufferedReader br = new BufferedReader(new FileReader(fileSource));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileTemp));
+            BufferedReader br2 = null;
+            boolean b = false;
+            String line1 = null;
+            String line2 = null;
+            while ((line1 = br.readLine()) != null) {
+                b = false;
+                br2 = new BufferedReader(new FileReader(fileUpdate));
+                while ((line2 = br2.readLine()) != null) {
+                    if (line1.split("\\|")[0].equals(line2.split("\\|")[0])) {
+                        bufferedWriter.write(line2);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+                        b = true;
+                        break;
+                    }
+                }
+                if (b == false) {
+                    bufferedWriter.write(line1);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+                }
+            }
+            br.close();
+            bufferedWriter.close();
+            fileSource.delete();
+            fileTemp.renameTo(new File("product.txt"));
+            br2.close();
+            fileUpdate.delete();
+            long time2 = System.nanoTime() - startTime2;
+            System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveUpdate() {
         long startTime = System.nanoTime();
         FileWriter fileWriter = null;
         int bufferSize = 8 * 1024;
@@ -431,9 +518,9 @@ public class App<publlic> {
         }
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter, bufferSize);
         System.out.println(products.size());
-        for (int i = 1; i <= products.size(); i++) {
+        for (int i = 0; i < products.size(); i++) {
             try {
-                bufferedWriter.write(products.get(i).toString());
+                bufferedWriter.write(products.get(i));
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
             } catch (IOException e) {
@@ -466,6 +553,42 @@ public class App<publlic> {
         return dateFormat.format(date);
     }
 
+    private static void writeData () {
+        String[] lastProduct = products.get(products.size() - 1).split("\\|");
+        int lastId = Integer.parseInt(lastProduct[0]);
+        System.out.println("Product ID : " + (lastId + 1));
+        System.out.print("Product's Name : ");
+        String name = scanner.nextLine();
+        double price = Validator.readDouble("Product's Price : ");
+        int qty = Validator.readInt("Product's Qty : ", 1, 1_000_000);
+        /*@Seakthong add App.myTable*/
+        String shown[] = {"ID", "" + (lastId + 1), "Name", name, "Price", "" + price,"Qty",""+qty, "Imported Date", getDate()};
+        App.myTable(2, 20, "Result", shown, "tttttttttt");
+
+        char answer;
+        System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
+        answer = Character.toLowerCase(scanner.next().charAt(0));
+        if (answer == 'y')
+            products.add("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+        scanner.nextLine();
+
+    }
+
+    private static void writeData(String name, double price, int qty){
+        String[] lastProduct = products.get(products.size() - 1).split("\\|");
+        int lastId = Integer.parseInt(lastProduct[0]);
+        System.out.println("Product ID : " + (lastId + 1));
+
+        String shown[] = {"ID", "" + (lastId + 1), "Name", name, "Price", "" + price,"Qty",""+qty, "Imported Date", getDate()};
+        App.myTable(2, 20, "Result", shown, "tttttttttt");
+        char answer;
+        System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
+        answer = Character.toLowerCase(scanner.next().charAt(0));
+        if (answer == 'y')
+            products.add("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+        scanner.nextLine();
+    }
+
     static void backup () {
         long start = System.nanoTime();
         try (BufferedWriter backup = new BufferedWriter(new FileWriter("backup\\" + (new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date())) + ".bac"))) {
@@ -487,7 +610,7 @@ public class App<publlic> {
             e.printStackTrace();
         }
         long time = System.nanoTime() - start;
-        System.out.print("Backup successfully " + (double) time / 1000000 + " milliseconds");
+        System.out.println("Backup successfully " + (double) time / 1000000 + " milliseconds");
     }
 
     static void reStore () {
@@ -523,6 +646,19 @@ public class App<publlic> {
 
     }
 
+    private static void saveOption() {
+        if (containedUnsavedFiles()) {
+            if (Validator.readYesNo("Are you sure to add record? [Y/y] or [N/n]:") == 'n')
+                return;
+            if (new File("temp\\Insert.txt").exists())
+                saveInserted();
+            if (new File("temp\\Delete.txt").exists())
+                saveDeleted();
+            if (new File("temp\\Update.txt").exists())
+                saveUpdated();
+            System.out.println("\n\nAlready update!!!\n");
+        }
+    }
 
     public static void myTable ( int colNum, int colWidth, String[] Value, String shown){
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
@@ -536,6 +672,7 @@ public class App<publlic> {
         }
         System.out.println(tbl.render());
     }
+
     public static void myTable ( int colNum, int colWidth, String content, String[]Value, String shown){
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
     //        CellStyle cellStyle = new CellStyle();
