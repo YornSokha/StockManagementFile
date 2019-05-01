@@ -12,18 +12,17 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Scanner;
 
 public class App {
     private static final String FILE_NAME = "product.txt";
-    public static ArrayList<String> products = new ArrayList<>();
+    private static ArrayList<String> products = new ArrayList<>();
     private static Scanner scanner = new Scanner(System.in);
     private static int numOfRows = 5;
     private static int currentPage = 1;
-    private static Table table;
+    public static Table table;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         myGroupname();
 //        generateData();
         getData();
@@ -40,13 +39,13 @@ public class App {
                     readData();
                     break;
                 case "u":
-                    //RecordComplement.updateObjectById(10, products);
+                    Complementary.updateObjectById(Validator.readInt("Input ID : "), products, true);
                     break;
                 case "d": /*@Delete*/
                     //System.out.println("Delete");
-                    RecordComplement.deleteRecordById(Validator.readInt("Enter Number: ", 0, products.size() - 1), products);
-
-
+                    //RecordComplement.deleteRecordById(Validator.readInt("Enter Number: ", 0, products.size() - 1), products);
+                    delete();
+                    break;
                 case "f":
                     goFirst();
                     break;
@@ -60,7 +59,8 @@ public class App {
                     goLast();
                     break;
                 case "s":
-                    System.out.println("search");
+                    System.out.print("Name :");
+                    System.out.println(Complementary.findObjectByCharacterInName(scanner.nextLine(), products));
                     break;
                 case "g":
                     gotoPage(Validator.readInt("Input page number(1-" + getTotalPage() + ") : ", 1, getTotalPage()));
@@ -88,6 +88,17 @@ public class App {
                 /*@Seakthong*/
             }
         } while (true);
+    }
+
+    private static void delete() {
+        String product = Complementary.updateObjectById(Validator.readInt("Input ID : "), products, false);
+        if(product != null)
+            reCalculateCurrentPage();
+    }
+
+    private static void reCalculateCurrentPage() {
+        if (currentPage > getTotalPage())
+            currentPage = 1;
     }
 
     private static void help() {
@@ -148,9 +159,9 @@ public class App {
                 }
 
             } else if (str.toLowerCase().charAt(1) == 'g') {
-                int num = 0;
-                for (int i = 0; i < str.length(); i++) {
-                    if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                int num = Validator.getNumberFromShortcut(str);
+                for (int i = 2; i < str.length(); i++) {
+                    num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
                 }
                 gotoPage(num);
             }
@@ -208,23 +219,26 @@ public class App {
                 tableReadData.addCell("Imported Date");
                 tableReadData.addCell(idPro[3]);
                 System.out.println(tableReadData.render());
+                return;
             }
         }
+        System.out.println("Product not found!");
     }
 
-    private static void generateData() {
-//        new Thread(() -> {
-//            String message = "Please wait....";
-//            int i = 0;
-//            while (i < message.length()) {
-//                System.out.print(message.charAt(i++));
-//                try {
-//                    Thread.sleep(350);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }).start();
+    private static void generateData() throws InterruptedException {
+        Thread.sleep(1000);
+        new Thread(() -> {
+            String message = "Please wait....";
+            int i = 0;
+            while (i < message.length()) {
+                System.out.print(message.charAt(i++));
+                try {
+                    Thread.sleep(350);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         long startTime = System.nanoTime();
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILE_NAME, false))) {
             int flush = 0;
@@ -249,8 +263,7 @@ public class App {
     private static void setRow() {
         System.out.print("Number of row : ");
         numOfRows = scanner.nextInt();
-        if (currentPage > getTotalPage())
-            currentPage = 1;
+        reCalculateCurrentPage();
         scanner.nextLine();
     }
 
@@ -272,10 +285,7 @@ public class App {
         currentPage = pageNum;
         int start = numOfRows * (currentPage - 1);
         if (pageNum == getTotalPage()) {
-            int remainRows = products.size() - start;
-            for (int i = start; i < start + remainRows; i++) {
-                addRowTable(products.get(i));
-            }
+            goLast();
         } else {
             for (int i = start; i < start + numOfRows; i++) {
                 addRowTable(products.get(i));
@@ -293,7 +303,7 @@ public class App {
     private static void goFirst() {
         currentPage = 1;
         initTable();
-        for (int i = 1; i <= numOfRows; i++) {
+        for (int i = 0; i < numOfRows; i++) {
             addRowTable(products.get(i));
         }
         System.out.println(table.render());
@@ -306,10 +316,15 @@ public class App {
         System.out.println();
     }
 
+    private static int remainRowInLastPage() {
+        return products.size() % numOfRows;
+    }
+
     private static void goLast() {
         initTable();
         currentPage = getTotalPage();
-        for (int i = products.size() - (numOfRows - 1); i < products.size(); i++) {
+        int start = numOfRows * (currentPage - 1);
+        for (int i = start; i < products.size(); i++) {
             addRowTable(products.get(i));
         }
         System.out.println(table.render());
@@ -465,4 +480,5 @@ public class App {
 
                 );
     }
+
 }
