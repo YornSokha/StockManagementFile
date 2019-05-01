@@ -1,9 +1,11 @@
 package main;
 
+import com.sun.rowset.internal.Row;
 import controller.Connection;
 import helper.Validator;
 import model.Product;
 import org.nocrala.tools.texttablefmt.BorderStyle;
+import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
@@ -15,7 +17,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class App {
+public class App<publlic> {
     private static final String FILE_NAME = "product.txt";
     public static ArrayList<String> products = new ArrayList<>();
     private static Scanner scanner = new Scanner(System.in);
@@ -91,44 +93,50 @@ public class App {
     }
 
     private static void help() {
-        System.out.println("+-----------------------------------------------------------------------------+");
-        System.out.println("! 1.    press    * : Display all record of products                           !");
-        System.out.println("! 2.    press    w : Add new products                                         !");
-        System.out.println("!       press    w : #proname-unitprice-qty : sortcut for add new product     !");
-        System.out.println("! 3.    press    r : read Content any content                                 !");
-        System.out.println("!       press    r#proId :  sortcut for read product by Id                    !");
-        System.out.println("! 4.    press    u : Update Data                                              !");
-        System.out.println("! 5.    press    d : Delete Data                                              !");
-        System.out.println("!       press    d#proId :  sortcut for read product by Id                    !");
-        System.out.println("! 6.    press    f : Display First Page                                       !");
-        System.out.println("! 7.    press    p : Display Previous Page                                    !");
-        System.out.println("! 8.    press    n : Display Next Page                                        !");
-        System.out.println("! 9.    press    l : Display Last Page                                        !");
-        System.out.println("! 10.   press    s : Search product by name                                   !");
-        System.out.println("! 11.   press    sa : Save record to file                                     !");
-        System.out.println("! 12.   press    ba : Backup data                                             !");
-        System.out.println("! 13.   press    re : Restore data                                            !");
-        System.out.println("! 14.   press    h : Help                                                     !");
-        System.out.println("+-----------------------------------------------------------------------------+");
+        String help[]={
+
+                "1.    press    * : Display all record of products",
+                "2.    press    w : Add new products",
+                "      press    w : #proname-unitprice-qty : sortcut for add new product",
+                "3.    press    r : read Content any content",
+                "      press    r#proId :  sortcut for read product by Id",
+                "4.    press    u : Update Data",
+                "5.    press    d : Delete Data",
+                "      press    d#proId :  sortcut for read product by Id",
+                "6.    press    f : Display First Page",
+                "7.    press    p : Display Previous Page",
+                "8.    press    n : Display Next Page",
+                "9.    press    l : Display Last Page",
+                "10.   press    s : Search product by name",
+                "11.   press    g : Goto a specific page",
+                "11.   press    sa : Save record to file",
+                "12.   press    ba : Backup data",
+                "13.   press    re : Restore data",
+                "14.   press    h : Help"
+
+    };
+        /*@Seakthong App.myTable*/
+        App.myTable(1, 90,"Help", help,"......tttt");
 
     }
 
 
     private static String printMenu() {
-        BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
-        Table tableMenu = new Table(9, borderStyle, new ShownBorders("......tttt"));
+//        BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
+//        Table tableMenu = new Table(9, borderStyle, new ShownBorders("......tttt"));
         String[] menu = {"*)Display", "W)rite", "R)ead",
                 "U)pdate", "D)elete", "F)irst", "P)revious",
                 "N)ext", "L)ast", "S)earch", "G)oto", "Se)t",
                 "Sa)ve", "Ba)ck up", "Re)store", "H)elp", "E)xit"};
-        for (int i = 0; i < 9; i++) {
-            tableMenu.setColumnWidth(i, 11, 11);
-        }
-        for (String s : menu) {
+        App.myTable(9, 15, "Menu", menu,"tttttttttt");
+//        for (int i = 0; i < 9; i++) {
+//            tableMenu.setColumnWidth(i, 11, 11);
+//        }
+//        for (String s : menu) {
+////            tableMenu.addCell(s);
 //            tableMenu.addCell(s);
-            tableMenu.addCell(s);
-        }
-        System.out.println(tableMenu.render());
+//        }
+//        System.out.println(tableMenu.render());
         System.out.print("Command-->");
 //        String str =scanner.nextLine().toLowerCase();
         String str = scanner.nextLine();
@@ -178,13 +186,16 @@ public class App {
     }
 
     private static int selectChoice() {
-        System.out.println("1. Set row");
+
+        String mySearchChoice[] ={"1. Set row","2. First","3. previous","4. Next","5. Last","6. Goto","7. Display"};
+        /*System.out.println("1. Set row");
         System.out.println("2. First");
         System.out.println("3. previous");
         System.out.println("4. Next");
         System.out.println("5. Last");
         System.out.println("6. Goto");
-        System.out.println("7. Display");
+        System.out.println("7. Display");*/
+
         int choice = Validator.readInt("Please select a choice :");
         return choice;
     }
@@ -203,17 +214,7 @@ public class App {
             String[] idPro = product.split("\\|");
             if (id == Integer.parseInt(idPro[0])) {
                 String shown[]={"ID",idPro[0], "Name",idPro[1],"Price",idPro[2],"Imported Date",idPro[3]};
-                App.myTable(2,shown,"tttttttttt");
-//                Table tableReadData = new Table(2);
-//                tableReadData.addCell("ID");
-//                tableReadData.addCell(idPro[0]);
-//                tableReadData.addCell("Name");
-//                tableReadData.addCell(idPro[1]);
-//                tableReadData.addCell("Price");
-//                tableReadData.addCell(idPro[2]);
-//                tableReadData.addCell("Imported Date");
-//                tableReadData.addCell(idPro[3]);
-//                System.out.println(tableReadData.render());
+                App.myTable(2,20, "Read" ,shown,"tttttttttt");
             }
         }
     }
@@ -370,18 +371,10 @@ public class App {
         String name = scanner.nextLine();
         double price = Validator.readDouble("Product's Price : ");
         int qty = Validator.readInt("Product's Qty : ", 1, 1_000_000);
+        /*@Seakthong add App.myTable*/
         String shown[]={"ID","" + (lastId + 1), "Name",name,"Price","" + price,"Imported Date",getDate()};
-        App.myTable(2,shown,"tttttttttt");
-        /*Table tableWriteData = new Table(2);
-        tableWriteData.addCell("ID");
-        tableWriteData.addCell("" + (lastId + 1));
-        tableWriteData.addCell("Name");
-        tableWriteData.addCell(name);
-        tableWriteData.addCell("Price");
-        tableWriteData.addCell("" + price);
-        tableWriteData.addCell("Imported Date");
-        tableWriteData.addCell(getDate());
-        System.out.println(tableWriteData.render());*/
+        App.myTable(2, 20, "Result",shown,"tttttttttt");
+
         char answer;
         System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
         answer = Character.toLowerCase(scanner.next().charAt(0));
@@ -448,14 +441,34 @@ public class App {
 
     }
 
-    public static void myTable(int colNum, String[] Value, String shown){
+    public static void myTable(int colNum, int colWidth, String[] Value, String shown){
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
         Table tbl = new Table(colNum, borderStyle,new ShownBorders(shown));
+//        tbl.addCell(content, CellStyle.HorizontalAlign.center,colNum);
+        for(int i=0; i<colNum; i++) {
+            tbl.setColumnWidth(i, colWidth, colWidth+10);
+        }
         for(int i = 0; i<Value.length; i++){
             tbl.addCell(Value[i]);
         }
         System.out.println(tbl.render());
     }
+    public static void myTable(int colNum, int colWidth, String content, String[] Value, String shown){
+        BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
+//        CellStyle cellStyle = new CellStyle();
+        Table tbl = new Table(colNum, borderStyle,new ShownBorders(shown));
+        tbl.addCell(content, new CellStyle(CellStyle.HorizontalAlign.center) ,colNum);
+        for(int i=0; i<colNum; i++) {
+            tbl.setColumnWidth(i, colWidth, colWidth+10);
+        }
+        for(int i = 0; i<Value.length; i++){
+            tbl.addCell(Value[i]);
+        }
+        System.out.println(tbl.render());
+    }
+    /*publlic static void myTable(int colNum){
+        Row row = new row();
+    }*/
 
     static void myGroupname(){
         System.out.println
