@@ -57,11 +57,12 @@ public class Complementary extends Thread {
         }
         System.out.println(tbl.render());
     }
+
     ///<<< first index for array & sec for adding many string as varage
     public static String[] combineArray(String []str,String ...str2 ){
         int number = str.length+str2.length;
         int i=0;
-        String []stringResult = new String()[number];
+        String []stringResult = new String[number];
         for (String st:str2) {
             stringResult[i] = st;
             i++;
@@ -73,10 +74,10 @@ public class Complementary extends Thread {
         return stringResult;
     }
 
-    public static boolean searcher(String character, ArrayList<String> products){
+    public static boolean searcher(String character, ArrayList<String> products,int recordAmount ){
         ArrayList arrayList = findObjectByCharacterInName(character,products);
         if (arrayList.size()>0){
-            paginator(arrayList,10);
+            paginator(arrayList,recordAmount);
             return true;
         }else{
             return false;
@@ -106,7 +107,6 @@ public class Complementary extends Thread {
         productSize = products.size() + 10 - (productSize==0? 10 : productSize);//បង្កត់
         //>>>> end of file
 //        System.out.println(productSize);
-
         if(recordAmount < 5 ){
 
         }else{
@@ -141,13 +141,26 @@ public class Complementary extends Thread {
                         break;
 
                 }
+                int j = 0;
+                String showData[]= new String[recordAmount];;
                 for(int i = (recordAmount*page ) - recordAmount ;i < recordAmount*page;i++){
+
                     try {
-                        System.out.println(products.get(i));
+//                        System.out.println(products.get(i));
+
+                        showData[j] = products.get(i);
+
+//                        System.out.println(showData[j]);
+                        j++;
                     }catch (IndexOutOfBoundsException e){
                         break;
                     }
                 }
+//                System.out.println(showData[2]);
+//                System.out.println(showData[3]);
+                tabler(showData);
+
+
             }//while loop
 
 
@@ -176,8 +189,8 @@ public class Complementary extends Thread {
 
                 if (Validator.readYesNo("press 'y' to delete and 'n' to cancel : ") == 'y') {
                     productString = products.remove(index);
-                    System.out.println(productString);
-                    System.out.println("successfully deleted");//<<<<< move to table
+                    tabler(productString);
+                    tabler("successfully deleted");
                 }
 
             }
@@ -212,7 +225,7 @@ public class Complementary extends Thread {
             }
         }
 
-        System.out.println("not found");//<<<<< move to table
+        tabler("not found");
         return -1;
     }
 

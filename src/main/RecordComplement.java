@@ -124,17 +124,18 @@ public class RecordComplement {
                         loopStatus = false;
                         break;
                     default:
-                        System.out.println("input mistake");//<<<<< move to table
+                        Complementary.tabler("input mistake");
                         break;
                 }
-            System.out.println(product);//<<<<< move to table
-            System.out.println(paramProduct);//<<<<< move to table
+            Complementary.tabler("Updated Info : "+ product.toString() );
+            Complementary.tabler("Previous Info : "+paramProduct.toString());
         }while(loopStatus);
 
 
 
         while (true){
-            System.out.println("press 'y' to update and 'n' to cancel");//<<<<< move to table
+
+            Complementary.tabler("press 'y' to update and 'n' to cancel");
             char c = new Scanner(System.in).next().charAt(0);
             if (c == 'y' || c == 'Y'){
                 return product.toString();

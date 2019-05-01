@@ -68,7 +68,11 @@ public class App<publlic> {
                 case "s":
                     System.out.println("search");
                     System.out.print("Name :");
-                    System.out.println(Complementary.searcher(scanner.nextLine(), products));
+                    if(Complementary.searcher(scanner.nextLine(), products,10)==true){
+
+                    }else {
+                        Complementary.tabler("Data Not Found");
+                    }
                     break;
                 case "g":
                     gotoPage(Validator.readInt("Input page number(1-" + getTotalPage() + ") : ", 1, getTotalPage()));
