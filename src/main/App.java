@@ -45,7 +45,6 @@ public class App<publlic> {
                     readData();
                     break;
                 case "u":
-//                    Complementary.updateObjectById(Validator.readInt("Input ID : "), products, true);
 
                     break;
                 case "d": /*@Delete*/
