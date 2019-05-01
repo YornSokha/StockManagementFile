@@ -444,6 +444,20 @@ public class App<publlic> {
 
         long time = System.nanoTime() - startTime;
         System.out.println("Read using " + (double) time / 1000000 + " milliseconds");
+        deleteTempFiles();
+    }
+
+    private static void deleteTempFiles() {
+        if(new File("temp\\Update.txt").exists())
+            new File("temp\\Update.txt").delete();
+
+        if(new File("temp\\Delete.txt").exists())
+            new File("temp\\Delete.txt").delete();
+
+        if(new File("temp\\Insert.txt").exists()) {
+            new File("temp\\Insert.txt").delete();
+        }
+
     }
 
     private static String getDate () {
