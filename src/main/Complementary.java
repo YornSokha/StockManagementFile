@@ -191,19 +191,13 @@ public class Complementary extends Thread {
         int index = findObjectToUpdate(number, products);
         String productString = null;
         if (index == -1) {
-
             return null;
-
         } else {
-
             if (booFeature) {//update record
-
                 Product product = convertFromStringToProduct(subString(products.get(index)));
                 productString = RecordComplement.insertRecord(product);
                 products.set(index, productString);
-
             } else {//delete record
-
                 if (Validator.readYesNo("press 'y' to delete and 'n' to cancel : ") == 'y') {
                     productString = products.remove(index);
                     tabler(productString);
@@ -211,12 +205,10 @@ public class Complementary extends Thread {
                 }else{
                     tabler("delete canceled");
                 }
-
             }
-            return productString;
-            //>>>>> data found
-        }
 
+            return productString;
+        }
     }
 
     private static Product convertFromStringToProduct(String[] str) {
