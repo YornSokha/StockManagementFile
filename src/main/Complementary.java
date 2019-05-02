@@ -41,7 +41,7 @@ public class Complementary extends Thread {
     public void run() {
 
     }
-
+    //table usable version
     public static void tabler(String ...str){//<<<< for adding String Array
         int number = str.length;
         Table tbl = new Table(number, BorderStyle.UNICODE_DOUBLE_BOX, ShownBorders.ALL);
@@ -58,6 +58,7 @@ public class Complementary extends Thread {
         System.out.println(tbl.render());
     }
 
+    //table previous version
     public static void tabler(int j,String ...str){//<<<< for adding String Array
         int number = str.length;
         Table tbl = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX, ShownBorders.ALL);
@@ -91,6 +92,7 @@ public class Complementary extends Thread {
         return stringResult;
     }
 
+    // function to be called in main
     public static boolean searcher(String character, ArrayList<String> products,int recordAmount ){
         ArrayList arrayList = findObjectByCharacterInName(character,products);
         if (arrayList.size()>0){
@@ -101,6 +103,7 @@ public class Complementary extends Thread {
         }
     }
 
+    //sub function searcher
     public static ArrayList findObjectByCharacterInName(String character, ArrayList<String> products) {
 
         arrayList = new ArrayList();
@@ -117,6 +120,7 @@ public class Complementary extends Thread {
         return arrayList;
     }
 
+    //sub function searcher
     private static void paginator(ArrayList<String> products, int recordAmount) {
 
         int productSize = products.size() % 10;
@@ -164,31 +168,16 @@ public class Complementary extends Thread {
                     break;
 
                 }
-                int j = 0;
-                String showData[] = new String[recordAmount];
-                ;
-                for (int i = (recordAmount * page) - recordAmount; i < recordAmount * page; i++) {
-
-                    try {
-                        showData[j] = products.get(i);
-                        j++;
-                    } catch (IndexOutOfBoundsException e) {
-                        break;
-                    }
-                }
-                App.myTable(15, recordAmount, showData, true);  //show search string result @Seakthong@Search Table
-                System.out.println("Page : " + page + "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tRecord : " + products.size());
-
             }//for loop
-
+                App.myTable(15, recordAmount, showData, true);  //show search string result @Seakthong@Search Table
+                System.out.println("Page : " + page + "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tRecords : " + products.size());
 
         }//while loop
 
 
-    }
+    }//end of paginator
 
-    //<<<<<<main call update or delete determine by boolean
-    //<<<<<< UI improver
+    //<<<<<<main called
     public static String updateObjectById(int number, ArrayList<String> products, boolean booFeature) {
         int index = findObjectToUpdate(number, products);
         String productString = null;
@@ -225,10 +214,12 @@ public class Complementary extends Thread {
         }
     }
 
+    //
     private static Product convertFromStringToProduct(String[] str) {
         return new Product(Integer.parseInt(str[0]), str[1], Double.parseDouble(str[2]), Integer.parseInt(str[3]), str[4]);
     }
 
+    //it is used in both delete update -1 = not found
     private static int findObjectToUpdate(Integer id, ArrayList<String> products) {
 
         for (int i = 0; i < products.size(); i++) {
@@ -245,6 +236,7 @@ public class Complementary extends Thread {
     }
 
     public static String[] subString(String str) {
+
         int firstIndex = str.indexOf('|');
         String s1 = str.substring(0, firstIndex);
 
