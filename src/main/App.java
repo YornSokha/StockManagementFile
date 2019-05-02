@@ -65,7 +65,7 @@ public class App<publlic> {
                 case "s":
                     Complementary.tabler("search");
                     System.out.print("Name :");
-                    if(Complementary.searcher(scanner.nextLine(), products,10)==true){
+                    if(Complementary.searcher(scanner.nextLine(), products,numOfRows)==true){
                     }else {
                         Complementary.tabler("Data Not Found");
                     }
@@ -693,7 +693,7 @@ public class App<publlic> {
         }
     }
 
-    public static void myTable(int colWidth, String[] fullValues){
+    public static void myTable(int colWidth, int recordAmount, String[] fullValues,boolean me){
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
         Table tbl = new Table(5, borderStyle, new ShownBorders("tttttttttt"));
         String contents[]={"ID","Name","Price","Qty","Imported Date"};
@@ -701,7 +701,7 @@ public class App<publlic> {
             tbl.setColumnWidth(i, colWidth, colWidth + 10);
             tbl.addCell(contents[i]);
         }
-            for(int i=0; i< 5; i++){
+            for(int i=0; i< recordAmount; i++){
                 String[] myValues = Complementary.subString(fullValues[i]);
                 for(int j=0; j<5; j++) {
                     tbl.addCell(myValues[j]);

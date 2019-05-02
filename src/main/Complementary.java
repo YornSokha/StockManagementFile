@@ -115,8 +115,6 @@ public class Complementary extends Thread {
     }
 
     private static void paginator(ArrayList<String> products, int recordAmount){
-
-        recordAmount = 5;
         int productSize = products.size()%10;
         productSize = products.size() + 10 - (productSize==0? 10 : productSize);//បង្កត់
         //>>>> end of file
@@ -166,7 +164,7 @@ public class Complementary extends Thread {
                         break;
                     }
                 }
-                App.myTable(15,showData);  //show search string result @Seakthong@Search Table
+                App.myTable(15, recordAmount,showData,true);  //show search string result @Seakthong@Search Table
             }//while loop
 
 
