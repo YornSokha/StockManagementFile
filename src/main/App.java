@@ -79,7 +79,7 @@ public class App<publlic> {
                     setRow();
                     break;
                 case "ba":
-                    backup();
+                        backup();
                     break;
                 case "sa":
                     System.out.println("Save");
@@ -597,6 +597,11 @@ public class App<publlic> {
         System.out.println("Product ID : " + (lastId + 1));
         System.out.print("Product's Name : ");
         String name = scanner.nextLine();
+         if(RecordComplement.stringHasChar("\\|",name)){
+            System.out.println("Mistake");
+            writeData();
+            return;
+        }
         double price = Validator.readDouble("Product's Price : ");
         int qty = Validator.readInt("Product's Qty : ", 1, 1_000_000);
         /*@Seakthong add App.myTable*/
@@ -606,13 +611,29 @@ public class App<publlic> {
         char answer;
         System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
         answer = Character.toLowerCase(scanner.next().charAt(0));
-        if (answer == 'y')
-            products.add("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+        if (answer == 'y'){
+            String product = ("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+            products.add(product);
+            try {
+                BufferedWriter insertFile = new BufferedWriter(new FileWriter("temp\\Insert.txt", true));
+                insertFile.write(product);
+                insertFile.newLine();
+                insertFile.flush();
+                insertFile.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         scanner.nextLine();
 
     }
 
     private static void writeData(String name, double price, int qty){
+        if(RecordComplement.stringHasChar("\\|",name)){
+            System.err.println("Mistake");
+            return;
+        }
+
         String[] lastProduct = products.get(products.size() - 1).split("\\|");
         int lastId = Integer.parseInt(lastProduct[0]);
         System.out.println("Product ID : " + (lastId + 1));
@@ -639,8 +660,31 @@ public class App<publlic> {
         scanner.nextLine();
     }
 
+    public static void mkDir(String fileName){
+
+        File file = new File(fileName);
+
+// if the directory does not exist, create it
+        if (!file.exists()) {
+            boolean result = false;
+
+            try{
+                file.mkdir();
+                result = true;
+            }
+            catch(SecurityException se){
+                System.err.println("Folder is not created");
+            }
+            if(result) {
+                System.out.println("Folder was created");
+            }
+        }//end of if
+
+    }
+
     static void backup () {
         long start = System.nanoTime();
+        mkDir("backup");
         try (BufferedWriter backup = new BufferedWriter(new FileWriter("backup\\" + (new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date())) + ".bac"))) {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(FILE_NAME));
             String thisLine;
@@ -764,6 +808,7 @@ public class App<publlic> {
     }
 
     static void myGroupname() {
+        mkDir("temp");
         System.out.println("\n" +
                 "                                                      ______         ________         ______          ______         __    __                                                         \n" +
                 "                                                     /      \\       |        \\       /      \\        /      \\       |  \\  /  \\                                                        \n" +
