@@ -67,16 +67,6 @@ public class RecordComplement {
     }
 
 
-    public static Boolean updateObjectById(int number,ArrayList<Product> products){//<<<reference to products ??
-        if(products.get(number) == null ){
-            System.out.println("Data not found");
-            return false;
-        }else{
-            products.add(insertRecord(products.get(number)));
-            return true;
-        }
-    }
-
     public static void deleteRecordById(int number , ArrayList<String> products){
         char c;
         if(products.get(number)== null){
@@ -103,56 +93,76 @@ public class RecordComplement {
 
 //    private String myTable(){}
 
-    private static Product insertRecord(Product paramProduct){
+    public static String insertRecord(Product paramProduct){
         Product product = new Product();
         passByValue(product,paramProduct);
         int orderNum;
         boolean loopStatus = true;
-        String InsertMenu[] ={"1./Update All","2./Name","3./Price|","4./Qty","5./Exit"};
-        Table tbl = new Table(5,BorderStyle.UNICODE_DOUBLE_BOX, ShownBorders.ALL);
-        for(int i = 0; i<5; i++){
-            tbl.addCell(InsertMenu[i]);
-        }
-        System.out.println(tbl.render());
-        do{
-            orderNum = Validator.readInt("Option :");
+        boolean isUpdated = false;
+         do{
+             String InsertMenu[] ={"1.Update All","2.Name","3.Price","4.Qty","5.Exit"};
+             Table tbl = new Table(5,BorderStyle.UNICODE_DOUBLE_BOX, ShownBorders.ALL);
+             App.myTable(5, 10 ,InsertMenu,"tttttttttt");
+
+             orderNum = Validator.readInt("Option :");
                 switch (orderNum) {
                     case 1:
                         product = insertNewRecord();
                         product.setId(paramProduct.getId());
                         product.setImportedDate(paramProduct.getImportedDate());
+                        isUpdated =true;
                         break;
                     case 2:
                         System.out.print("Name:"); String name = new Scanner(System.in).nextLine();
                         product.setName(name);
+                        isUpdated = true;
                         break;
                     case 3:
 
                         product.setUnitPrice(Validator.readDouble("Price :"));
+                        isUpdated = true;
                         break;
                     case 4:
                         product.setStockQty(Validator.readInt("QTY :"));
+                        isUpdated = true;
                         break;
                     case 5:
                         loopStatus = false;
                         break;
                     default:
-                        System.out.println("input mistake");
+                        Complementary.tabler("Input Mistake");
                         break;
                 }
-            System.out.println(product);//??<<<
-            System.out.println(paramProduct);//??<<<
+             if(isUpdated==true) {
+//                 Complementary.tabler("Updated Info : " + product.toString()) ;
+                 String checkInfo[] = Complementary.subString(product.toString());
+                 String PreviousInfo[] = Complementary.subString(paramProduct.toString());
+                 String addStringTable[]= {
+                         " ","Old","New",
+                         "ID",PreviousInfo[0],checkInfo[0],
+                         "Name",PreviousInfo[1],checkInfo[1],
+                         "Price",PreviousInfo[2],checkInfo[2],
+                         "Qty",PreviousInfo[3],checkInfo[3]
+                         ,"Imorted Date",PreviousInfo[4],checkInfo[4]
+                 };
+                 App.myTable(3,19,"Chceck",addStringTable,"tttttttttt");
+
+//                 Complementary.tabler("Previous Info : " + paramProduct.toString());
+             }
         }while(loopStatus);
 
-
+        if(isUpdated==false){
+            return paramProduct.toString();
+        }
 
         while (true){
-            System.out.println("press 'y' to update and 'n' to cancel");
+
+            Complementary.tabler("press 'y' to update and 'n' to cancel");
             char c = new Scanner(System.in).next().charAt(0);
-            if (c == 'y' ){
-                return product;
-            }else if(c == 'n'){
-                return paramProduct;
+            if (c == 'y' || c == 'Y'){
+                return product.toString();
+            }else if(c == 'n' || c == 'N'){
+                return paramProduct.toString();
             }else{
                 continue;
             }

@@ -1,9 +1,12 @@
 package main;
 
+import com.sun.rowset.internal.Row;
 import controller.Connection;
 import helper.Validator;
+import jdk.internal.org.objectweb.asm.tree.analysis.Value;
 import model.Product;
 import org.nocrala.tools.texttablefmt.BorderStyle;
+import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
@@ -15,7 +18,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class App {
+public class App<publlic> {
     private static final String FILE_NAME = "product.txt";
     public static ArrayList<String> products = new ArrayList<>();
     private static Scanner scanner = new Scanner(System.in);
@@ -23,14 +26,15 @@ public class App {
     private static int currentPage = 1;
     private static Table table;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         myGroupname();
 //        generateData();
         getData();
 
-        do{
+        do {
             String key = printMenu();
-            switch (key) {
+//            key.toLowerCase();
+            switch (key.toLowerCase()) {
                 case "*":
                     gotoPage(currentPage);
                     break;
@@ -41,12 +45,10 @@ public class App {
                     readData();
                     break;
                 case "u":
-                    //RecordComplement.updateObjectById(10, products);
+                    update();
                     break;
                 case "d": /*@Delete*/
-                    //System.out.println("Delete");
-                    RecordComplement.deleteRecordById(Validator.readInt("Enter Number: ", 0, products.size() - 1), products);
-
+                    delete();
                     break;
                 case "f":
                     goFirst();
@@ -61,7 +63,12 @@ public class App {
                     goLast();
                     break;
                 case "s":
-                    System.out.println("search");
+                    Complementary.tabler("search");
+                    System.out.print("Name :");
+                    if(Complementary.searcher(scanner.nextLine(), products,10)==true){
+                    }else {
+                        Complementary.tabler("Data Not Found");
+                    }
                     break;
                 case "g":
                     gotoPage(Validator.readInt("Input page number(1-" + getTotalPage() + ") : ", 1, getTotalPage()));
@@ -84,112 +91,197 @@ public class App {
                 case "e":
                     System.exit(0);
                     break;
+                case "a":
+                    aboutus();
+                    break;
+                default:
+                    usingSpecialExpression(key);
+                    break;
 
                 /*@Seakthong*/
             }
         } while (true);
     }
 
-    private static void help() {
-        System.out.println("+-----------------------------------------------------------------------------+");
-        System.out.println("! 1.    press    * : Display all record of products                           !");
-        System.out.println("! 2.    press    w : Add new products                                         !");
-        System.out.println("!       press    w : #proname-unitprice-qty : sortcut for add new product     !");
-        System.out.println("! 3.    press    r : read Content any content                                 !");
-        System.out.println("!       press    r#proId :  sortcut for read product by Id                    !");
-        System.out.println("! 4.    press    u : Update Data                                              !");
-        System.out.println("! 5.    press    d : Delete Data                                              !");
-        System.out.println("!       press    d#proId :  sortcut for read product by Id                    !");
-        System.out.println("! 6.    press    f : Display First Page                                       !");
-        System.out.println("! 7.    press    p : Display Previous Page                                    !");
-        System.out.println("! 8.    press    n : Display Next Page                                        !");
-        System.out.println("! 9.    press    l : Display Last Page                                        !");
-        System.out.println("! 10.   press    s : Search product by name                                   !");
-        System.out.println("! 11.   press    sa : Save record to file                                     !");
-        System.out.println("! 12.   press    ba : Backup data                                             !");
-        System.out.println("! 13.   press    re : Restore data                                            !");
-        System.out.println("! 14.   press    h : Help                                                     !");
-        System.out.println("+-----------------------------------------------------------------------------+");
+    private static void usingSpecialExpression(String str) {
+        int num;
+        if (str.toLowerCase().charAt(0) == '#') {
+            switch (str.toLowerCase().charAt(1)){
+                //read write delete search
+                case 'g': //@Goto_Shorthand
+                    /* #g100*/ //go to page 100
+                    num = 0;
+                    try {
+                        for (int i = 0; i < str.length(); i++) {
+                            if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                        }
+                        gotoPage(num);
+                    }catch (NumberFormatException nfe){
+                        System.err.println("Syntax: #gNumber\nExample #g100 for goto page 100");
+                    }
+                    break;
+                case 'd'://@Delete_Shorthand
+                    /* #d100 */  //Delete id 100
+                    num = 0;
+                    try {
+                        for (int i = 0; i < str.length(); i++) {
+                            if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                        }
+                        delete(num);
+                    }catch (NumberFormatException nfe){
+                        System.err.println("Syntax: #dNumber\nExample #d100 for delete pro_id 100");
+                    }
+                    break;
+                case 'u'://@Update_Shorthand
+                    /* #u100*/
+                    num = 0;
+                    try {
+                        for (int i = 0; i < str.length(); i++) {
+                            if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                        }
+                        Complementary.updateObjectById(num, products, true);
+                    }catch (NumberFormatException nfe){
+                        System.err.println("Syntax: #uNumber\nExample #u100 for update pro_id 100");
+                    }
+
+                    break;
+                case 'w'://@Write_Shorthand
+                    /* #w/Items/100.5/10 */ //write data name: Items /price: 100.5 /qty: 10
+                    String [] myString = subStringWrite(str);
+                    if(myString[0] == "Wrong") return;
+                    try {
+                        writeData(myString[1], Double.valueOf(myString[2]), Integer.valueOf(myString[3]));
+                    }
+                    catch (NumberFormatException e){
+                        System.err.println("Syntax: #w/ProductName/Price/Quantity\nExample #w/Reach/1.0/1");
+                    }
+                    break;
+                case 'r'://@Read_Shorthand
+                    /* #r100 */ //read data id 100
+                    num = 0;
+                    try {
+                        for (int i = 0; i < str.length(); i++) {
+                            if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                        }
+                        readData(num);
+                    }
+                    catch(NumberFormatException nfe){
+                        System.err.println("Syntax: #rNumber \nExample #r100 for show pro_id 100");
+                    }
+                    break;
+            }
+        }
+    }
+
+    public static String[] subStringWrite(String str) {
+        try {
+            int firstIndex = str.indexOf('/');
+            String s0 = str.substring(0, firstIndex);
+
+            int second = str.indexOf("/", firstIndex + 1);
+            String s1 = str.substring(firstIndex + 1, second);
+
+            int third = str.indexOf("/", second + 1);
+            String s2 = str.substring(second + 1, third);
+
+            String s3 = str.substring(third + 1);
+            return new String[]{s0, s1, s2, s3};
+        }catch(IndexOutOfBoundsException e){return new String[]{"Wrong"};}
 
     }
 
+    private static void update() {
+        String product = Complementary.updateObjectById(Validator.readInt("Input ID : "), products, true);
+        if (product != null)
+            try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("temp\\Update.txt"))) {
+                bufferedWriter.write(product);
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+            } catch (IOException e) {
+            }
+    }
 
-    private static String printMenu() {
-        BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
-        Table tableMenu = new Table(9, borderStyle, new ShownBorders("......tttt"));
+    private static void delete() {
+        String product = Complementary.updateObjectById(Validator.readInt("Input ID : "), products, false);
+        if(product != null)
+            reCalculateCurrentPage();
+    }
+
+    private static void delete(int id){
+        String product = Complementary.updateObjectById(id, products, false);
+        if(product != null)
+            reCalculateCurrentPage();
+    }
+
+    private static void reCalculateCurrentPage() {
+        if (currentPage > getTotalPage())
+            currentPage = 1;
+    }
+    /*Done*/
+    private static void help() {
+        String Help[] = {
+
+                "1.    press    *  : Display all record of products",
+                "2.    press    w  : Add new products",
+                "      press         #w/proname/unitprice/qty : sortcut for add new product",
+                "3.    press    r  : read Content any content",
+                "      press         #rID:  sortcut for read product by Id",
+                "4.    press    u  : Update Data",
+                "      press         #uID",
+                "5.    press    d  : Delete Data",
+                "      press         #dID :  sortcut for read product by Id",
+                "6.    press    f  : Display First Page",
+                "7.    press    p  : Display Previous Page",
+                "8.    press    n  : Display Next Page",
+                "9.    press    l  : Display Last Page",
+                "10.   press    s  : Search product by name",
+                "11.   press    g  : Goto a specific page",
+                "      press         #gPageNum",
+                "11.   press    sa : Save record to file",
+                "12.   press    ba : Backup data",
+                "13.   press    re : Restore data",
+                "14.   press    h  : Help",
+                "15.   press    a  : About Our Developers"
+
+        };
+        /*@Seakthong App.myTable*/
+        App.myTable(1, 90, "Help", Help, "......tttt");
+    }
+    /*In Process*/
+    private static String printMenu () {
         String[] menu = {"*)Display", "W)rite", "R)ead",
                 "U)pdate", "D)elete", "F)irst", "P)revious",
                 "N)ext", "L)ast", "S)earch", "G)oto", "Se)t",
-                "Sa)ve", "Ba)ck up", "Re)store", "H)elp", "E)xit"};
-        for (int i = 0; i < 9; i++) {
-            tableMenu.setColumnWidth(i, 11, 11);
-        }
-        for (String s : menu) {
-//            tableMenu.addCell(s);
-            tableMenu.addCell(s);
-        }
-        System.out.println(tableMenu.render());
+                "Sa)ve", "Ba)ck up", "Re)store", "H)elp", "A)bout US", "E)xit"};
+        App.myTable(9, 15, "Menu", menu, "tttttttttt");
         System.out.print("Command-->");
-//        String str =scanner.nextLine().toLowerCase();
         String str = scanner.nextLine();
-        if(str.charAt(0)=='.'){
-            if(str.toLowerCase().charAt(1)=='u'){
-                if(str.charAt(2)=='1'){
-                    //.U1:Name:Unit:Price
-                    String []mystr = str.split("/",10);
-//                    System.out.println("1"+mystr[1]);
-//                    System.out.println("2"+mystr[2]);
-                }
-                else if(str.charAt(2)=='2'){
-                    System.out.println(2);
-                }
-                else if(str.charAt(2)=='3'){
-                    System.out.println(3);
-                }
-                else if(str.charAt(2)=='4'){
-                    System.out.println(4);
-                }
+        return str;
+}
 
-            }
-            else if(str.toLowerCase().charAt(1)=='g'){
-                int num = 0;
-                for(int i = 0 ; i < str.length(); i++){
-                    if(i>1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
-                }
-                gotoPage(num);
-            }
-
-        }
-        return str.toLowerCase();
-    }
-
-    private static void initTable() {
+    private static void initTable () {
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
         table = new Table(5, borderStyle, new ShownBorders("tttttttttt"));
-        int myMinWidth[] = {14, 32, 11, 12, 18};
+        int myMinWidth[] = {14, 32, 12, 11, 18};
         for (int i = 0; i < 5; i++) {
             table.setColumnWidth(i, myMinWidth[i], 27);
         }
-        table.addCell("ID");
-        table.addCell("Name");
-        table.addCell("Qty");
-        table.addCell("Unit Price");
-        table.addCell("Date");
+        table.addCell("ID",new CellStyle(CellStyle.HorizontalAlign.center));
+        table.addCell("Name",new CellStyle(CellStyle.HorizontalAlign.center));
+        table.addCell("Unit Price",new CellStyle(CellStyle.HorizontalAlign.left));
+        table.addCell("Qty",new CellStyle(CellStyle.HorizontalAlign.left));
+        table.addCell("Date",new CellStyle(CellStyle.HorizontalAlign.left));
     }
 
-    private static int selectChoice() {
-        System.out.println("1. Set row");
-        System.out.println("2. First");
-        System.out.println("3. previous");
-        System.out.println("4. Next");
-        System.out.println("5. Last");
-        System.out.println("6. Goto");
-        System.out.println("7. Display");
+    private static int selectChoice () {
+
+        String mySearchChoice[] = {"1. Set row", "2. First", "3. previous", "4. Next", "5. Last", "6. Goto", "7. Display"};
+        /*@Seakthong add select choice*/
         int choice = Validator.readInt("Please select a choice :");
         return choice;
     }
 
-    private static void getData() {
+    private static void getData () {
         long startTime = System.nanoTime();
         products = new ArrayList<>();
         Connection.getProducts(products);
@@ -197,26 +289,22 @@ public class App {
         System.out.println("Read using " + (double) time / 1000000 + " seconds");
     }
 
-    private static void readData() {
+    private static void readData () {
         int id = Validator.readInt("Read by ID :");
+        readData(id);
+    }
+
+    private static void readData(int id){
         for (String product : products) {
             String[] idPro = product.split("\\|");
             if (id == Integer.parseInt(idPro[0])) {
-                Table tableReadData = new Table(2);
-                tableReadData.addCell("ID");
-                tableReadData.addCell(idPro[0]);
-                tableReadData.addCell("Name");
-                tableReadData.addCell(idPro[1]);
-                tableReadData.addCell("Price");
-                tableReadData.addCell(idPro[2]);
-                tableReadData.addCell("Imported Date");
-                tableReadData.addCell(idPro[3]);
-                System.out.println(tableReadData.render());
+                String shown[] = {"ID", idPro[0], "Name", idPro[1], "Price", idPro[2], "Qty", idPro[3], "Imported Date", idPro[4]};
+                App.myTable(2, 20, "Product Detail", shown, "tttttttttt");
             }
         }
     }
 
-    private static void generateData() {
+    private static void generateData () {
 //        new Thread(() -> {
 //            String message = "Please wait....";
 //            int i = 0;
@@ -250,7 +338,7 @@ public class App {
 
     }
 
-    private static void setRow() {
+    private static void setRow () {
         System.out.print("Number of row : ");
         numOfRows = scanner.nextInt();
         if (currentPage > getTotalPage())
@@ -258,40 +346,47 @@ public class App {
         scanner.nextLine();
     }
 
-    private static void goNext() {
+    private static void goNext () {
         if (currentPage != getTotalPage())
             gotoPage(++currentPage);
         else gotoPage(getTotalPage());
     }
 
-    private static void goPrevious() {
+    private static void goPrevious () {
         if (currentPage != 1)
             gotoPage(--currentPage);
         else
             gotoPage(1);
     }
 
-    private static void gotoPage(int pageNum) {
+    private static void gotoPage ( int pageNum){
         initTable();
         currentPage = pageNum;
         int start = numOfRows * (currentPage - 1);
+
+        if(pageNum > getTotalPage()) return;
         if (pageNum == getTotalPage()) {
             goLast();
         } else {
+            String[] myProducts = new String[start+numOfRows];
             for (int i = start; i < start + numOfRows; i++) {
                 addRowTable(products.get(i));
+//                myProducts[i-start] = products.get(i);
             }
+//            myTable(20,myProducts);
         }
-
+        String[] myPageDetail = printPageSummary();
+        table.addCell(myPageDetail[0], new CellStyle(CellStyle.HorizontalAlign.left),2);
+        table.addCell(myPageDetail[1], new CellStyle(CellStyle.HorizontalAlign.right),3);
         System.out.println(table.render());
         printPageSummary();
     }
 
-    private static int getTotalPage() {
+    private static int getTotalPage () {
         return products.size() % numOfRows == 0 ? products.size() / numOfRows : products.size() / numOfRows + 1;
     }
 
-    private static void goFirst() {
+    private static void goFirst () {
         currentPage = 1;
         initTable();
         for (int i = 0; i < numOfRows; i++) {
@@ -301,31 +396,144 @@ public class App {
         printPageSummary();
     }
 
-    private static void printPageSummary() {
+    private static String[] printPageSummary () {
 //        System.out.print("Page : " + currentPage + " of " + getTotalPage() + "\t\t\t\t\t\t\tTotal record : " + products.size());
-        System.out.printf("%4sPage : %d of %d %64s Total Record: %d", " ", currentPage, getTotalPage(), " ", products.size());
-        System.out.println();
+        //System.out.printf("%4sPage : %d of %d %64s Total Record: %d", " ", currentPage, getTotalPage(), " ", products.size());
+        //System.out.println();
+        return new String[]{"Page : "+currentPage+" of "+getTotalPage(),"Total Record: "+ products.size()};
     }
 
-    private static int remainRowInLastPage(){
-        return products.size()%numOfRows;
+    private static int remainRowInLastPage () {
+        return products.size() % numOfRows;
     }
 
-    private static void goLast() {
+    public static void addRowTable (String product){
+        String[] p = product.split("\\|");
+        for (int i = 0; i < 5; i++)
+            table.addCell(p[i]);
+    }
+
+    private static void goLast () {
         initTable();
         currentPage = getTotalPage();
         int start = numOfRows * (currentPage - 1);
-        for (int i = start  ; i < products.size(); i++) {
+        for (int i = start; i < products.size(); i++) {
             addRowTable(products.get(i));
         }
         System.out.println(table.render());
         printPageSummary();
     }
 
-    private static void addRowTable(String product) {
-        String[] p = product.split("\\|");
-        for(int i = 0; i < 5; i++)
-            table.addCell(p[i]);
+    public static boolean containedUnsavedFiles() {
+        return new File("temp\\Insert.txt").exists() || new File("temp\\Delete.txt").exists() || new File("temp\\Update.txt").exists();
+    }
+
+    private static void saveInserted() {
+        try {
+            long startTime2 = System.nanoTime();
+            File fileInsert = new File("temp\\Insert.txt");
+            BufferedReader fileTempRead = new BufferedReader(new FileReader(fileInsert));
+            BufferedWriter fileSourceWrite = new BufferedWriter(new FileWriter("product.txt", true));
+            String line = null;
+            while ((line = fileTempRead.readLine()) != null) {
+                fileSourceWrite.write(line);
+                fileSourceWrite.newLine();
+                fileSourceWrite.flush();
+            }
+            fileTempRead.close();
+            fileInsert.delete();
+            long time2 = System.nanoTime() - startTime2;
+            System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveDeleted() {
+        try {
+            long startTime2 = System.nanoTime();
+            File fileTemp = new File("deleteTempPro.txt");
+            File fileSource = new File("product.txt");
+            File fileDelete = new File("temp\\Delete.txt");
+            BufferedReader br = new BufferedReader(new FileReader(fileSource));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileTemp));
+            boolean b = false;
+            String line1 = null;
+            String line2 = null;
+            int i = 0, j = 100;
+            while ((line1 = br.readLine()) != null) {
+                b = false;
+                BufferedReader br2 = new BufferedReader(new FileReader(fileDelete));
+                while ((line2 = br2.readLine()) != null) {
+                    if (line1.split("\\|")[0].equals(line2.split("\\|")[0])) {
+                        b = true;
+                        break;
+                    }
+                }
+                if (b == false) {
+                    bufferedWriter.write(line1);
+                    bufferedWriter.newLine();
+                    if (i++ == j) {
+                        j += 100;
+                        bufferedWriter.flush();
+                        ;
+                    }
+                }
+            }
+            br.close();
+            bufferedWriter.close();
+            fileSource.delete();
+            fileTemp.renameTo(new File("product.txt"));
+            br.close();
+            fileDelete.delete();
+            long time2 = System.nanoTime() - startTime2;
+            System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveUpdated() {
+        try {
+            long startTime2 = System.nanoTime();
+            File fileTemp = new File("updateTempPro.txt");
+            File fileSource = new File("product.txt");
+            File fileUpdate = new File("temp\\Update.txt");
+            BufferedReader br = new BufferedReader(new FileReader(fileSource));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileTemp));
+            BufferedReader br2 = null;
+            boolean b = false;
+            String line1 = null;
+            String line2 = null;
+            while ((line1 = br.readLine()) != null) {
+                b = false;
+                br2 = new BufferedReader(new FileReader(fileUpdate));
+                while ((line2 = br2.readLine()) != null) {
+                    if (line1.split("\\|")[0].equals(line2.split("\\|")[0])) {
+                        bufferedWriter.write(line2);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+                        b = true;
+                        break;
+                    }
+                }
+                if (b == false) {
+                    bufferedWriter.write(line1);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+                }
+            }
+            br.close();
+            bufferedWriter.close();
+            fileSource.delete();
+            fileTemp.renameTo(new File("product.txt"));
+            br2.close();
+            fileUpdate.delete();
+            long time2 = System.nanoTime() - startTime2;
+            System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void saveUpdate() {
@@ -339,9 +547,9 @@ public class App {
         }
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter, bufferSize);
         System.out.println(products.size());
-        for (int i = 1; i <= products.size(); i++) {
+        for (int i = 0; i < products.size(); i++) {
             try {
-                bufferedWriter.write(products.get(i).toString());
+                bufferedWriter.write(products.get(i));
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
             } catch (IOException e) {
@@ -351,16 +559,30 @@ public class App {
 
         long time = System.nanoTime() - startTime;
         System.out.println("Read using " + (double) time / 1000000 + " milliseconds");
+        deleteTempFiles();
     }
 
-    private static String getDate() {
+    private static void deleteTempFiles() {
+        if(new File("temp\\Update.txt").exists())
+            new File("temp\\Update.txt").delete();
+
+        if(new File("temp\\Delete.txt").exists())
+            new File("temp\\Delete.txt").delete();
+
+        if(new File("temp\\Insert.txt").exists()) {
+            new File("temp\\Insert.txt").delete();
+        }
+
+    }
+
+    private static String getDate () {
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         Date date = new Date();
 //        System.out.println(dateFormat.format(date)); //2016/11/16 12:08:43
         return dateFormat.format(date);
     }
 
-    private static void writeData() {
+    private static void writeData () {
         String[] lastProduct = products.get(products.size() - 1).split("\\|");
         int lastId = Integer.parseInt(lastProduct[0]);
         System.out.println("Product ID : " + (lastId + 1));
@@ -368,17 +590,10 @@ public class App {
         String name = scanner.nextLine();
         double price = Validator.readDouble("Product's Price : ");
         int qty = Validator.readInt("Product's Qty : ", 1, 1_000_000);
+        /*@Seakthong add App.myTable*/
+        String shown[] = {"ID", "" + (lastId + 1), "Name", name, "Price", "" + price,"Qty",""+qty, "Imported Date", getDate()};
+        App.myTable(2, 20, "Result", shown, "tttttttttt");
 
-        Table tableWriteData = new Table(2);
-        tableWriteData.addCell("ID");
-        tableWriteData.addCell("" + (lastId + 1));
-        tableWriteData.addCell("Name");
-        tableWriteData.addCell(name);
-        tableWriteData.addCell("Price");
-        tableWriteData.addCell("" + price);
-        tableWriteData.addCell("Imported Date");
-        tableWriteData.addCell(getDate());
-        System.out.println(tableWriteData.render());
         char answer;
         System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
         answer = Character.toLowerCase(scanner.next().charAt(0));
@@ -388,7 +603,22 @@ public class App {
 
     }
 
-    static void backup() {
+    private static void writeData(String name, double price, int qty){
+        String[] lastProduct = products.get(products.size() - 1).split("\\|");
+        int lastId = Integer.parseInt(lastProduct[0]);
+        System.out.println("Product ID : " + (lastId + 1));
+
+        String shown[] = {"ID", "" + (lastId + 1), "Name", name, "Price", "" + price,"Qty",""+qty, "Imported Date", getDate()};
+        App.myTable(2, 20, "Result", shown, "tttttttttt");
+        char answer;
+        System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
+        answer = Character.toLowerCase(scanner.next().charAt(0));
+        if (answer == 'y')
+            products.add("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+        scanner.nextLine();
+    }
+
+    static void backup () {
         long start = System.nanoTime();
         try (BufferedWriter backup = new BufferedWriter(new FileWriter("backup\\" + (new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date())) + ".bac"))) {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(FILE_NAME));
@@ -409,10 +639,10 @@ public class App {
             e.printStackTrace();
         }
         long time = System.nanoTime() - start;
-        System.out.print("Backup successfully " + (double) time / 1000000 + " milliseconds");
+        System.out.println("Backup successfully " + (double) time / 1000000 + " milliseconds");
     }
 
-    static void reStore() {
+    static void reStore () {
         File[] listOfFiles;
         listOfFiles = (new File("backup")).listFiles();
         for (int i = 0; i < listOfFiles.length; i++) {
@@ -445,30 +675,127 @@ public class App {
 
     }
 
-    static void myGroupname(){
-        System.out.println
-        (
-                "\n" +
-
-                        ".....................................................................................................................................\n" +
-                        ".....................................................................................................................................\n" +
-                        "...______.........._........_________..._________........_........____....____...______.........._........____.._____.....______.....\n" +
-                        "..|_..._.\\......../.\\......|.._..._..|.|.._..._..|....../.\\......|_...\\../..._|.|_..._.\\......../.\\......|_...\\|_..._|...'.___..|....\n" +
-                        "....|.|_).|....../._.\\.....|_/.|.|.\\_|.|_/.|.|.\\_|...../._.\\.......|...\\/...|.....|.|_).|....../._.\\.......|...\\.|.|.../..'...\\_|....\n" +
-                        "....|..__'....../.___.\\........|.|.........|.|......../.___.\\......|.|\\../|.|.....|..__'....../.___.\\......|.|\\.\\|.|...|.|...____....\n" +
-                        "..._|.|__).|.._/./...\\.\\_....._|.|_......._|.|_....._/./...\\.\\_..._|.|_\\/_|.|_..._|.|__).|.._/./...\\.\\_..._|.|_\\...|_..\\.`.___]..|...\n" +
-                        "..|_______/..|____|.|____|...|_____|.....|_____|...|____|.|____|.|_____||_____|.|_______/..|____|.|____|.|_____|\\____|..`._____.'....\n" +
-                        ".....................................................................................................................................\n" +
-                        "...................................______..................................................._...._...................................\n" +
-                        "..................................'.___..|.................................................|.|..|.|..................................\n" +
-                        "................................/..'...\\_|..._..--......--.....__..._...._..--.....______..|.|__|.|_.................................\n" +
-                        "................................|.|...____..[.`/'`\\]./..'`\\.\\.[..|.|.|..[.'/'`\\.\\.|______|.|____..._|................................\n" +
-                        "................................\\.`.___]..|..|.|.....|.\\__..|..|.\\_/.|,..|.\\__/.|.............._|.|_.................................\n" +
-                        ".................................`._____.'..[___].....'.__.'...'.__.'_/..|.;.__/..............|_____|................................\n" +
-                        "........................................................................[__|.........................................................\n" +
-                        ".....................................................................................................................................\n" +
-                        ".....................................................................................................................................\n"
-
-        );
+    private static void saveOption() {
+        if (containedUnsavedFiles()) {
+            if (Validator.readYesNo("Are you sure to add record? [Y/y] or [N/n]:") == 'n')
+                return;
+            if (new File("temp\\Insert.txt").exists())
+                saveInserted();
+            if (new File("temp\\Delete.txt").exists())
+                saveDeleted();
+            if (new File("temp\\Update.txt").exists())
+                saveUpdated();
+            System.out.println("\n\nAlready update!!!\n");
+        }
     }
-}
+
+    public static void myTable(int colWidth, String[] fullValues){
+        BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
+        Table tbl = new Table(5, borderStyle, new ShownBorders("tttttttttt"));
+        String contents[]={"ID","Name","Price","Qty","Imported Date"};
+        for (int i = 0; i < 5; i++) {
+            tbl.setColumnWidth(i, colWidth, colWidth + 10);
+            tbl.addCell(contents[i]);
+        }
+            for(int i=0; i< 5; i++){
+                String[] myValues = Complementary.subString(fullValues[i]);
+                for(int j=0; j<5; j++) {
+                    tbl.addCell(myValues[j]);
+                }
+        }
+        System.out.println(tbl.render());
+    }
+
+    public static void myTable(int colNum, int colWidth, String[] values){
+        myTable(colNum, colWidth,"", values, "tttttttttt");
+    }
+
+    public static void myTable ( int colNum, int colWidth, String[] values, String shown){
+        myTable(colNum, colWidth,"", values, shown);
+    }
+
+    public static void myTable ( int colNum, int colWidth, String content, String[]Value, String shown){
+        BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
+        Table tbl = new Table(colNum, borderStyle, new ShownBorders(shown));
+        if(content != "")
+            tbl.addCell(content, new CellStyle(CellStyle.HorizontalAlign.center), colNum);
+        for (int i = 0; i < colNum; i++) {
+            tbl.setColumnWidth(i, colWidth, colWidth + 10);
+        }
+        for (int i = 0; i < Value.length; i++) {
+            tbl.addCell(Value[i]);
+        }
+        System.out.println(tbl.render());
+    }
+
+    public static void myTable ( int colNum, int colWidth, String content[], String[]Value, String shown){
+        BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
+        //        CellStyle cellStyle = new CellStyle();
+        Table tbl = new Table(colNum, borderStyle, new ShownBorders(shown));
+        tbl.addCell(content[0], new CellStyle(CellStyle.HorizontalAlign.center), colNum);
+        for (int i = 0; i < colNum; i++) {
+            tbl.setColumnWidth(i, colWidth, colWidth + 10);
+        }
+        for (int i = 0; i < Value.length; i++) {
+            tbl.addCell(Value[i]);
+        }
+        System.out.println(tbl.render());
+    }
+
+    static void myGroupname () {
+        System.out.println
+                (
+                        "\n" +
+                                ".....................................................................................................................................\n" +
+                                ".....................................................................................................................................\n" +
+                                "...______.........._........_________..._________........_........____....____...______.........._........____.._____.....______.....\n" +
+                                "..|_..._.\\......../.\\......|.._..._..|.|.._..._..|....../.\\......|_...\\../..._|.|_..._.\\......../.\\......|_...\\|_..._|...'.___..|....\n" +
+                                "....|.|_).|....../._.\\.....|_/.|.|.\\_|.|_/.|.|.\\_|...../._.\\.......|...\\/...|.....|.|_).|....../._.\\.......|...\\.|.|.../..'...\\_|....\n" +
+                                "....|..__'....../.___.\\........|.|.........|.|......../.___.\\......|.|\\../|.|.....|..__'....../.___.\\......|.|\\.\\|.|...|.|...____....\n" +
+                                "..._|.|__).|.._/./...\\.\\_....._|.|_......._|.|_....._/./...\\.\\_..._|.|_\\/_|.|_..._|.|__).|.._/./...\\.\\_..._|.|_\\...|_..\\.`.___]..|...\n" +
+                                "..|_______/..|____|.|____|...|_____|.....|_____|...|____|.|____|.|_____||_____|.|_______/..|____|.|____|.|_____|\\____|..`._____.'....\n" +
+                                ".....................................................................................................................................\n" +
+                                "...................................______..................................................._...._...................................\n" +
+                                "..................................'.___..|.................................................|.|..|.|..................................\n" +
+                                "................................/..'...\\_|..._..--......--.....__..._...._..--.....______..|.|__|.|_.................................\n" +
+                                "................................|.|...____..[.`/'`\\]./..'`\\.\\.[..|.|.|..[.'/'`\\.\\.|______|.|____..._|................................\n" +
+                                "................................\\.`.___]..|..|.|.....|.\\__..|..|.\\_/.|,..|.\\__/.|.............._|.|_.................................\n" +
+                                ".................................`._____.'..[___].....'.__.'...'.__.'_/..|.;.__/..............|_____|................................\n" +
+                                "........................................................................[__|.........................................................\n" +
+                                ".....................................................................................................................................\n" +
+                                ".....................................................................................................................................\n"
+                );
+    }
+
+    private static void aboutus(){
+        String about[]={
+                "","",
+                "Welcome To Stock Management System",
+                " ",
+                "Hello User, our Stock Management System is built for easy to control products in stock.",
+                "Include, product id, product name, product quantity, product price, and product imported date.",
+                "Moreover, we can know about product out of stock or expired date.",
+                "",
+                "",
+                "And We also have multi work according to this Details",
+                "1). Display Read Write and Search Data",
+                "2). Insert Update Delete: update all or some",
+                "3). Pagination from 1 to end by next Page, Previous Page or go to a specific page",
+                "4). Save, Backup Restore and Recovery file",
+                "",
+                ""
+        };
+        String Developer[]={
+                "Name", "Position",
+                "Yorn Sokha", "Project Leader",
+                "Sok Menghok", "Project Logical",
+                "Nim Sreytouch", "Developer",
+                "Veth Samoeun", "Database Manager",
+                "Aing Seakthong", "UI Designer"
+        };
+
+        App.myTable(1, 99, "About US", about,"......tttt");
+        App.myTable(2,48,"Stock Management System was developed by Group 4 Class BTB",Developer,"tttttttttt");
+    }
+
+    }
