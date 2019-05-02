@@ -79,16 +79,15 @@ public class Complementary extends Thread {
 
     private static void paginator(ArrayList<String> products, int recordAmount) {
 
-        recordAmount = 5;
         int productSize = products.size() % 10;
         productSize = products.size() + 10 - (productSize == 0 ? 10 : productSize);//បង្កត់
         //>>>> end of file
 //        System.out.println(productSize);
         int page = 0;
-
+        boolean boo = false;
         while (true) {
             Complementary.tabler("1.previous||2.next||3.exit");
-            switch (Validator.readInt("Option : ")) {
+            switch (boo==false? 2: Validator.readInt("Option : ")  ) {
                 case 1:
                     if (page * recordAmount <= recordAmount) {
                         tabler("First Page");
@@ -113,6 +112,7 @@ public class Complementary extends Thread {
                     break;
 
             }
+            boo = true;
             int j = 0;
             String showData[] = new String[recordAmount];
             for (int i = (recordAmount * page) - recordAmount; i < recordAmount * page; i++) {
@@ -125,6 +125,7 @@ public class Complementary extends Thread {
                 }
             }
             App.myTable(15, showData);  //show search string result @Seakthong@Search Table
+            System.out.println("Page : "+page+"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tRecord : "+products.size() );
         }//while loop
 
 
