@@ -96,13 +96,8 @@ public class App<publlic> {
                 case "a":
                     aboutus();
                     break;
-                case "♪":
-                    usingSpecialExpression(key);
-                    break;
                 default:
-
                     usingSpecialExpression(key);
-//                    System.out.println("Hello");
                     break;
 
                 /*@Seakthong*/
