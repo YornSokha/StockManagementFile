@@ -94,8 +94,13 @@ public class App<publlic> {
                 case "a":
                     aboutus();
                     break;
-                default:
+                case "♪":
                     usingSpecialExpression(key);
+                    break;
+                default:
+
+                    usingSpecialExpression(key);
+//                    System.out.println("Hello");
                     break;
 
                 /*@Seakthong*/
@@ -105,71 +110,73 @@ public class App<publlic> {
 
     private static void usingSpecialExpression(String str) {
         int num;
-        if (str.toLowerCase().charAt(0) == '#') {
-            switch (str.toLowerCase().charAt(1)){
-                //read write delete search
-                case 'g': //@Goto_Shorthand
-                    /* #g100*/ //go to page 100
-                    num = 0;
-                    try {
-                        for (int i = 0; i < str.length(); i++) {
-                            if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+        try {
+            if (str.toLowerCase().charAt(0) == '#') {
+                switch (str.toLowerCase().charAt(1)) {
+                    //read write delete search
+                    case 'g': //@Goto_Shorthand
+                        /* #g100*/ //go to page 100
+                        num = 0;
+                        try {
+                            for (int i = 0; i < str.length(); i++) {
+                                if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                            }
+                            gotoPage(num);
+                        } catch (NumberFormatException nfe) {
+                            System.err.println("Syntax: #gNumber\nExample #g100 for goto page 100");
                         }
-                        gotoPage(num);
-                    }catch (NumberFormatException nfe){
-                        System.err.println("Syntax: #gNumber\nExample #g100 for goto page 100");
-                    }
-                    break;
-                case 'd'://@Delete_Shorthand
-                    /* #d100 */  //Delete id 100
-                    num = 0;
-                    try {
-                        for (int i = 0; i < str.length(); i++) {
-                            if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                        break;
+                    case 'd'://@Delete_Shorthand
+                        /* #d100 */  //Delete id 100
+                        num = 0;
+                        try {
+                            for (int i = 0; i < str.length(); i++) {
+                                if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                            }
+                            delete(num);
+                        } catch (NumberFormatException nfe) {
+                            System.err.println("Syntax: #dNumber\nExample #d100 for delete pro_id 100");
                         }
-                        delete(num);
-                    }catch (NumberFormatException nfe){
-                        System.err.println("Syntax: #dNumber\nExample #d100 for delete pro_id 100");
-                    }
-                    break;
-                case 'u'://@Update_Shorthand
-                    /* #u100*/
-                    num = 0;
-                    try {
-                        for (int i = 0; i < str.length(); i++) {
-                            if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                        break;
+                    case 'u'://@Update_Shorthand
+                        /* #u100*/
+                        num = 0;
+                        try {
+                            for (int i = 0; i < str.length(); i++) {
+                                if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                            }
+                            Complementary.updateObjectById(num, products, true);
+                        } catch (NumberFormatException nfe) {
+                            System.err.println("Syntax: #uNumber\nExample #u100 for update pro_id 100");
                         }
-                        Complementary.updateObjectById(num, products, true);
-                    }catch (NumberFormatException nfe){
-                        System.err.println("Syntax: #uNumber\nExample #u100 for update pro_id 100");
-                    }
 
-                    break;
-                case 'w'://@Write_Shorthand
-                    /* #w/Items/100.5/10 */ //write data name: Items /price: 100.5 /qty: 10
-                    String [] myString = subStringWrite(str);
-                    if(myString[0] == "Wrong") return;
-                    try {
-                        writeData(myString[1], Double.valueOf(myString[2]), Integer.valueOf(myString[3]));
-                    }
-                    catch (NumberFormatException e){
-                        System.err.println("Syntax: #w/ProductName/Price/Quantity\nExample #w/Reach/1.0/1");
-                    }
-                    break;
-                case 'r'://@Read_Shorthand
-                    /* #r100 */ //read data id 100
-                    num = 0;
-                    try {
-                        for (int i = 0; i < str.length(); i++) {
-                            if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                        break;
+                    case 'w'://@Write_Shorthand
+                        /* #w/Items/100.5/10 */ //write data name: Items /price: 100.5 /qty: 10
+                        String[] myString = subStringWrite(str);
+                        if (myString[0] == "Wrong") return;
+                        try {
+                            writeData(myString[1], Double.valueOf(myString[2]), Integer.valueOf(myString[3]));
+                        } catch (NumberFormatException e) {
+                            System.err.println("Syntax: #w/ProductName/Price/Quantity\nExample #w/Reach/1.0/1");
                         }
-                        readData(num);
-                    }
-                    catch(NumberFormatException nfe){
-                        System.err.println("Syntax: #rNumber \nExample #r100 for show pro_id 100");
-                    }
-                    break;
+                        break;
+                    case 'r'://@Read_Shorthand
+                        /* #r100 */ //read data id 100
+                        num = 0;
+                        try {
+                            for (int i = 0; i < str.length(); i++) {
+                                if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
+                            }
+                            readData(num);
+                        } catch (NumberFormatException nfe) {
+                            System.err.println("Syntax: #rNumber \nExample #r100 for show pro_id 100");
+                        }
+                        break;
+                }
             }
+        }catch (StringIndexOutOfBoundsException siobe){
+            System.err.println("Wrong Value ");
         }
     }
 
