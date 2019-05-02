@@ -169,11 +169,11 @@ public class Complementary extends Thread {
                 }
                 App.myTable(15, recordAmount,showData,true);  //show search string result @Seakthong@Search Table
             }//while loop
+            }
+        }//while loop
 
 
-        }
 
-    }
 
     //<<<<<<main call update or delete determine by boolean
     //<<<<<< UI improver
