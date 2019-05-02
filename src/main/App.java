@@ -28,7 +28,8 @@ public class App<publlic> {
 
     public static void main(String[] args) throws InterruptedException {
         myGroupname();
-        generateData();
+        saveOption("Do you want to save the last modified? [Y/y] or [N/n] : ");
+//        generateData();
         getData();
 
         do {
@@ -675,9 +676,9 @@ public class App<publlic> {
             catch(SecurityException se){
                 System.err.println("Folder is not created");
             }
-            if(result) {
+            /*if(result) {
                 System.out.println("Folder was created");
-            }
+            }*/
         }//end of if
 
     }
@@ -753,6 +754,24 @@ public class App<publlic> {
             System.out.println("\n\nAlready update!!!\n");
         }
     }
+
+    private static void saveOption(String message) {
+            if (containedUnsavedFiles()) {
+                if (Validator.readYesNo(message) == 'n')
+                    if (Validator.readYesNo("Are you sure to add record? [Y/y] or [N/n]:") == 'n')
+                        return;
+                if (new File("temp\\Insert.txt").exists())
+                    saveInserted();
+                if (new File("temp\\Update.txt").exists())
+                    saveUpdated();
+                if (new File("temp\\Delete.txt").exists())
+                    saveDeleted();
+                System.out.println("\n\nAlready updated!!!\n");
+                if (new File("temp\\Update.txt").exists())
+                    saveUpdated();
+                System.out.println("\n\nAlready update!!!\n");
+            }
+        }
 
     static void myTable(int colWidth, int recordAmount, String[] fullValues, boolean yess) {
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
