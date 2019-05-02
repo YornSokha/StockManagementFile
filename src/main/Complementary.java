@@ -150,7 +150,6 @@ public class Complementary extends Thread {
                 default:
                     System.out.println("Input mistake");
                     break;
-
             }
             boo = true;
             int j = 0;
