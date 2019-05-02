@@ -29,6 +29,7 @@ public class App<publlic> {
     public static void main(String[] args) throws InterruptedException {
         myGroupname();
 //        generateData();
+        saveOption();
         getData();
 
         do {
@@ -80,7 +81,7 @@ public class App<publlic> {
                     backup();
                     break;
                 case "sa":
-                    System.out.println("Save");
+                    saveOption();
                     break;
                 case "re":
                     reStore();
@@ -193,7 +194,7 @@ public class App<publlic> {
     private static void update() {
         String product = Complementary.updateObjectById(Validator.readInt("Input ID : "), products, true);
         if (product != null)
-            try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("temp\\Update.txt"))) {
+            try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("temp\\Update.txt",true))) {
                 bufferedWriter.write(product);
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
@@ -440,6 +441,7 @@ public class App<publlic> {
                 fileSourceWrite.newLine();
                 fileSourceWrite.flush();
             }
+            fileSourceWrite.close();
             fileTempRead.close();
             fileInsert.delete();
             long time2 = System.nanoTime() - startTime2;
@@ -476,15 +478,14 @@ public class App<publlic> {
                     if (i++ == j) {
                         j += 100;
                         bufferedWriter.flush();
-                        ;
                     }
                 }
+                br2.close();
             }
             br.close();
             bufferedWriter.close();
             fileSource.delete();
             fileTemp.renameTo(new File("product.txt"));
-            br.close();
             fileDelete.delete();
             long time2 = System.nanoTime() - startTime2;
             System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
@@ -522,12 +523,12 @@ public class App<publlic> {
                     bufferedWriter.newLine();
                     bufferedWriter.flush();
                 }
+                br2.close();
             }
             br.close();
             bufferedWriter.close();
             fileSource.delete();
             fileTemp.renameTo(new File("product.txt"));
-            br2.close();
             fileUpdate.delete();
             long time2 = System.nanoTime() - startTime2;
             System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
@@ -597,8 +598,19 @@ public class App<publlic> {
         char answer;
         System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
         answer = Character.toLowerCase(scanner.next().charAt(0));
-        if (answer == 'y')
-            products.add("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+        if (answer == 'y'){
+            String product=("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+            products.add(product);
+            try {
+                BufferedWriter insertFile=new BufferedWriter(new FileWriter("temp\\Insert.txt",true));
+                insertFile.write(product);
+                insertFile.newLine();
+                insertFile.flush();
+                insertFile.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         scanner.nextLine();
 
     }
@@ -681,10 +693,10 @@ public class App<publlic> {
                 return;
             if (new File("temp\\Insert.txt").exists())
                 saveInserted();
-            if (new File("temp\\Delete.txt").exists())
-                saveDeleted();
             if (new File("temp\\Update.txt").exists())
                 saveUpdated();
+            if (new File("temp\\Delete.txt").exists())
+                saveDeleted();
             System.out.println("\n\nAlready update!!!\n");
         }
     }

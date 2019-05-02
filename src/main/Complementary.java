@@ -6,6 +6,9 @@ import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /*
@@ -195,6 +198,13 @@ public class Complementary extends Thread {
 //                    tabler(productString);
                     String myString1[] = {"Successfully Deleted"};
                     App.myTable(1,43,myString1,"tttttttttt");
+                    try (BufferedWriter fileDelete = new BufferedWriter(new FileWriter("temp\\Delete.txt", true))) {
+                        fileDelete.write(productString);
+                        fileDelete.newLine();
+                        fileDelete.flush();
+                    }catch (IOException e){
+                        e.printStackTrace();
+                    }
                 }else{
                     String myString1[] = {"Delete Canceled"};
                     App.myTable(1,43,myString1,"tttttttttt");
