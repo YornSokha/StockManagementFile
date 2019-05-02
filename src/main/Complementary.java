@@ -76,9 +76,8 @@ public class Complementary extends Thread {
 
         return arrayList;
     }
-
     private static void paginator(ArrayList<String> products, int recordAmount) {
-        recordAmount = 10;
+
         int productSize = products.size() % 10;
         productSize = products.size() + 10 - (productSize == 0 ? 10 : productSize);//បង្កត់
         //>>>> end of file
