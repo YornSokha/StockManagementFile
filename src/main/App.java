@@ -311,18 +311,18 @@ public class App<publlic> {
     }
 
     private static void generateData() {
-//        new Thread(() -> {
-//            String message = "Please wait....";
-//            int i = 0;
-//            while (i < message.length()) {
-//                System.out.print(message.charAt(i++));
-//                try {
-//                    Thread.sleep(350);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }).start();
+        new Thread(() -> {
+            String message = "Please wait....";
+            int i = 0;
+            while (i < message.length()) {
+                System.out.print(message.charAt(i++));
+                try {
+                    Thread.sleep(350);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         long startTime = System.nanoTime();
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILE_NAME, false))) {
             int flush = 0;
