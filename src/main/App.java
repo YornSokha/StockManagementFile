@@ -20,15 +20,16 @@ import java.util.Scanner;
 
 public class App<publlic> {
     private static final String FILE_NAME = "product.txt";
-    public static ArrayList<String> products = new ArrayList<>();
+    private static ArrayList<String> products = new ArrayList<>();
     private static Scanner scanner = new Scanner(System.in);
     private static int numOfRows = 5;
     private static int currentPage = 1;
     private static Table table;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args)  {
         myGroupname();
-        generateData();
+//        generateData();
+        saveOption("Do you want to save the last modified? [Y/y] or [N/n] : ");
         getData();
 
         do {
@@ -65,8 +66,8 @@ public class App<publlic> {
                 case "s":
                     Complementary.tabler("search");
                     System.out.print("Name :");
-                    if(Complementary.searcher(scanner.nextLine(), products,10)==true){
-                    }else {
+                    if (Complementary.searcher(scanner.nextLine(), products, numOfRows) == true) {
+                    } else {
                         Complementary.tabler("Data Not Found");
                     }
                     break;
@@ -80,7 +81,7 @@ public class App<publlic> {
                     backup();
                     break;
                 case "sa":
-                    System.out.println("Save");
+                    saveOption("Do you want to save? [Y/y] or [N/n] : ");
                     break;
                 case "re":
                     reStore();
@@ -106,7 +107,7 @@ public class App<publlic> {
     private static void usingSpecialExpression(String str) {
         int num;
         if (str.toLowerCase().charAt(0) == '#') {
-            switch (str.toLowerCase().charAt(1)){
+            switch (str.toLowerCase().charAt(1)) {
                 //read write delete search
                 case 'g': //@Goto_Shorthand
                     /* #g100*/ //go to page 100
@@ -116,7 +117,7 @@ public class App<publlic> {
                             if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
                         }
                         gotoPage(num);
-                    }catch (NumberFormatException nfe){
+                    } catch (NumberFormatException nfe) {
                         System.err.println("Syntax: #gNumber\nExample #g100 for goto page 100");
                     }
                     break;
@@ -128,7 +129,7 @@ public class App<publlic> {
                             if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
                         }
                         delete(num);
-                    }catch (NumberFormatException nfe){
+                    } catch (NumberFormatException nfe) {
                         System.err.println("Syntax: #dNumber\nExample #d100 for delete pro_id 100");
                     }
                     break;
@@ -140,19 +141,18 @@ public class App<publlic> {
                             if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
                         }
                         Complementary.updateObjectById(num, products, true);
-                    }catch (NumberFormatException nfe){
+                    } catch (NumberFormatException nfe) {
                         System.err.println("Syntax: #uNumber\nExample #u100 for update pro_id 100");
                     }
 
                     break;
                 case 'w'://@Write_Shorthand
                     /* #w/Items/100.5/10 */ //write data name: Items /price: 100.5 /qty: 10
-                    String [] myString = subStringWrite(str);
-                    if(myString[0] == "Wrong") return;
+                    String[] myString = subStringWrite(str);
+                    if (myString[0] == "Wrong") return;
                     try {
                         writeData(myString[1], Double.valueOf(myString[2]), Integer.valueOf(myString[3]));
-                    }
-                    catch (NumberFormatException e){
+                    } catch (NumberFormatException e) {
                         System.err.println("Syntax: #w/ProductName/Price/Quantity\nExample #w/Reach/1.0/1");
                     }
                     break;
@@ -164,8 +164,7 @@ public class App<publlic> {
                             if (i > 1) num = num * 10 + Integer.parseInt(String.valueOf(str.charAt(i)));
                         }
                         readData(num);
-                    }
-                    catch(NumberFormatException nfe){
+                    } catch (NumberFormatException nfe) {
                         System.err.println("Syntax: #rNumber \nExample #r100 for show pro_id 100");
                     }
                     break;
@@ -173,7 +172,7 @@ public class App<publlic> {
         }
     }
 
-    public static String[] subStringWrite(String str) {
+    static String[] subStringWrite(String str) {
         try {
             int firstIndex = str.indexOf('/');
             String s0 = str.substring(0, firstIndex);
@@ -186,14 +185,16 @@ public class App<publlic> {
 
             String s3 = str.substring(third + 1);
             return new String[]{s0, s1, s2, s3};
-        }catch(IndexOutOfBoundsException e){return new String[]{"Wrong"};}
+        } catch (IndexOutOfBoundsException e) {
+            return new String[]{"Wrong"};
+        }
 
     }
 
     private static void update() {
         String product = Complementary.updateObjectById(Validator.readInt("Input ID : "), products, true);
         if (product != null)
-            try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("temp\\Update.txt"))) {
+            try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("temp\\Update.txt", true))) {
                 bufferedWriter.write(product);
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
@@ -203,13 +204,13 @@ public class App<publlic> {
 
     private static void delete() {
         String product = Complementary.updateObjectById(Validator.readInt("Input ID : "), products, false);
-        if(product != null)
+        if (product != null)
             reCalculateCurrentPage();
     }
 
-    private static void delete(int id){
+    private static void delete(int id) {
         String product = Complementary.updateObjectById(id, products, false);
-        if(product != null)
+        if (product != null)
             reCalculateCurrentPage();
     }
 
@@ -217,10 +218,12 @@ public class App<publlic> {
         if (currentPage > getTotalPage())
             currentPage = 1;
     }
+
     /*Done*/
     private static void help() {
         String Help[] = {
-
+                "",
+                "",
                 "1.    press    *  : Display all record of products",
                 "2.    press    w  : Add new products",
                 "      press         #w/proname/unitprice/qty : sortcut for add new product",
@@ -247,8 +250,9 @@ public class App<publlic> {
         /*@Seakthong App.myTable*/
         App.myTable(1, 90, "Help", Help, "......tttt");
     }
+
     /*In Process*/
-    private static String printMenu () {
+    private static String printMenu() {
         String[] menu = {"*)Display", "W)rite", "R)ead",
                 "U)pdate", "D)elete", "F)irst", "P)revious",
                 "N)ext", "L)ast", "S)earch", "G)oto", "Se)t",
@@ -257,31 +261,23 @@ public class App<publlic> {
         System.out.print("Command-->");
         String str = scanner.nextLine();
         return str;
-}
+    }
 
-    private static void initTable () {
+    private static void initTable() {
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
         table = new Table(5, borderStyle, new ShownBorders("tttttttttt"));
         int myMinWidth[] = {14, 32, 12, 11, 18};
         for (int i = 0; i < 5; i++) {
             table.setColumnWidth(i, myMinWidth[i], 27);
         }
-        table.addCell("ID",new CellStyle(CellStyle.HorizontalAlign.center));
-        table.addCell("Name",new CellStyle(CellStyle.HorizontalAlign.center));
-        table.addCell("Unit Price",new CellStyle(CellStyle.HorizontalAlign.left));
-        table.addCell("Qty",new CellStyle(CellStyle.HorizontalAlign.left));
-        table.addCell("Date",new CellStyle(CellStyle.HorizontalAlign.left));
+        table.addCell("ID", new CellStyle(CellStyle.HorizontalAlign.center));
+        table.addCell("Name", new CellStyle(CellStyle.HorizontalAlign.center));
+        table.addCell("Unit Price", new CellStyle(CellStyle.HorizontalAlign.left));
+        table.addCell("Qty", new CellStyle(CellStyle.HorizontalAlign.left));
+        table.addCell("Date", new CellStyle(CellStyle.HorizontalAlign.left));
     }
 
-    private static int selectChoice () {
-
-        String mySearchChoice[] = {"1. Set row", "2. First", "3. previous", "4. Next", "5. Last", "6. Goto", "7. Display"};
-        /*@Seakthong add select choice*/
-        int choice = Validator.readInt("Please select a choice :");
-        return choice;
-    }
-
-    private static void getData () {
+    private static void getData() {
         long startTime = System.nanoTime();
         products = new ArrayList<>();
         Connection.getProducts(products);
@@ -289,12 +285,12 @@ public class App<publlic> {
         System.out.println("Read using " + (double) time / 1000000 + " seconds");
     }
 
-    private static void readData () {
+    private static void readData() {
         int id = Validator.readInt("Read by ID :");
         readData(id);
     }
 
-    private static void readData(int id){
+    private static void readData(int id) {
         for (String product : products) {
             String[] idPro = product.split("\\|");
             if (id == Integer.parseInt(idPro[0])) {
@@ -304,7 +300,7 @@ public class App<publlic> {
         }
     }
 
-    private static void generateData () {
+    private static void generateData() {
 //        new Thread(() -> {
 //            String message = "Please wait....";
 //            int i = 0;
@@ -320,7 +316,7 @@ public class App<publlic> {
         long startTime = System.nanoTime();
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILE_NAME, false))) {
             int flush = 0;
-            for (int i = 1; i <= 1_00; i++) {
+            for (int i = 1; i <= 10_00; i++) {
                 Product product = new Product(i, "Angkor Beer", 10d, 1000, getDate());
                 bufferedWriter.write(product.toString());
                 bufferedWriter.newLine();
@@ -338,7 +334,7 @@ public class App<publlic> {
 
     }
 
-    private static void setRow () {
+    private static void setRow() {
         System.out.print("Number of row : ");
         numOfRows = scanner.nextInt();
         if (currentPage > getTotalPage())
@@ -346,29 +342,32 @@ public class App<publlic> {
         scanner.nextLine();
     }
 
-    private static void goNext () {
+    private static void goNext() {
         if (currentPage != getTotalPage())
             gotoPage(++currentPage);
         else gotoPage(getTotalPage());
     }
 
-    private static void goPrevious () {
+    private static void goPrevious() {
         if (currentPage != 1)
             gotoPage(--currentPage);
         else
             gotoPage(1);
     }
 
-    private static void gotoPage ( int pageNum){
+    private static void gotoPage(int pageNum) {
         initTable();
         currentPage = pageNum;
         int start = numOfRows * (currentPage - 1);
 
-        if(pageNum > getTotalPage()) return;
+        if (pageNum > getTotalPage()) {
+            gotoPage(Validator.readInt("Please enter from " + 1 + " to " + getTotalPage() + " : ", 1, getTotalPage()));
+            return;
+        }
         if (pageNum == getTotalPage()) {
             goLast();
         } else {
-            String[] myProducts = new String[start+numOfRows];
+            String[] myProducts = new String[start + numOfRows];
             for (int i = start; i < start + numOfRows; i++) {
                 addRowTable(products.get(i));
 //                myProducts[i-start] = products.get(i);
@@ -376,17 +375,16 @@ public class App<publlic> {
 //            myTable(20,myProducts);
         }
         String[] myPageDetail = printPageSummary();
-        table.addCell(myPageDetail[0], new CellStyle(CellStyle.HorizontalAlign.left),2);
-        table.addCell(myPageDetail[1], new CellStyle(CellStyle.HorizontalAlign.right),3);
+        table.addCell(myPageDetail[0], new CellStyle(CellStyle.HorizontalAlign.left), 2);
+        table.addCell(myPageDetail[1], new CellStyle(CellStyle.HorizontalAlign.right), 3);
         System.out.println(table.render());
-        printPageSummary();
     }
 
-    private static int getTotalPage () {
+    private static int getTotalPage() {
         return products.size() % numOfRows == 0 ? products.size() / numOfRows : products.size() / numOfRows + 1;
     }
 
-    private static void goFirst () {
+    private static void goFirst() {
         currentPage = 1;
         initTable();
         for (int i = 0; i < numOfRows; i++) {
@@ -398,24 +396,20 @@ public class App<publlic> {
         System.out.println(table.render());
     }
 
-    private static String[] printPageSummary () {
+    private static String[] printPageSummary() {
 //        System.out.print("Page : " + currentPage + " of " + getTotalPage() + "\t\t\t\t\t\t\tTotal record : " + products.size());
         //System.out.printf("%4sPage : %d of %d %64s Total Record: %d", " ", currentPage, getTotalPage(), " ", products.size());
         //System.out.println();
-        return new String[]{"Page : "+currentPage+" of "+getTotalPage(),"Total Record: "+ products.size()};
+        return new String[]{"Page : " + currentPage + " of " + getTotalPage(), "Total Record: " + products.size()};
     }
 
-    private static int remainRowInLastPage () {
-        return products.size() % numOfRows;
-    }
-
-    public static void addRowTable (String product){
+    static void addRowTable(String product) {
         String[] p = product.split("\\|");
         for (int i = 0; i < 5; i++)
             table.addCell(p[i]);
     }
 
-    private static void goLast () {
+    private static void goLast() {
         initTable();
         currentPage = getTotalPage();
         int start = numOfRows * (currentPage - 1);
@@ -428,7 +422,7 @@ public class App<publlic> {
         System.out.println(table.render());
     }
 
-    public static boolean containedUnsavedFiles() {
+    static boolean containedUnsavedFiles() {
         return new File("temp\\Insert.txt").exists() || new File("temp\\Delete.txt").exists() || new File("temp\\Update.txt").exists();
     }
 
@@ -438,12 +432,13 @@ public class App<publlic> {
             File fileInsert = new File("temp\\Insert.txt");
             BufferedReader fileTempRead = new BufferedReader(new FileReader(fileInsert));
             BufferedWriter fileSourceWrite = new BufferedWriter(new FileWriter("product.txt", true));
-            String line = null;
+            String line;
             while ((line = fileTempRead.readLine()) != null) {
                 fileSourceWrite.write(line);
                 fileSourceWrite.newLine();
                 fileSourceWrite.flush();
             }
+            fileSourceWrite.close();
             fileTempRead.close();
             fileInsert.delete();
             long time2 = System.nanoTime() - startTime2;
@@ -461,9 +456,9 @@ public class App<publlic> {
             File fileDelete = new File("temp\\Delete.txt");
             BufferedReader br = new BufferedReader(new FileReader(fileSource));
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileTemp));
-            boolean b = false;
-            String line1 = null;
-            String line2 = null;
+            boolean b;
+            String line1;
+            String line2;
             int i = 0, j = 100;
             while ((line1 = br.readLine()) != null) {
                 b = false;
@@ -474,21 +469,20 @@ public class App<publlic> {
                         break;
                     }
                 }
-                if (b == false) {
+                if (!b) {
                     bufferedWriter.write(line1);
                     bufferedWriter.newLine();
                     if (i++ == j) {
                         j += 100;
                         bufferedWriter.flush();
-                        ;
                     }
                 }
+                br2.close();
             }
             br.close();
             bufferedWriter.close();
             fileSource.delete();
             fileTemp.renameTo(new File("product.txt"));
-            br.close();
             fileDelete.delete();
             long time2 = System.nanoTime() - startTime2;
             System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
@@ -505,10 +499,10 @@ public class App<publlic> {
             File fileUpdate = new File("temp\\Update.txt");
             BufferedReader br = new BufferedReader(new FileReader(fileSource));
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileTemp));
-            BufferedReader br2 = null;
-            boolean b = false;
-            String line1 = null;
-            String line2 = null;
+            BufferedReader br2;
+            boolean b;
+            String line1;
+            String line2;
             while ((line1 = br.readLine()) != null) {
                 b = false;
                 br2 = new BufferedReader(new FileReader(fileUpdate));
@@ -521,17 +515,17 @@ public class App<publlic> {
                         break;
                     }
                 }
-                if (b == false) {
+                if (!b) {
                     bufferedWriter.write(line1);
                     bufferedWriter.newLine();
                     bufferedWriter.flush();
                 }
+                br2.close();
             }
             br.close();
             bufferedWriter.close();
             fileSource.delete();
             fileTemp.renameTo(new File("product.txt"));
-            br2.close();
             fileUpdate.delete();
             long time2 = System.nanoTime() - startTime2;
             System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
@@ -539,54 +533,27 @@ public class App<publlic> {
             e.printStackTrace();
         }
     }
-
-    private static void saveUpdate() {
-        long startTime = System.nanoTime();
-        FileWriter fileWriter = null;
-        int bufferSize = 8 * 1024;
-        try {
-            fileWriter = new FileWriter("Product.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter, bufferSize);
-        System.out.println(products.size());
-        for (int i = 0; i < products.size(); i++) {
-            try {
-                bufferedWriter.write(products.get(i));
-                bufferedWriter.newLine();
-                bufferedWriter.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        long time = System.nanoTime() - startTime;
-        System.out.println("Read using " + (double) time / 1000000 + " milliseconds");
-        deleteTempFiles();
-    }
-
     private static void deleteTempFiles() {
-        if(new File("temp\\Update.txt").exists())
+        if (new File("temp\\Update.txt").exists())
             new File("temp\\Update.txt").delete();
 
-        if(new File("temp\\Delete.txt").exists())
+        if (new File("temp\\Delete.txt").exists())
             new File("temp\\Delete.txt").delete();
 
-        if(new File("temp\\Insert.txt").exists()) {
+        if (new File("temp\\Insert.txt").exists()) {
             new File("temp\\Insert.txt").delete();
         }
 
     }
 
-    private static String getDate () {
+    private static String getDate() {
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         Date date = new Date();
 //        System.out.println(dateFormat.format(date)); //2016/11/16 12:08:43
         return dateFormat.format(date);
     }
 
-    private static void writeData () {
+    private static void writeData() {
         String[] lastProduct = products.get(products.size() - 1).split("\\|");
         int lastId = Integer.parseInt(lastProduct[0]);
         System.out.println("Product ID : " + (lastId + 1));
@@ -595,34 +562,57 @@ public class App<publlic> {
         double price = Validator.readDouble("Product's Price : ");
         int qty = Validator.readInt("Product's Qty : ", 1, 1_000_000);
         /*@Seakthong add App.myTable*/
-        String shown[] = {"ID", "" + (lastId + 1), "Name", name, "Price", "" + price,"Qty",""+qty, "Imported Date", getDate()};
+        String shown[] = {"ID", "" + (lastId + 1), "Name", name, "Price", "" + price, "Qty", "" + qty, "Imported Date", getDate()};
         App.myTable(2, 20, "Result", shown, "tttttttttt");
 
         char answer;
         System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
         answer = Character.toLowerCase(scanner.next().charAt(0));
-        if (answer == 'y')
-            products.add("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+        if (answer == 'y') {
+            String product = ("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+            products.add(product);
+            try {
+                BufferedWriter insertFile = new BufferedWriter(new FileWriter("temp\\Insert.txt", true));
+                insertFile.write(product);
+                insertFile.newLine();
+                insertFile.flush();
+                insertFile.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         scanner.nextLine();
 
     }
 
-    private static void writeData(String name, double price, int qty){
+    private static void writeData(String name, double price, int qty) {
         String[] lastProduct = products.get(products.size() - 1).split("\\|");
         int lastId = Integer.parseInt(lastProduct[0]);
         System.out.println("Product ID : " + (lastId + 1));
 
-        String shown[] = {"ID", "" + (lastId + 1), "Name", name, "Price", "" + price,"Qty",""+qty, "Imported Date", getDate()};
+        String shown[] = {"ID", "" + (lastId + 1), "Name", name, "Price", "" + price, "Qty", "" + qty, "Imported Date", getDate()};
         App.myTable(2, 20, "Result", shown, "tttttttttt");
         char answer;
         System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
         answer = Character.toLowerCase(scanner.next().charAt(0));
-        if (answer == 'y')
-            products.add("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+        if (answer == 'y'){
+            String product = ("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+            products.add(product);
+            try {
+                BufferedWriter insertFile = new BufferedWriter(new FileWriter("temp\\Insert.txt", true));
+                insertFile.write(product);
+                insertFile.newLine();
+                insertFile.flush();
+                insertFile.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         scanner.nextLine();
     }
 
-    static void backup () {
+    static void backup() {
         long start = System.nanoTime();
         try (BufferedWriter backup = new BufferedWriter(new FileWriter("backup\\" + (new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date())) + ".bac"))) {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(FILE_NAME));
@@ -646,7 +636,7 @@ public class App<publlic> {
         System.out.println("Backup successfully " + (double) time / 1000000 + " milliseconds");
     }
 
-    static void reStore () {
+    static void reStore() {
         File[] listOfFiles;
         listOfFiles = (new File("backup")).listFiles();
         for (int i = 0; i < listOfFiles.length; i++) {
@@ -679,49 +669,45 @@ public class App<publlic> {
 
     }
 
-    private static void saveOption() {
+    private static void saveOption(String message) {
         if (containedUnsavedFiles()) {
-            if (Validator.readYesNo("Are you sure to add record? [Y/y] or [N/n]:") == 'n')
+            if (Validator.readYesNo(message) == 'n')
                 return;
             if (new File("temp\\Insert.txt").exists())
                 saveInserted();
-            if (new File("temp\\Delete.txt").exists())
-                saveDeleted();
             if (new File("temp\\Update.txt").exists())
                 saveUpdated();
-            System.out.println("\n\nAlready update!!!\n");
+            if (new File("temp\\Delete.txt").exists())
+                saveDeleted();
+            System.out.println("\n\nAlready updated!!!\n");
         }
     }
 
-    public static void myTable(int colWidth, String[] fullValues){
+    static void myTable(int colWidth, int recordAmout, String[] fullValues, boolean yess) {
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
         Table tbl = new Table(5, borderStyle, new ShownBorders("tttttttttt"));
-        String contents[]={"ID","Name","Price","Qty","Imported Date"};
+        String contents[] = {"ID", "Name", "Price", "Qty", "Imported Date"};
         for (int i = 0; i < 5; i++) {
             tbl.setColumnWidth(i, colWidth, colWidth + 10);
             tbl.addCell(contents[i]);
         }
-            for(int i=0; i< 5; i++){
-                String[] myValues = Complementary.subString(fullValues[i]);
-                for(int j=0; j<5; j++) {
-                    tbl.addCell(myValues[j]);
-                }
+        for (int i = 0; i < recordAmout; i++) {
+            String[] myValues = Complementary.subString(fullValues[i]);
+            for (int j = 0; j < 5; j++) {
+                tbl.addCell(myValues[j]);
+            }
         }
         System.out.println(tbl.render());
     }
 
-    public static void myTable(int colNum, int colWidth, String[] values){
-        myTable(colNum, colWidth,"", values, "tttttttttt");
+    static void myTable(int colNum, int colWidth, String[] values, String shown) {
+        myTable(colNum, colWidth, "", values, shown);
     }
 
-    public static void myTable ( int colNum, int colWidth, String[] values, String shown){
-        myTable(colNum, colWidth,"", values, shown);
-    }
-
-    public static void myTable ( int colNum, int colWidth, String content, String[]Value, String shown){
+    static void myTable(int colNum, int colWidth, String content, String[] Value, String shown) {
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
         Table tbl = new Table(colNum, borderStyle, new ShownBorders(shown));
-        if(content != "")
+        if (content != "")
             tbl.addCell(content, new CellStyle(CellStyle.HorizontalAlign.center), colNum);
         for (int i = 0; i < colNum; i++) {
             tbl.setColumnWidth(i, colWidth, colWidth + 10);
@@ -732,21 +718,32 @@ public class App<publlic> {
         System.out.println(tbl.render());
     }
 
-    public static void myTable ( int colNum, int colWidth, String content[], String[]Value, String shown){
-        BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
-        //        CellStyle cellStyle = new CellStyle();
-        Table tbl = new Table(colNum, borderStyle, new ShownBorders(shown));
-        tbl.addCell(content[0], new CellStyle(CellStyle.HorizontalAlign.center), colNum);
-        for (int i = 0; i < colNum; i++) {
-            tbl.setColumnWidth(i, colWidth, colWidth + 10);
-        }
-        for (int i = 0; i < Value.length; i++) {
-            tbl.addCell(Value[i]);
-        }
-        System.out.println(tbl.render());
-    }
-
-    static void myGroupname () {
+    static void myGroupname() {
+        System.out.println("\n" +
+                "                                                      ______         ________         ______          ______         __    __                                                         \n" +
+                "                                                     /      \\       |        \\       /      \\        /      \\       |  \\  /  \\                                                        \n" +
+                "                                                    |  $$$$$$\\       \\$$$$$$$$      |  $$$$$$\\      |  $$$$$$\\      | $$ /  $$                                                        \n" +
+                "                                                    | $$___\\$$         | $$         | $$  | $$      | $$   \\$$      | $$/  $$                                                         \n" +
+                "                                                     \\$$    \\          | $$         | $$  | $$      | $$            | $$  $$                                                          \n" +
+                "                                                     _\\$$$$$$\\         | $$         | $$  | $$      | $$   __       | $$$$$\\                                                          \n" +
+                "                                                    |  \\__| $$         | $$         | $$__/ $$      | $$__/  \\      | $$ \\$$\\                                                         \n" +
+                "                                                     \\$$    $$         | $$          \\$$    $$       \\$$    $$      | $$  \\$$\\                                                        \n" +
+                "                                                      \\$$$$$$           \\$$           \\$$$$$$         \\$$$$$$        \\$$   \\$$                                                        \n" +
+                "                                                                                                                                                                            \n" +
+                "                                                                                                                                                                            \n" +
+                "                                                                                                                                                                            \n" +
+                "             __       __         ______         __    __         ______          ______         ________        __       __        ________        __    __        ________ \n" +
+                "            |  \\     /  \\       /      \\       |  \\  |  \\       /      \\        /      \\       |        \\      |  \\     /  \\      |        \\      |  \\  |  \\      |        \\\n" +
+                "            | $$\\   /  $$      |  $$$$$$\\      | $$\\ | $$      |  $$$$$$\\      |  $$$$$$\\      | $$$$$$$$      | $$\\   /  $$      | $$$$$$$$      | $$\\ | $$       \\$$$$$$$$\n" +
+                "            | $$$\\ /  $$$      | $$__| $$      | $$$\\| $$      | $$__| $$      | $$ __\\$$      | $$__          | $$$\\ /  $$$      | $$__          | $$$\\| $$         | $$   \n" +
+                "            | $$$$\\  $$$$      | $$    $$      | $$$$\\ $$      | $$    $$      | $$|    \\      | $$  \\         | $$$$\\  $$$$      | $$  \\         | $$$$\\ $$         | $$   \n" +
+                "            | $$\\$$ $$ $$      | $$$$$$$$      | $$\\$$ $$      | $$$$$$$$      | $$ \\$$$$      | $$$$$         | $$\\$$ $$ $$      | $$$$$         | $$\\$$ $$         | $$   \n" +
+                "            | $$ \\$$$| $$      | $$  | $$      | $$ \\$$$$      | $$  | $$      | $$__| $$      | $$_____       | $$ \\$$$| $$      | $$_____       | $$ \\$$$$         | $$   \n" +
+                "            | $$  \\$ | $$      | $$  | $$      | $$  \\$$$      | $$  | $$       \\$$    $$      | $$     \\      | $$  \\$ | $$      | $$     \\      | $$  \\$$$         | $$   \n" +
+                "             \\$$      \\$$       \\$$   \\$$       \\$$   \\$$       \\$$   \\$$        \\$$$$$$        \\$$$$$$$$       \\$$      \\$$       \\$$$$$$$$       \\$$   \\$$          \\$$   \n" +
+                "                                                                                                                                                                            \n" +
+                "                                                                                                                                                                            \n" +
+                "                                                                                                                                                                            \n");
         System.out.println
                 (
                         "\n" +
@@ -771,9 +768,9 @@ public class App<publlic> {
                 );
     }
 
-    private static void aboutus(){
-        String about[]={
-                "","",
+    private static void aboutus() {
+        String about[] = {
+                "", "",
                 "Welcome To Stock Management System",
                 " ",
                 "Hello User, our Stock Management System is built for easy to control products in stock.",
@@ -789,7 +786,7 @@ public class App<publlic> {
                 "",
                 ""
         };
-        String Developer[]={
+        String Developer[] = {
                 "Name", "Position",
                 "Yorn Sokha", "Project Leader",
                 "Sok Menghok", "Project Logical",
@@ -798,8 +795,8 @@ public class App<publlic> {
                 "Aing Seakthong", "UI Designer"
         };
 
-        App.myTable(1, 99, "About US", about,"......tttt");
-        App.myTable(2,48,"Stock Management System was developed by Group 4 Class BTB",Developer,"tttttttttt");
+        App.myTable(1, 99, "About US", about, "......tttt");
+        App.myTable(2, 48, "Stock Management System was developed by Group 4 Class BTB", Developer, "tttttttttt");
     }
 
-    }
+}
