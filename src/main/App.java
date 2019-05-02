@@ -65,7 +65,9 @@ public class App<publlic> {
                 case "s":
                     Complementary.tabler("search");
                     System.out.print("Name :");
-                    if(Complementary.searcher(scanner.nextLine(), products, numOfRows)==true){
+
+                    if (Complementary.searcher(new Scanner(System.in).nextLine(), products, numOfRows) == true) {
+
                     } else {
                         Complementary.tabler("Data Not Found");
                     }

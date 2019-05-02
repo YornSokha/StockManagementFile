@@ -117,63 +117,75 @@ public class Complementary extends Thread {
         return arrayList;
     }
 
-    private static void paginator(ArrayList<String> products, int recordAmount){
-        int productSize = products.size()%10;
-        productSize = products.size() + 10 - (productSize==0? 10 : productSize);//បង្កត់
+    private static void paginator(ArrayList<String> products, int recordAmount) {
+
+        int productSize = products.size() % 10;
+        productSize = products.size() + 10 - (productSize == 0 ? 10 : productSize);//បង្កត់
         //>>>> end of file
 //        System.out.println(productSize);
-        if(recordAmount < 5 ){
+        int page = 0;
+        boolean boo = false;
+        while (true) {
+            Complementary.tabler("1.previous||2.next||3.exit");
+            switch (boo == false ? 2 : Validator.readInt("Option : ")) {
+                case 1:
+                    if (page * recordAmount <= recordAmount) {
+                        tabler("First Page");
+                        continue;
+                    } else
+                        page--;
+                    break;
+                case 2:
+                    //page = page * recordAmount > productSize ? continue : page ;
+                    if (page * recordAmount >= productSize) {
+                        tabler("End of Page ");
+                        continue;
+                    } else {
+                        page++;
+                    }
+                    break;
+                case 3:
+                    return;
 
-        }else{
-            int page = 0;
+                default:
+                    System.out.println("Input mistake");
+                    break;
 
-            while (true){
-                Complementary.tabler("1.previous||2.next||3.exit");
-                switch (Validator.readInt("Option : ")){
-                    case 1:
-                        if(page*recordAmount <= recordAmount){
-                           tabler("First Page");
-                            continue;
-                        }
+            }
+            boo = true;
+            int j = 0;
+            String showData[] = new String[recordAmount];
+            for (int i = (recordAmount * page) - recordAmount; i < recordAmount * page; i++) {
 
-                        else
-                            page--;
-                        break;
-                    case 2:
-                        //page = page * recordAmount > productSize ? continue : page ;
-                        if(page*recordAmount >= productSize){
-                           tabler("End of Page ");
-                            continue;
-                        }else {
-                            page++;
-                        }
-                        break;
-                    case 3:
-                        return;
-
-                    default:
-                        System.out.println("Input mistake");
-                        break;
+                try {
+                    showData[j] = products.get(i);
+                    j++;
+                } catch (IndexOutOfBoundsException e) {
+                    break;
 
                 }
                 int j = 0;
-                String showData[]= new String[recordAmount];;
-                for(int i = (recordAmount*page ) - recordAmount ;i < recordAmount*page;i++){
+                String showData[] = new String[recordAmount];
+                ;
+                for (int i = (recordAmount * page) - recordAmount; i < recordAmount * page; i++) {
 
                     try {
                         showData[j] = products.get(i);
                         j++;
-                    }catch (IndexOutOfBoundsException e){
+                    } catch (IndexOutOfBoundsException e) {
                         break;
                     }
                 }
-                App.myTable(15, recordAmount,showData,true);  //show search string result @Seakthong@Search Table
-            }//while loop
-            }
+                App.myTable(15, recordAmount, showData, true);  //show search string result @Seakthong@Search Table
+                System.out.println("Page : " + page + "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tRecord : " + products.size());
+
+            }//for loop
+
+
         }//while loop
 
 
-
+    }
 
     //<<<<<<main call update or delete determine by boolean
     //<<<<<< UI improver
