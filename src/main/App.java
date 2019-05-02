@@ -29,7 +29,7 @@ public class App<publlic> {
     public static void main(String[] args) throws InterruptedException {
         myGroupname();
 //        generateData();
-        saveOption();
+        saveOption("Do you want to save the last modified? [Y/y] or [N/n] : ");
         getData();
 
         do {
@@ -81,7 +81,7 @@ public class App<publlic> {
                     backup();
                     break;
                 case "sa":
-                    saveOption();
+                    saveOption("Do you want to save? [Y/y] or [N/n] : ");
                     break;
                 case "re":
                     reStore();
@@ -687,9 +687,9 @@ public class App<publlic> {
 
     }
 
-    private static void saveOption() {
+    private static void saveOption(String message) {
         if (containedUnsavedFiles()) {
-            if (Validator.readYesNo("Are you sure to add record? [Y/y] or [N/n]:") == 'n')
+            if (Validator.readYesNo(message) == 'n')
                 return;
             if (new File("temp\\Insert.txt").exists())
                 saveInserted();
