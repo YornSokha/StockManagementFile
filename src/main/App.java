@@ -365,7 +365,10 @@ public class App<publlic> {
         currentPage = pageNum;
         int start = numOfRows * (currentPage - 1);
 
-        if(pageNum > getTotalPage()) return;
+        if(pageNum > getTotalPage()) {
+            gotoPage(Validator.readInt("Please enter from " + 1 + " to " + getTotalPage() + " : ", 1, getTotalPage()));
+            return;
+        }
         if (pageNum == getTotalPage()) {
             goLast();
         } else {
@@ -380,7 +383,6 @@ public class App<publlic> {
         table.addCell(myPageDetail[0], new CellStyle(CellStyle.HorizontalAlign.left),2);
         table.addCell(myPageDetail[1], new CellStyle(CellStyle.HorizontalAlign.right),3);
         System.out.println(table.render());
-        printPageSummary();
     }
 
     private static int getTotalPage () {
@@ -393,8 +395,10 @@ public class App<publlic> {
         for (int i = 0; i < numOfRows; i++) {
             addRowTable(products.get(i));
         }
+        String[] myPageDetail = printPageSummary();
+        table.addCell(myPageDetail[0], new CellStyle(CellStyle.HorizontalAlign.left),2);
+        table.addCell(myPageDetail[1], new CellStyle(CellStyle.HorizontalAlign.right),3);
         System.out.println(table.render());
-        printPageSummary();
     }
 
     private static String[] printPageSummary () {
@@ -421,8 +425,10 @@ public class App<publlic> {
         for (int i = start; i < products.size(); i++) {
             addRowTable(products.get(i));
         }
+        String[] myPageDetail = printPageSummary();
+        table.addCell(myPageDetail[0], new CellStyle(CellStyle.HorizontalAlign.left),2);
+        table.addCell(myPageDetail[1], new CellStyle(CellStyle.HorizontalAlign.right),3);
         System.out.println(table.render());
-        printPageSummary();
     }
 
     public static boolean containedUnsavedFiles() {
