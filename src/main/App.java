@@ -631,8 +631,19 @@ public class App<publlic> {
         char answer;
         System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
         answer = Character.toLowerCase(scanner.next().charAt(0));
-        if (answer == 'y')
-            products.add("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+        if (answer == 'y') {
+            String product=("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+            products.add(product);
+            try {
+                BufferedWriter insertFile=new BufferedWriter(new FileWriter("temp\\Insert.txt",true));
+                insertFile.write(product);
+                insertFile.newLine();
+                insertFile.flush();
+                insertFile.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         scanner.nextLine();
     }
 
