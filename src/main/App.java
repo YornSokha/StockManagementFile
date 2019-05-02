@@ -66,7 +66,7 @@ public class App<publlic> {
                 case "s":
                     Complementary.tabler("search");
                     System.out.print("Name :");
-                    if (Complementary.searcher(scanner.nextLine(), products, 10) == true) {
+                    if (Complementary.searcher(new Scanner(System.in).nextLine(), products, numOfRows) == true) {
                     } else {
                         Complementary.tabler("Data Not Found");
                     }
@@ -222,7 +222,8 @@ public class App<publlic> {
     /*Done*/
     private static void help() {
         String Help[] = {
-
+                "",
+                "",
                 "1.    press    *  : Display all record of products",
                 "2.    press    w  : Add new products",
                 "      press         #w/proname/unitprice/qty : sortcut for add new product",
@@ -300,22 +301,22 @@ public class App<publlic> {
     }
 
     private static void generateData() {
-        new Thread(() -> {
-            String message = "Please wait....";
-            int i = 0;
-            while (i < message.length()) {
-                System.out.print(message.charAt(i++));
-                try {
-                    Thread.sleep(350);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+//        new Thread(() -> {
+//            String message = "Please wait....";
+//            int i = 0;
+//            while (i < message.length()) {
+//                System.out.print(message.charAt(i++));
+//                try {
+//                    Thread.sleep(350);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
         long startTime = System.nanoTime();
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(FILE_NAME, false))) {
             int flush = 0;
-            for (int i = 1; i <= 10_000; i++) {
+            for (int i = 1; i <= 10_00; i++) {
                 Product product = new Product(i, "Angkor Beer", 10d, 1000, getDate());
                 bufferedWriter.write(product.toString());
                 bufferedWriter.newLine();
@@ -390,8 +391,8 @@ public class App<publlic> {
             addRowTable(products.get(i));
         }
         String[] myPageDetail = printPageSummary();
-        table.addCell(myPageDetail[0], new CellStyle(CellStyle.HorizontalAlign.left), 2);
-        table.addCell(myPageDetail[1], new CellStyle(CellStyle.HorizontalAlign.right), 3);
+        table.addCell(myPageDetail[0], new CellStyle(CellStyle.HorizontalAlign.left),2);
+        table.addCell(myPageDetail[1], new CellStyle(CellStyle.HorizontalAlign.right),3);
         System.out.println(table.render());
     }
 
@@ -416,8 +417,8 @@ public class App<publlic> {
             addRowTable(products.get(i));
         }
         String[] myPageDetail = printPageSummary();
-        table.addCell(myPageDetail[0], new CellStyle(CellStyle.HorizontalAlign.left), 2);
-        table.addCell(myPageDetail[1], new CellStyle(CellStyle.HorizontalAlign.right), 3);
+        table.addCell(myPageDetail[0], new CellStyle(CellStyle.HorizontalAlign.left),2);
+        table.addCell(myPageDetail[1], new CellStyle(CellStyle.HorizontalAlign.right),3);
         System.out.println(table.render());
     }
 
@@ -594,8 +595,20 @@ public class App<publlic> {
         char answer;
         System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
         answer = Character.toLowerCase(scanner.next().charAt(0));
-        if (answer == 'y')
-            products.add("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+        if (answer == 'y'){
+            String product = ("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+            products.add(product);
+            try {
+                BufferedWriter insertFile = new BufferedWriter(new FileWriter("temp\\Insert.txt", true));
+                insertFile.write(product);
+                insertFile.newLine();
+                insertFile.flush();
+                insertFile.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         scanner.nextLine();
     }
 
@@ -670,7 +683,7 @@ public class App<publlic> {
         }
     }
 
-    static void myTable(int colWidth, String[] fullValues) {
+    static void myTable(int colWidth, int recordAmout, String[] fullValues, boolean yess) {
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
         Table tbl = new Table(5, borderStyle, new ShownBorders("tttttttttt"));
         String contents[] = {"ID", "Name", "Price", "Qty", "Imported Date"};
@@ -678,7 +691,7 @@ public class App<publlic> {
             tbl.setColumnWidth(i, colWidth, colWidth + 10);
             tbl.addCell(contents[i]);
         }
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < recordAmout; i++) {
             String[] myValues = Complementary.subString(fullValues[i]);
             for (int j = 0; j < 5; j++) {
                 tbl.addCell(myValues[j]);
@@ -706,6 +719,31 @@ public class App<publlic> {
     }
 
     static void myGroupname() {
+        System.out.println("\n" +
+                "                                                      ______         ________         ______          ______         __    __                                                         \n" +
+                "                                                     /      \\       |        \\       /      \\        /      \\       |  \\  /  \\                                                        \n" +
+                "                                                    |  $$$$$$\\       \\$$$$$$$$      |  $$$$$$\\      |  $$$$$$\\      | $$ /  $$                                                        \n" +
+                "                                                    | $$___\\$$         | $$         | $$  | $$      | $$   \\$$      | $$/  $$                                                         \n" +
+                "                                                     \\$$    \\          | $$         | $$  | $$      | $$            | $$  $$                                                          \n" +
+                "                                                     _\\$$$$$$\\         | $$         | $$  | $$      | $$   __       | $$$$$\\                                                          \n" +
+                "                                                    |  \\__| $$         | $$         | $$__/ $$      | $$__/  \\      | $$ \\$$\\                                                         \n" +
+                "                                                     \\$$    $$         | $$          \\$$    $$       \\$$    $$      | $$  \\$$\\                                                        \n" +
+                "                                                      \\$$$$$$           \\$$           \\$$$$$$         \\$$$$$$        \\$$   \\$$                                                        \n" +
+                "                                                                                                                                                                            \n" +
+                "                                                                                                                                                                            \n" +
+                "                                                                                                                                                                            \n" +
+                "             __       __         ______         __    __         ______          ______         ________        __       __        ________        __    __        ________ \n" +
+                "            |  \\     /  \\       /      \\       |  \\  |  \\       /      \\        /      \\       |        \\      |  \\     /  \\      |        \\      |  \\  |  \\      |        \\\n" +
+                "            | $$\\   /  $$      |  $$$$$$\\      | $$\\ | $$      |  $$$$$$\\      |  $$$$$$\\      | $$$$$$$$      | $$\\   /  $$      | $$$$$$$$      | $$\\ | $$       \\$$$$$$$$\n" +
+                "            | $$$\\ /  $$$      | $$__| $$      | $$$\\| $$      | $$__| $$      | $$ __\\$$      | $$__          | $$$\\ /  $$$      | $$__          | $$$\\| $$         | $$   \n" +
+                "            | $$$$\\  $$$$      | $$    $$      | $$$$\\ $$      | $$    $$      | $$|    \\      | $$  \\         | $$$$\\  $$$$      | $$  \\         | $$$$\\ $$         | $$   \n" +
+                "            | $$\\$$ $$ $$      | $$$$$$$$      | $$\\$$ $$      | $$$$$$$$      | $$ \\$$$$      | $$$$$         | $$\\$$ $$ $$      | $$$$$         | $$\\$$ $$         | $$   \n" +
+                "            | $$ \\$$$| $$      | $$  | $$      | $$ \\$$$$      | $$  | $$      | $$__| $$      | $$_____       | $$ \\$$$| $$      | $$_____       | $$ \\$$$$         | $$   \n" +
+                "            | $$  \\$ | $$      | $$  | $$      | $$  \\$$$      | $$  | $$       \\$$    $$      | $$     \\      | $$  \\$ | $$      | $$     \\      | $$  \\$$$         | $$   \n" +
+                "             \\$$      \\$$       \\$$   \\$$       \\$$   \\$$       \\$$   \\$$        \\$$$$$$        \\$$$$$$$$       \\$$      \\$$       \\$$$$$$$$       \\$$   \\$$          \\$$   \n" +
+                "                                                                                                                                                                            \n" +
+                "                                                                                                                                                                            \n" +
+                "                                                                                                                                                                            \n");
         System.out.println
                 (
                         "\n" +

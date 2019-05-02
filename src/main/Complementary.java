@@ -78,7 +78,7 @@ public class Complementary extends Thread {
     }
 
     private static void paginator(ArrayList<String> products, int recordAmount) {
-
+        recordAmount = 10;
         int productSize = products.size() % 10;
         productSize = products.size() + 10 - (productSize == 0 ? 10 : productSize);//បង្កត់
         //>>>> end of file
@@ -124,8 +124,10 @@ public class Complementary extends Thread {
                     break;
                 }
             }
-            App.myTable(15, showData);  //show search string result @Seakthong@Search Table
+
+            App.myTable(15, recordAmount, showData, true);  //show search string result @Seakthong@Search Table
             System.out.println("Page : "+page+"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tRecord : "+products.size() );
+
         }//while loop
 
 
@@ -153,7 +155,7 @@ public class Complementary extends Thread {
 //                    tabler(productString);
                     String myString1[] = {"Successfully Deleted"};
                     App.myTable(1, 43, myString1, "tttttttttt");
-                    try (BufferedWriter fileDelete = new BufferedWriter(new FileWriter("temp\\Delete.bak", true))) {
+                    try (BufferedWriter fileDelete = new BufferedWriter(new FileWriter("temp\\Delete.txt", true))) {
                         fileDelete.write(productString);
                         fileDelete.newLine();
                         fileDelete.flush();
