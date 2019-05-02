@@ -19,16 +19,18 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class App<publlic> {
+    public static final String separator = "®";
     private static final String FILE_NAME = "product.txt";
     public static ArrayList<String> products = new ArrayList<>();
     private static Scanner scanner = new Scanner(System.in);
     private static int numOfRows = 5;
     private static int currentPage = 1;
     private static Table table;
-
+    private static boolean noteDelete=true,noteUpdate=true,noteInsert=true;
     public static void main(String[] args) throws InterruptedException {
         myGroupname();
-        generateData();
+//        generateData();
+        saveOption("Do you want to save the last modified? [Y/y] or [N/n] : ");
         getData();
 
         do {
@@ -82,7 +84,7 @@ public class App<publlic> {
                     backup();
                     break;
                 case "sa":
-                    System.out.println("Save");
+                    saveOption("Do you want to save it? [Y/y] or [N/n] : ");
                     break;
                 case "re":
                     reStore();
@@ -193,6 +195,12 @@ public class App<publlic> {
     }
 
     private static void update() {
+        try {
+            FileWriter writerChar=new FileWriter("temp\\chioce.txt",true);
+            if(noteUpdate==true) {writerChar.write('u');writerChar.flush();writerChar.close();}noteUpdate=false;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         String product = Complementary.updateObjectById(Validator.readInt("Input ID : "), products, true);
         if (product != null)
             try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("temp\\Update.txt"))) {
@@ -204,6 +212,12 @@ public class App<publlic> {
     }
 
     private static void delete() {
+        try {
+            FileWriter writerChar=new FileWriter("temp\\chioce.txt",true);
+            if(noteDelete==true) {writerChar.write('d');writerChar.flush();writerChar.close();}noteDelete=false;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         String product = Complementary.updateObjectById(Validator.readInt("Input ID : "), products, false);
         if(product != null)
             reCalculateCurrentPage();
@@ -299,7 +313,7 @@ public class App<publlic> {
 
     private static void readData(int id){
         for (String product : products) {
-            String[] idPro = product.split("\\|");
+            String[] idPro = product.split(separator);
             if (id == Integer.parseInt(idPro[0])) {
                 String shown[] = {"ID", idPro[0], "Name", idPro[1], "Price", idPro[2], "Qty", idPro[3], "Imported Date", idPro[4]};
                 App.myTable(2, 20, "Product Detail", shown, "tttttttttt");
@@ -413,7 +427,7 @@ public class App<publlic> {
     }
 
     public static void addRowTable (String product){
-        String[] p = product.split("\\|");
+        String[] p = product.split(separator);
         for (int i = 0; i < 5; i++)
             table.addCell(p[i]);
     }
@@ -447,6 +461,7 @@ public class App<publlic> {
                 fileSourceWrite.newLine();
                 fileSourceWrite.flush();
             }
+            fileSourceWrite.close();
             fileTempRead.close();
             fileInsert.delete();
             long time2 = System.nanoTime() - startTime2;
@@ -472,7 +487,7 @@ public class App<publlic> {
                 b = false;
                 BufferedReader br2 = new BufferedReader(new FileReader(fileDelete));
                 while ((line2 = br2.readLine()) != null) {
-                    if (line1.split("\\|")[0].equals(line2.split("\\|")[0])) {
+                    if (line1.split(separator)[0].equals(line2.split(separator)[0])) {
                         b = true;
                         break;
                     }
@@ -486,12 +501,12 @@ public class App<publlic> {
                         ;
                     }
                 }
+                br2.close();
             }
             br.close();
             bufferedWriter.close();
             fileSource.delete();
             fileTemp.renameTo(new File("product.txt"));
-            br.close();
             fileDelete.delete();
             long time2 = System.nanoTime() - startTime2;
             System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
@@ -516,7 +531,7 @@ public class App<publlic> {
                 b = false;
                 br2 = new BufferedReader(new FileReader(fileUpdate));
                 while ((line2 = br2.readLine()) != null) {
-                    if (line1.split("\\|")[0].equals(line2.split("\\|")[0])) {
+                    if (line1.split(separator)[0].equals(line2.split(separator)[0])) {
                         bufferedWriter.write(line2);
                         bufferedWriter.newLine();
                         bufferedWriter.flush();
@@ -529,12 +544,12 @@ public class App<publlic> {
                     bufferedWriter.newLine();
                     bufferedWriter.flush();
                 }
+                br2.close();
             }
             br.close();
             bufferedWriter.close();
             fileSource.delete();
             fileTemp.renameTo(new File("product.txt"));
-            br2.close();
             fileUpdate.delete();
             long time2 = System.nanoTime() - startTime2;
             System.out.println("Read using " + (double) time2 / 1000000 + " milliseconds");
@@ -590,28 +605,46 @@ public class App<publlic> {
     }
 
     private static void writeData () {
-        String[] lastProduct = products.get(products.size() - 1).split("\\|");
+        try {
+            FileWriter writerChar=new FileWriter("temp\\chioce.txt",true);
+            if(noteInsert==true) {writerChar.write('i');writerChar.flush();writerChar.close();}noteInsert=false;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String[] lastProduct = products.get(products.size() - 1).split(separator);
         int lastId = Integer.parseInt(lastProduct[0]);
-        System.out.println("Product ID : " + (lastId + 1));
+        System.out.println("Product ID : " + (lastId + 1));;
         System.out.print("Product's Name : ");
         String name = scanner.nextLine();
         double price = Validator.readDouble("Product's Price : ");
-        int qty = Validator.readInt("Product's Qty : ", 1, 1_000_000);
+        int qty = Validator.readInt("Product's Qty : ", 1, 1_000_000);;
         /*@Seakthong add App.myTable*/
         String shown[] = {"ID", "" + (lastId + 1), "Name", name, "Price", "" + price,"Qty",""+qty, "Imported Date", getDate()};
-        App.myTable(2, 20, "Result", shown, "tttttttttt");
+        App.myTable(2, 20, "Result", shown, "tttttttttt") ;;
 
-        char answer;
+        char answer;;
         System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
         answer = Character.toLowerCase(scanner.next().charAt(0));
-        if (answer == 'y')
-            products.add("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+        if (answer == 'y'){
+            String product = ("" + (lastId + 1) + separator + name + separator + price + separator + qty + separator + getDate());
+            products.add(product);
+            try {
+                BufferedWriter insertFile = new BufferedWriter(new FileWriter("temp\\Insert.txt", true));
+                insertFile.write(product);
+                insertFile.newLine();
+                insertFile.flush();;
+                insertFile.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         scanner.nextLine();
 
     }
 
     private static void writeData(String name, double price, int qty){
-        String[] lastProduct = products.get(products.size() - 1).split("\\|");
+        String[] lastProduct = products.get(products.size() - 1).split(separator);
         int lastId = Integer.parseInt(lastProduct[0]);
         System.out.println("Product ID : " + (lastId + 1));
 
@@ -621,7 +654,7 @@ public class App<publlic> {
         System.out.print("Are you sure to add record? [Y/y] or [N/n]:");
         answer = Character.toLowerCase(scanner.next().charAt(0));
         if (answer == 'y'){
-            String product = ("" + (lastId + 1) + "|" + name + "|" + price + "|" + qty + "|" + getDate());
+            String product = ("" + (lastId + 1) + separator + name + separator + price + separator + qty + separator + getDate());
             products.add(product);
             try {
                 BufferedWriter insertFile = new BufferedWriter(new FileWriter("temp\\Insert.txt", true));
@@ -694,17 +727,29 @@ public class App<publlic> {
 
     }
 
-    private static void saveOption() {
+    private static void saveOption(String message) {
         if (containedUnsavedFiles()) {
-            if (Validator.readYesNo("Are you sure to add record? [Y/y] or [N/n]:") == 'n')
+            if (Validator.readYesNo(message) == 'n')
                 return;
-            if (new File("temp\\Insert.txt").exists())
-                saveInserted();
-            if (new File("temp\\Delete.txt").exists())
-                saveDeleted();
-            if (new File("temp\\Update.txt").exists())
-                saveUpdated();
-            System.out.println("\n\nAlready update!!!\n");
+            try {
+                FileReader readChoice=new FileReader("temp\\chioce.txt");
+                int charTemp=0;
+                while ((charTemp=readChoice.read())!=-1){
+                    if(charTemp=='u'){
+                        if (new File("temp\\Update.txt").exists())
+                            saveUpdated();
+                    }else if(charTemp=='d'){
+                        if (new File("temp\\Delete.txt").exists())
+                            saveDeleted();
+                    }else{
+                        if (new File("temp\\Insert.txt").exists())
+                            saveInserted();
+                    }
+                }
+                readChoice.close();
+                (new File("temp\\chioce.txt")).delete();
+            } catch (Exception e) {    }
+            System.out.println("\n\nAlready updated!!!\n");
         }
     }
 

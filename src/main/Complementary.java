@@ -237,16 +237,16 @@ public class Complementary extends Thread {
 
     public static String[] subString(String str) {
 
-        int firstIndex = str.indexOf('|');
+        int firstIndex = str.indexOf(App.separator);
         String s1 = str.substring(0, firstIndex);
 
-        int second = str.indexOf("|", firstIndex + 1);
+        int second = str.indexOf(App.separator, firstIndex + 1);
         String s2 = str.substring(firstIndex + 1, second);
 
-        int third = str.indexOf("|", second + 1);
+        int third = str.indexOf(App.separator, second + 1);
         String s3 = str.substring(second + 1, third);
 
-        int fourth = str.indexOf("|", third + 1);
+        int fourth = str.indexOf(App.separator, third + 1);
         String s4 = str.substring(third + 1, fourth);
 
         String s5 = str.substring(fourth + 1);
@@ -255,7 +255,7 @@ public class Complementary extends Thread {
     }
 
     public static String subFirstString(String str) {
-        int firstIndex = str.indexOf('|');
+        int firstIndex = str.indexOf(App.separator);
         String s1 = str.substring(0, firstIndex);
         return s1;
     }

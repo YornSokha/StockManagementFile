@@ -1,5 +1,7 @@
 package model;
 
+import main.App;
+
 public class Product {
     private int id;
     private String name;
@@ -57,6 +59,6 @@ public class Product {
 
     @Override
     public String toString() {
-        return id + "|" + name + "|" + unitPrice + "|" +stockQty + "|"+ importedDate;
+        return id + App.separator + name + App.separator + unitPrice + App.separator +stockQty + App.separator+ importedDate;
     }
 }
