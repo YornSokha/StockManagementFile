@@ -1,5 +1,4 @@
 package main;
-
 import helper.Validator;
 import model.Product;
 import org.nocrala.tools.texttablefmt.BorderStyle;
@@ -9,9 +8,14 @@ import org.nocrala.tools.texttablefmt.Table;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 /*
+ *line 123 overload function
+ * 2204 line 123 work lack of status WHEATER deleted or not
  *<<<<< instance table
  *<<<<< move to table update UI
  *<<<<< arraylist pagination
@@ -119,6 +123,22 @@ public class Complementary extends Thread {
 
         return arrayList;
     }
+    //sub function searcher overloading USING WITH DATABASE
+    public static ArrayList findObjectByCharacterInName(String character) {
+
+        arrayList = new ArrayList();
+
+        try {
+           arrayList =  sample.Manipulator.productQueryer("select * from products where name like '%"+character+"%'");
+        }catch (SQLException sql){
+
+        }finally {
+
+        }
+
+
+        return arrayList;
+    }
 
     //sub function searcher
     private static void paginator(ArrayList<String> products, int recordAmount) {
@@ -186,6 +206,7 @@ public class Complementary extends Thread {
             if (booFeature) {//update record
                 Product product = convertFromStringToProduct(subString(products.get(index)));
                 productString = RecordComplement.insertRecord(product);
+                //<<<<< add method update query here replace products.set
                 products.set(index, productString);
             } else {//delete record
                 if (Validator.readYesNo("press 'y' to delete and 'n' to cancel : ") == 'y') {
