@@ -46,7 +46,7 @@ public class Data {
             String sqlCreateTable="CREATE TABLE tb_temp( id serial PRIMARY KEY, name VARCHAR (50) , unitprice float8, stockQty INT,importedDate VARCHAR (50),status INT);";
             String sqlInsertData="INSERT INTO tb_temp (name, unitPrice, stockQty, importedDate,status) VALUES ("+'"'+pro_name+'"'+","+pro_price+","+qty+","+'"'+importDate+'"'+",1)";
             System.out.println(sqlInsertData);
-            if (tables.next())
+            if (checkWhetherTempTableHasValue())
                 statement.executeUpdate(sqlInsertData);
             else {
 
@@ -54,7 +54,8 @@ public class Data {
                 statement.executeUpdate(sqlInsertData);
             }
             product = new ArrayList<>();
-            product.add(pro_name+GetConnection.separator+pro_price+GetConnection.separator+qty+GetConnection.separator+importDate);
+            int lastIndex = Integer.parseInt(Complementary.subString(App.products.get(App.products.size()-1))[0])+1;
+            product.add(lastIndex+GetConnection.separator+pro_name+GetConnection.separator+pro_price+GetConnection.separator+qty+GetConnection.separator+importDate);
         } catch (SQLException e) {
             System.out.println("exception here");
             e.printStackTrace();
@@ -84,7 +85,7 @@ public class Data {
             ResultSet resultSet=statement.executeQuery(queryData);
             while (resultSet.next()){
                 statement = GetConnection.connection.createStatement();
-                String sql="INSERT INTO products (name, unitprice, stockqty, importeddate,status) VALUES ("+"'"+resultSet.getString(2)+"'"+","+resultSet.getDouble(3)+","+resultSet.getInt(4)+","+"'"+resultSet.getString(5)+"'"+ ","+resultSet.getInt(6) +");";
+                String sql="INSERT INTO products (name, unitprice, stockQty, importeddate,status) VALUES ("+"'"+resultSet.getString(2)+"'"+","+resultSet.getDouble(3)+","+resultSet.getInt(4)+","+"'"+resultSet.getString(5)+"'"+ ","+resultSet.getInt(6) +");";
                 statement.executeUpdate(sql);
             }
         } catch (SQLException e) {
@@ -149,5 +150,20 @@ public class Data {
         }
 
         return 0;
+    }
+
+    public static boolean checkWhetherTempTableHasValue(){
+        boolean boo= false;
+        GetConnection.openConnection();
+        try {
+            PreparedStatement preparedStatement = GetConnection.connection.prepareStatement("select * from tb_temp");
+            preparedStatement.executeQuery();
+            boo = true;
+        }catch (SQLException sql){
+            boo =false;
+        }finally {
+            GetConnection.closeConnection();
+        }
+        return boo;
     }
 }
