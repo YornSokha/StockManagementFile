@@ -114,7 +114,7 @@ public class Manipulator {
         int qty = Validator.readInt("Qty :");
         System.out.print("Date-Imported : ");
         String dateTime = new Scanner(System.in).nextLine();
-        return new Product(0, name, price, qty, dateTime);
+        return new Product(Integer.parseInt(Complementary.subString(App.products.get(App.products.size()-1))[0])+1, name, price, qty, dateTime);
     }
 
     public static ArrayList<String> statementQueryer(String sqlStatement) throws SQLException {

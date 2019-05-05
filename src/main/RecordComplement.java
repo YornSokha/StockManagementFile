@@ -100,7 +100,7 @@ public class RecordComplement {
         double price = Validator.readDouble("Price : ");
         int qty = Validator.readInt("Qty :");
 
-        return new Product(0, name, price, qty, null);
+        return new Product(0 , name, price, qty, null);
     }
 
     public static void main(String[] args) {

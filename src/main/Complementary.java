@@ -187,6 +187,7 @@ public class Complementary extends Thread {
 
                 }
             }//for loop
+
                 App.myTable(15, recordAmount, showData, true);  //show search string result @Seakthong@Search Table
                 System.out.println("Page : " + page + "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tRecords : " + products.size());
 
@@ -272,21 +273,21 @@ public class Complementary extends Thread {
         return -1;
     }
 
-    public static String[] subString(String str) {
+    public static String[] subString(String str) throws IndexOutOfBoundsException{
 
-        int firstIndex = str.indexOf(App.separator);
-        String s1 = str.substring(0, firstIndex);
+            int firstIndex = str.indexOf(App.separator);
+            String s1 = str.substring(0, firstIndex);
 
-        int second = str.indexOf(App.separator, firstIndex + 1);
-        String s2 = str.substring(firstIndex + 1, second);
+            int second = str.indexOf(App.separator, firstIndex + 1);
+            String s2 = str.substring(firstIndex + 1, second);
 
-        int third = str.indexOf(App.separator, second + 1);
-        String s3 = str.substring(second + 1, third);
+            int third = str.indexOf(App.separator, second + 1);
+            String s3 = str.substring(second + 1, third);
 
-        int fourth = str.indexOf(App.separator, third + 1);
-        String s4 = str.substring(third + 1, fourth);
+            int fourth = str.indexOf(App.separator, third + 1);
+            String s4 = str.substring(third + 1, fourth);
 
-        String s5 = str.substring(fourth + 1);
+            String s5 = str.substring(fourth + 1);
 
         return new String[]{s1, s2, s3, s4, s5};
     }

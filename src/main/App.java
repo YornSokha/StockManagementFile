@@ -12,6 +12,10 @@ import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
 import java.io.*;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,12 +31,11 @@ public class App<publlic> {
     private static int numOfRows = 5;
     private static int currentPage = 1;
     private static Table table;
-    private static boolean noteDelete = true, noteUpdate = true, noteInsert = true;
-
+    private static boolean noteUpdate=true,noteDelete=true,noteInsert=true;
     public static void main(String[] args) throws InterruptedException {
         myGroupname();
         //generateData();
-        saveOption("Do you want to save the last modified? [Y/y] or [N/n] : ");
+        saveNewOption("Do you want to save the last modified? [Y/y] or [N/n] : ");
         //getData();
         products = Data.read();
         do {
@@ -97,13 +100,13 @@ public class App<publlic> {
                     backup();
                     break;
                 case "sa":
-                    saveOption("Do you want to save it? [Y/y] or [N/n] : ");
+                    saveNewOption("Do you want to save it? [Y/y] or [N/n] : ");
+                    System.out.println(products);
                     break;
                 case "re":
                     reStore();
                     break;
                 case "h":
-                    help();
                     break;
                 case "e":
                     System.exit(0);
@@ -457,8 +460,16 @@ public class App<publlic> {
 
     public static void addRowTable(String product) {
         String[] p = product.split(separator);
-        for (int i = 0; i < 5; i++)
-            table.addCell(p[i]);
+
+            for (int i = 0; i < 5; i++){
+                try {
+                    table.addCell(p[i]);
+                }catch (Exception e){
+                   break;
+                }
+            }
+
+
     }
 
     private static void goLast() {
@@ -794,7 +805,42 @@ public class App<publlic> {
         getData();
 
     }
+    private static void saveNewOption(String msg){
 
+            GetConnection.openConnection();
+            DatabaseMetaData dbm = null;
+            try {
+                if (Data.checkWhetherTempTableHasValue()|| Data.checkWhetherStatementTableHasValue()>0){
+                    if (Validator.readYesNo(msg) == 'n'){//<<<<drop statement
+                        if(Data.checkWhetherTempTableHasValue()){
+                            GetConnection.openConnection();
+                            String check="drop table tb_temp";
+                            Statement statement=GetConnection.connection.createStatement();
+                            statement.executeUpdate(check);
+                            GetConnection.closeConnection();
+                        }
+                        Manipulator.updater("delete from tb_statements");
+                        return;
+                    }
+                    if(Data.checkWhetherTempTableHasValue()){
+                        Data.savAndRecovery();
+                        GetConnection.openConnection();
+                        String check="drop table tb_temp";
+                        Statement statement=GetConnection.connection.createStatement();
+                        statement.executeUpdate(check);
+                        GetConnection.closeConnection();
+                    }
+                    if( Data.checkWhetherStatementTableHasValue()>0){
+                        Data.executeDataFromStatementTable();
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("\n\nAlready updated!!!\n");
+
+    }
     private static void saveOption(String message) {
         if (containedUnsavedFiles()) {
             if (Validator.readYesNo(message) == 'n')
@@ -826,14 +872,23 @@ public class App<publlic> {
         BorderStyle borderStyle = new BorderStyle("╔═", "═", "═╤═", "═╗", "╟─", "─", "─┼─", "─╢", "╚═", "═", "═╧═", "═╝", "║ ", " │ ", " ║", "─┴─", "─┬─");
         Table tbl = new Table(5, borderStyle, new ShownBorders("tttttttttt"));
         String contents[] = {"ID", "Name", "Price", "Qty", "Imported Date"};
+
         for (int i = 0; i < 5; i++) {
-            tbl.setColumnWidth(i, colWidth, colWidth + 10);
-            tbl.addCell(contents[i]);
+            try {
+                tbl.setColumnWidth(i, colWidth, colWidth + 10);
+                tbl.addCell(contents[i]);
+            }catch (Exception err){
+                break;
+            }
         }
         for (int i = 0; i < recordAmount; i++) {
-            String[] myValues = Complementary.subString(fullValues[i]);
-            for (int j = 0; j < 5; j++) {
-                tbl.addCell(myValues[j]);
+            try {
+                String[] myValues = Complementary.subString(fullValues[i]);
+                for (int j = 0; j < 5; j++) {
+                    tbl.addCell(myValues[j]);
+                }
+            }catch (Exception err){
+                break;
             }
         }
         System.out.println(tbl.render());
