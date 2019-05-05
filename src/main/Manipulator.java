@@ -22,13 +22,8 @@ public class Manipulator {
 
     public static void main(String[] args) throws SQLException{
 
-        ArrayList<Product> arrayList = Complementary.findObjectByCharacterInName("o");
-        arrayList.get(2).setName("menghok hahaha");
-          String str = Manipulator.generateSQLstatementFromProduct(Complementary.convertFromStringToProduct(
-                  Complementary.subString(arrayList.get(2).toString())
-          ));
-        System.out.println(str);
-         Manipulator.updater(Manipulator.generateSQLstatementFromProduct( arrayList.get(2)));
+//        Data.executeDataFromStatementTable();
+       Data.checkWhetherStatementTableHasValue();
 
     }
 
@@ -46,7 +41,6 @@ public class Manipulator {
                  new Product(resultSet.getInt(1), resultSet.getString(2),resultSet.getFloat(3),resultSet.getInt(4), resultSet.getString(5))//<<<<< feild of constructor
             );
            //System.out.println(resultSet.getInt(1));
-
         }
         resultSet.close();
         preparedStatement.close();
@@ -123,5 +117,39 @@ public class Manipulator {
         return new Product(0, name, price, qty, dateTime);
     }
 
+    public static ArrayList<String> statementQueryer(String sqlStatement) throws SQLException {
+
+        ArrayList<String> arrayList = new ArrayList();
+
+        GetConnection.openConnection();
+
+        PreparedStatement preparedStatement = GetConnection.connection.prepareStatement(sqlStatement);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        //<<<<< change query ;
+        while (resultSet.next()) {
+
+           arrayList.add(resultSet.getString(2));
+
+        }
+        resultSet.close();
+        preparedStatement.close();
+        GetConnection.closeConnection();
+        // Manipulator.updater( resultSet.getString(2));
+
+        if (arrayList.size()>0){
+            arrayList.forEach((statement)->{
+                try {
+                    Manipulator.updater(statement);
+                }catch (SQLException sql){
+                    System.out.println("problem with sql statement update");
+                }
+            });
+            Manipulator.updater("delete from tb_statements");
+            return arrayList;
+        }else {
+            return null;
+        }
+
+    }
 }
 

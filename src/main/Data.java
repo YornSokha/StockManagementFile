@@ -1,9 +1,7 @@
 package main;
 
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.lang.reflect.GenericArrayType;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -76,5 +74,59 @@ public class Data {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    /*
+    * if(Data.checkWhetherStatementTableHasValue()>0){
+    *   not work
+    * }else{
+    *     executeDataFromStatementTable();
+    * }
+    *
+    *
+    * */
+
+
+    //direct execute so all conditional is checked
+    public static void executeDataFromStatementTable(){
+           ArrayList arrayList = new ArrayList();
+            try {
+             arrayList = Manipulator.statementQueryer("select * from tb_statements");
+             if(arrayList.size()>0){
+                 System.out.println(arrayList);
+             }
+            }catch (SQLException sql){
+
+            }
+    }
+
+    public static int checkWhetherStatementTableHasValue(){
+
+        GetConnection.openConnection();
+        PreparedStatement preparedStatement ;
+        int i =0;
+        try {
+            preparedStatement = GetConnection.connection.prepareStatement("select count(*) from tb_statements ");
+            ResultSet resultSet  =  preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                i = resultSet.getInt(1);
+            }
+
+            if (i>0){
+                System.out.println("found");
+                System.out.println(i);
+                return i;
+            }else{
+                System.out.println("not found");
+                return i;
+            }
+        }catch (SQLException sql){
+            sql.printStackTrace();
+
+        }finally {
+            GetConnection.closeConnection();
+        }
+
+        return 0;
     }
 }
