@@ -14,13 +14,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 /*
+ * //***** note  //<<<<< working on
+ *line 240 on_update
  *line 123 overload function
  * 2204 line 123 work lack of status WHEATER deleted or not
+ *
  *<<<<< instance table
- *<<<<< move to table update UI
- *<<<<< arraylist pagination
- *<<<<< R-T-F-B-R-A-C
- *<<<<< R-C-MO
  */
 
 public class Complementary extends Thread {
@@ -46,7 +45,7 @@ public class Complementary extends Thread {
 
     }
     //table usable version
-    public static void tabler(String ...str){//<<<< for adding String Array
+    public static void tabler(String ...str){//***** for adding String Array
         int number = str.length;
         Table tbl = new Table(number, BorderStyle.UNICODE_DOUBLE_BOX, ShownBorders.ALL);
         for(int i = 0; i<number; i++){
@@ -123,13 +122,13 @@ public class Complementary extends Thread {
 
         return arrayList;
     }
-    //sub function searcher overloading USING WITH DATABASE
+    //*****sub function searcher overloading USING WITH DATABASE
     public static ArrayList findObjectByCharacterInName(String character) {
 
         arrayList = new ArrayList();
 
         try {
-           arrayList =  sample.Manipulator.productQueryer("select * from products where name like '%"+character+"%'");
+           arrayList =  Manipulator.productQueryer("select * from products where name like '%"+character+"%'");
         }catch (SQLException sql){
 
         }finally {
@@ -140,7 +139,7 @@ public class Complementary extends Thread {
         return arrayList;
     }
 
-    //sub function searcher
+    //*****sub function searcher calculation on process paginator either it outputs
     private static void paginator(ArrayList<String> products, int recordAmount) {
 
         int productSize = products.size() % 10;
@@ -196,7 +195,7 @@ public class Complementary extends Thread {
 
     }//end of paginator
 
-    //<<<<<<main called
+    //***** main called
     public static String updateObjectById(int number, ArrayList<String> products, boolean booFeature) {
         int index = findObjectToUpdate(number, products);
         String productString = null;
@@ -206,10 +205,20 @@ public class Complementary extends Thread {
             if (booFeature) {//update record
                 Product product = convertFromStringToProduct(subString(products.get(index)));
                 productString = RecordComplement.insertRecord(product);
-                //<<<<< add method update query here replace products.set
+
+                //***** if (previous didn't get any changed)
+                if (product.toString().equals(productString)){
+                    System.out.println("nothing changed");
+                    return null;
+                }
+                //convert string object -> sql statement -> save to tb_statement
+                //generateSQLstatementFromProduct generate sql statement
+                Manipulator.generateUpdateStatement(Manipulator.generateSQLstatementFromProduct(subString(productString)));
                 products.set(index, productString);
             } else {//delete record
                 if (Validator.readYesNo("press 'y' to delete and 'n' to cancel : ") == 'y') {
+                    //generateSQLstatementStatus update status to 0
+                    Manipulator.generateUpdateStatement(Manipulator.generateSQLstatementStatus(subString(products.get(index))));
                     productString = products.remove(index);
                     String str[] = subString(productString);
                     String myString[] ={"ID", str[0], "Name", str[1], "Price", str[2], "Qty", str[3], "Imported Date", str[4]};
@@ -234,8 +243,17 @@ public class Complementary extends Thread {
         }
     }
 
-    //
-    private static Product convertFromStringToProduct(String[] str) {
+    //<<<<< update here
+    //use cuz every condition is checked
+    //sec param will be convert to Product object
+    //products.set(index, productString)
+    private static boolean updateDirectlyProductInDb(int index,Product product ){
+    return true;
+    }
+
+
+
+    public static Product convertFromStringToProduct(String[] str) {
         return new Product(Integer.parseInt(str[0]), str[1], Double.parseDouble(str[2]), Integer.parseInt(str[3]), str[4]);
     }
 
@@ -250,7 +268,6 @@ public class Complementary extends Thread {
                 return i;
             }
         }
-
         tabler("not found");
         return -1;
     }
@@ -274,10 +291,5 @@ public class Complementary extends Thread {
         return new String[]{s1, s2, s3, s4, s5};
     }
 
-    public static String subFirstString(String str) {
-        int firstIndex = str.indexOf(App.separator);
-        String s1 = str.substring(0, firstIndex);
-        return s1;
-    }
 
 }

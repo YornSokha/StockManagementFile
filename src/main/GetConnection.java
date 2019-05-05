@@ -16,7 +16,7 @@ import java.sql.SQLException;
 
 
 public class GetConnection {
-
+    public static final String separator = "®";
     public static Connection connection = null;
 
     public static void  openConnection(){
@@ -27,7 +27,7 @@ public class GetConnection {
         }
 
         //<<<< port
-        String url = "jdbc:mysql://localhost:3306/shop";
+        String url = "jdbc:mysql://localhost:3306/javatesting";
 
         try {
 

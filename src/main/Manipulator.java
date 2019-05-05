@@ -1,5 +1,4 @@
-package sample;
-
+package main;
 import main.Complementary;
 import main.GetConnection;
 import main.RecordComplement;
@@ -76,6 +75,42 @@ public class Manipulator {
     public static String generateSQLstatementFromProduct(String []product){
         return "update products set name = '"+product[1]+"',unitPrice = "+product[2]+",stockQty="+product[3]+",importedDate='"+product[4]+"' where id ="+product[0] ;
     }
+
+    //***** String of Product overloading
+    public static String generateSQLstatementStatus(String []product){
+        return "update products set status = 0 where id = "+product[0] ;
+    }
+
+    public static String generateSQLstatementStatus(Product product){
+        return "update products set status = 0 where id = "+product.getId() ;
+    }
+
+    public static boolean saveSqlStatementToTbStatements(String sql){
+        try {
+            //<<<<< testing
+            System.out.println(updater(sql));
+        }catch (SQLException sqlError){
+            sqlError.printStackTrace();
+        }
+        return true;
+    }
+
+    //***** generate sql statement
+    public static String generateUpdateStatement(String updateQuery){
+        System.out.println('"'+updateQuery+'"');
+        try {
+           int i = updater(  "insert into tb_statements (statement) values ("+'"'+updateQuery+'"'+")");
+        }catch (SQLException sql ){
+            sql.printStackTrace();
+        }
+        return "";
+    }
+
+//    //***** String of Product overloading
+//    public static String generateSQLstatementFromProduct(String []product){
+//        return "update products set name = '"+product[1]+"',unitPrice = "+product[2]+",stockQty="+product[3]+",importedDate='"+product[4]+"' where id ="+product[0] ;
+//    }
+
 
 
 }
