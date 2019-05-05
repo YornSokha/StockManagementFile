@@ -24,7 +24,6 @@ public class Data {
                         +GetConnection.separator+resultSet.getDouble(3)+GetConnection.separator+resultSet.getInt(4)
                         +GetConnection.separator+resultSet.getString(5));
             }
-            resultSet.close();
 //            Iterator<String> iter
 //                    = arrayList.iterator();
 //            while (iter.hasNext()) {
@@ -33,7 +32,7 @@ public class Data {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        GetConnection.closeConnection();
         return arrayList;
     }
 
@@ -68,6 +67,7 @@ public class Data {
     public static void generatData(){
         GetConnection.openConnection();
         try {
+
             statement = GetConnection.connection.createStatement();
             for(int i=1;i<=100;i++){
                 String sql="INSERT INTO products (name, unitprice, stockqty, importeddate) VALUES ('Angkor', 8, 8, '2019-04-30')";
@@ -76,5 +76,26 @@ public class Data {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        GetConnection.closeConnection();
+    }
+    public static void savAndRecovery(){
+        GetConnection.openConnection();
+        try {
+            statement = GetConnection.connection.createStatement();
+            String queryData="select * from tb_temp";
+            ResultSet resultSet=statement.executeQuery(queryData);
+            while (resultSet.next()){
+                statement = GetConnection.connection.createStatement();
+                String sql="INSERT INTO products (name, unitprice, stockqty, importeddate,status) VALUES ("+"'"+resultSet.getString(2)+"'"+","+resultSet.getDouble(3)+","+resultSet.getInt(4)+","+"'"+resultSet.getString(5)+"'"+ ","+resultSet.getInt(6) +");";
+                statement.executeUpdate(sql);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        GetConnection.closeConnection();
+    }
+
+    public static void main(String[] args) {
+        savAndRecovery();
     }
 }

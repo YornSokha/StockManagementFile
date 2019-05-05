@@ -1,8 +1,8 @@
 package main;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * * line 72 change part of file
@@ -21,25 +21,26 @@ public class GetConnection {
 
     public static void  openConnection(){
         try {
-            Class.forName("com.mysql.jdbc.Driver");//<<<<update driver
+            Class.forName("org.postgresql.Driver");//<<<<update driver
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
 
         //<<<< port
-        String url = "jdbc:mysql://localhost:3306/javatesting";
+        String url = "jdbc:postgresql://localhost:5432/StockTestData";
 
         try {
 
             ///<<<< update package connection "user name password "
             ///<<<< user and password
-            connection = DriverManager.getConnection(url,"root", "root");
+            connection = DriverManager.getConnection(url,"postgres", "123");
 
         } catch (SQLException e) {
-            System.out.println("sql error");
+
             e.printStackTrace();
 
         }
+
 
     }
 
@@ -50,6 +51,7 @@ public class GetConnection {
             e.printStackTrace();
         }
     }
+
 
 
 }//endofcloseConnection
