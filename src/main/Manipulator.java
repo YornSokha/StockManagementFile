@@ -1,4 +1,5 @@
 package main;
+import helper.Validator;
 import main.Complementary;
 import main.GetConnection;
 import main.RecordComplement;
@@ -7,6 +8,7 @@ import model.Product;
 import java.lang.reflect.GenericArrayType;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /*
 * Manipulator.productQueryer(sqlStatement ) return arraylist;
@@ -111,7 +113,15 @@ public class Manipulator {
 //        return "update products set name = '"+product[1]+"',unitPrice = "+product[2]+",stockQty="+product[3]+",importedDate='"+product[4]+"' where id ="+product[0] ;
 //    }
 
-
+    public static Product insertNewRecord() {
+        System.out.print("Name:");
+        String name = new Scanner(System.in).nextLine();
+        double price = Validator.readDouble("Price : ");
+        int qty = Validator.readInt("Qty :");
+        System.out.print("Date-Imported : ");
+        String dateTime = new Scanner(System.in).nextLine();
+        return new Product(0, name, price, qty, dateTime);
+    }
 
 }
 

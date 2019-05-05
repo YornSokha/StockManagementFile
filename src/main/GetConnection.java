@@ -36,7 +36,7 @@ public class GetConnection {
             connection = DriverManager.getConnection(url,"root", "root");
 
         } catch (SQLException e) {
-
+            System.out.println("sql error");
             e.printStackTrace();
 
         }

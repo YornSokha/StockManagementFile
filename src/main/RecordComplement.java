@@ -94,7 +94,7 @@ public class RecordComplement {
         }
     }
 
-    private static Product insertNewRecord() {
+    public static Product insertNewRecord() {
         System.out.print("Name:");
         String name = new Scanner(System.in).nextLine();
         double price = Validator.readDouble("Price : ");

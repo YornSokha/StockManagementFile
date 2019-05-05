@@ -1,5 +1,6 @@
 package main;
 
+import com.sun.prism.impl.Disposer;
 import com.sun.rowset.internal.Row;
 import controller.Connection;
 import helper.Validator;
@@ -30,10 +31,10 @@ public class App<publlic> {
 
     public static void main(String[] args) throws InterruptedException {
         myGroupname();
-//        generateData();
+        //generateData();
         saveOption("Do you want to save the last modified? [Y/y] or [N/n] : ");
-        getData();
-
+        //getData();
+        products = Data.read();
         do {
             String key = printMenu();
 //            key.toLowerCase();
@@ -42,7 +43,18 @@ public class App<publlic> {
                     gotoPage(currentPage);
                     break;
                 case "w":
-                    writeData();
+                    Product product = Manipulator.insertNewRecord();
+
+                    System.out.println(product);
+                    ArrayList<String> temporaryList = Data.write(product.getName(), product.getUnitPrice(),product.getStockQty(),product.getImportedDate(),1);
+                   if(temporaryList.size()>0){
+                       products.add(temporaryList.get(0));
+                        System.out.println("success added");
+                    }else {
+                        System.out.println("it not work");
+                    }
+
+                    //
                     break;
                 case "r":
                     readData();
