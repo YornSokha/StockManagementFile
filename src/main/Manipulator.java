@@ -23,11 +23,11 @@ public class Manipulator {
 
         ArrayList<Product> arrayList = Complementary.findObjectByCharacterInName("o");
         arrayList.get(2).setName("menghok hahaha");
-          String str = Complementary.generateSQLstatementFromProduct(Complementary.convertFromStringToProduct(
+          String str = Manipulator.generateSQLstatementFromProduct(Complementary.convertFromStringToProduct(
                   Complementary.subString(arrayList.get(2).toString())
           ));
         System.out.println(str);
-         Manipulator.updater(Complementary.generateSQLstatementFromProduct( arrayList.get(2)));
+         Manipulator.updater(Manipulator.generateSQLstatementFromProduct( arrayList.get(2)));
 
     }
 
